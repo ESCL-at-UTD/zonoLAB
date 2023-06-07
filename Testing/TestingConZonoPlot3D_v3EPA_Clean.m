@@ -1,6 +1,6 @@
 rng(3) % 2 was the working example
-nG = 40; % 5 was the working example
-nC = 15; % 1 was the working example
+nG = 5; % 5 was the working example
+nC = 1; % 1 was the working example
 G = 2*rand(3,nG)-1;
 c = zeros(3,1);
 A = 2*rand(nC,nG)-1;
@@ -13,12 +13,12 @@ obj = conZono(G,c,A,b);
 %% MPT plot
 
 figure;  hold on; axis square; view(3);
-% tStart = tic;
-% Box = Polyhedron('lb',-ones(obj.nG,1),'ub',ones(obj.nG,1),'He',[obj.A obj.b]);
-% P = obj.c + obj.G*Box;
-% plot(P,'color','g','alpha',0.1)
-% % drawnow
-% toc(tStart)
+tStart = tic;
+Box = Polyhedron('lb',-ones(obj.nG,1),'ub',ones(obj.nG,1),'He',[obj.A obj.b]);
+P = obj.c + obj.G*Box;
+plot(P,'color','g','alpha',0.1)
+% drawnow
+toc(tStart)
 
 %%
 % figure; hold on; axis square

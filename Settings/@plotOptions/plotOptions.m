@@ -1,5 +1,5 @@
 classdef plotOptions
-    % User defined plot options (subset of MATLAB's patch properties
+    % User defined plot options (subset of MATLAB's patch properties)
     
     properties
         EdgeAlpha           = 1
