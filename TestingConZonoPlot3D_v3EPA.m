@@ -9,7 +9,8 @@ A = 2*rand(nC,nG)-1;
 b = 2*rand(nC,1)-1;
 obj = conZono(G,c,A,b);
 
-% obj = conZono([eye(3) [1;1;1]],zeros(3,1),[1 1 1 0],[1]);
+% Still need to handle this case
+% obj = conZono([eye(3) [1;1;1]],zeros(3,1),[1 1 1 0],[1]); 
 
 %% CORA plot
 % CORA = conZonotope(c,G,A,b);
@@ -72,20 +73,20 @@ interiorPoint = sum(foundVerts(1:4,:))/4;
 plot3(interiorPoint(:,1),interiorPoint(:,2),interiorPoint(:,3),'or');view(3)
 % Faces, vertices, and normals
 [f] = nchoosek(1:4,3);
-v = foundVerts;
+% v = foundVerts;
 fNorms = zeros(0,3);
 for i = 1:size(f,1)
-    patch('Faces',f(i,:),'Vertices',v,'FaceColor','m','FaceAlpha',0.1)
+%     patch('Faces',f(i,:),'Vertices',v,'FaceColor','m','FaceAlpha',0.1)
     [fN,fC] = faceNormal(foundVerts(f(i,1:3),:),interiorPoint);
     fNorms(i,:)= fN;
-    quiver3(fC(:,1),fC(:,2),fC(:,3), ...
-                fN(:,1),fN(:,2),fN(:,3),1.5,'color','b');
+%     quiver3(fC(:,1),fC(:,2),fC(:,3), ...
+%                 fN(:,1),fN(:,2),fN(:,3),1.5,'color','b');
 end
 % Expand polytope
 maxIter = 1e6;
 fIndex = 1;
 nVerts = 4;
-for i = 1:2%maxIter
+for i = 1:maxIter
     [dir,~] = faceNormal(foundVerts(f(fIndex,1:3),:),interiorPoint);
     [extreme] = getVertices(obj,model,params,dir);
     [foundVerts,isNew] = addIfNew(foundVerts,extreme);
@@ -95,13 +96,18 @@ for i = 1:2%maxIter
         % Find all faces that see the new vertex
         facesThatSee = findFacesThatSeeNewVertex(fNorms,foundVerts(f(:,1),:),extreme);
         sharedEdges = findSharedEdges(find(facesThatSee),f);
-        removeCurrentFace = 0;
+%         removeCurrentFace = 0;
+        facesToRemove = [];
         for indx = find(facesThatSee)
-%             removeCurrentFace = 0;
-            allCombos = nchoosek(f(fIndex,f(fIndex,:)~=0),2);
+            removeCurrentFace = 0;
+            if ismember(nVerts,f(indx,:))
+                continue
+            end
+            allCombos = nchoosek(f(indx,f(indx,:)~=0),2);
             allCombos = setdiff(allCombos,sharedEdges,'rows'); 
             newFaces = [allCombos nVerts*ones(size(allCombos,1),1)];
             f
+            minIndices = [];
             for j = 1:size(newFaces,1)
                 [fN,~] = faceNormal(foundVerts(newFaces(j,1:3),:),interiorPoint);
                 [minVal,minIndx] = min(sum(abs(fNorms-fN),2));
@@ -109,24 +115,32 @@ for i = 1:2%maxIter
                 if isNewFace % Create new face
                     fNorms = [fNorms;fN];
                     f = [f;newFaces(j,:) zeros(1,size(f,2)-3)];
-%                     removeCurrentFace = 1;
+                    removeCurrentFace = 1;
                 else % Combine with existing face
                     if ~ismember(nVerts,f(minIndx,:))
+                        minIndices = [minIndices;minIndx];
                         n = find(f(minIndx,:),1,'last');
                         if n + 1 > size(f,2)
                             f = [f zeros(size(f,1),1)];
                         end
                         f(minIndx,n+1) = nVerts;
                         f(minIndx,:) = reOrderVerts(f(minIndx,:),foundVerts,interiorPoint);
+                        removeCurrentFace = 1;
                     end
                 end
-                removeCurrentFace = 1;
+%                 removeCurrentFace = 1;
             end
-%             if removeCurrentFace
+            if removeCurrentFace && ~ismember(indx,minIndices)
+                facesToRemove = [facesToRemove; indx];
 %                 f(indx,:) = [];
 %                 fNorms(indx,:) = [];
-%             end
+            end
         end
+%         f(find(facesThatSee),:) = [];
+%         fNorms(find(facesThatSee),:) = [];
+        f(facesToRemove,:) = [];
+        fNorms(facesToRemove,:) = [];
+
 %         f
 % find(facesThatSee)
 %         for indx = find(facesThatSee)
@@ -150,12 +164,15 @@ for i = 1:2%maxIter
 %                 f(indx,n+1) = nVerts;
 %             end
 %         end
-        if removeCurrentFace
-            f(fIndex,:) = [];
-            fNorms(fIndex,:) = [];
-        end
+%         if removeCurrentFace
+%             f(fIndex,:) = [];
+%             fNorms(fIndex,:) = [];
+%         end
     else
         fIndex = fIndex + 1;
+    end
+    if fIndex > size(f,1)
+        break
     end
         
 end
@@ -367,8 +384,8 @@ toc(tStart)
 % % end
 % drawnow
 % toc(tStart)
-% P
-% nfacesAndVerts = [size(f,1) nVerts]
+P
+nfacesAndVerts = [size(f,1) nVerts]
 % 
 % %%
 % % m = 5;
@@ -392,6 +409,7 @@ toc(tStart)
 % % plot3(fC(:,1),fC(:,2),fC(:,3),'og')
 % % quiver3(fC(:,1),fC(:,2),fC(:,3), ...
 % %     fN(:,1),fN(:,2),fN(:,3),1.5,'color','b');
+
 %%
 function [extreme] = getVertices(obj,model,params,dir)
 model.obj = dir*obj.G;
@@ -442,20 +460,42 @@ sharedEdges = allEdges(repeatedIndices,:);
 end
 
 function f = reOrderVerts(f,foundVerts,interiorPoint)
-    for j = 1:find(f(1,:),1,'last')-2
-        vertA = foundVerts(f(1,j),:);
-        vertB = foundVerts(f(1,j+1),:);
-        vertC = foundVerts(f(1,j+2),:);
-        vecA = vertB - vertA;
-        vecB = vertC - vertB;
-        fN = cross(vecA,vecB);
-        fC = (vertA + vertB + vertC)/3;
-        dotProd = fN*[fC-interiorPoint]';
-        if dotProd > 0 % Switch order of vertex in face
-            f1 = f(1,j+1);
-            f2 = f(1,j+2);
-            f(1,j+1) = f2;
-            f(1,j+2) = f1;
-        end
-    end
+    nVerts = find(f(1,:),1,'last');
+    [fN,fC] = faceNormal(foundVerts(f(1,1:3),:),interiorPoint);
+    subSpaceVecs = foundVerts(f(1,1:nVerts),:)*null(fN);
+    subCenter = fC*null(fN);
+    angles = atan2(subSpaceVecs(:,1)-subCenter(:,1),subSpaceVecs(:,2)-subCenter(:,2));
+    [~,order] = sort(angles);
+    f(1,1:nVerts) = f(1,order);
+%     for j = 1:nVerts
+%         vertA = foundVerts(f(1,j),:);
+%         if j+1 > nVerts
+%             indxB = 1;
+%             if j+2 > nVerts
+%                 indxC = 2;
+%             else
+%                 indxC = j+2;
+%             end
+%         else
+%             indxB = j+1;
+%             if j+2 > nVerts
+%                 indxC = 1;
+%             else
+%                 indxC = j+2;
+%             end
+%         end
+%         vertB = foundVerts(f(1,indxB),:);
+%         vertC = foundVerts(f(1,indxC),:);
+%         vecA = vertB - vertA;
+%         vecB = vertC - vertB;
+%         fN = cross(vecA,vecB);
+%         fC = (vertA + vertB + vertC)/3;
+%         dotProd = fN*[fC-interiorPoint]';
+%         if dotProd > 0 % Switch order of vertex in face
+%             f1 = f(1,indxB);
+%             f2 = f(1,indxC);
+%             f(1,indxB) = f2;
+%             f(1,indxC) = f1;
+%         end
+%     end
 end
