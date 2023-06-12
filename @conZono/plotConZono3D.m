@@ -83,13 +83,16 @@ coPlanar(2) = det([foundVerts(2,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:);
 coPlanar(3) = det([foundVerts(2,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)]) <= 1e-6;
 if min(coPlanar) == 1 % A planar set in 3D
     indx = find(isNewVert,1);
-    basis = orth([foundVerts(2,:)-foundVerts(1,:);extreme(indx,:)-foundVerts(1,:)]')';
-    reducedG = basis*obj.G;
+%     basis = orth([foundVerts(2,:)-foundVerts(1,:);extreme(indx,:)-foundVerts(1,:)]')';
+%     reducedG = basis*obj.G;
+    normVec = cross(foundVerts(2,:)-foundVerts(1,:),extreme(indx,:)-foundVerts(1,:));
+    reducedG = obj.G(1:2,:); % Will not work if set is 'vertical';
     reducedObj = conZono(reducedG,zeros(2,1),obj.A,obj.b);
     opt = plotOptions('Display','off');
     opt.SolverOpts = opts;
     [reducedV,~] = plot(reducedObj,opt);
-    v = obj.c' + reducedV*basis;
+%     v = obj.c' + reducedV*basis;
+    v = [reducedV 1/normVec(3)*(normVec*foundVerts(1,:)'-sum(normVec(1:2).*reducedV,2))];
     f = [1:size(v,1)];
     return
 end

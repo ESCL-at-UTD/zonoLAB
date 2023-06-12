@@ -39,7 +39,7 @@ switch opts.milpSolver
         params.outputflag = 0;
         if opts.nSolutions > 1
             params.PoolSearchMode = 2;
-            params.PoolSolutions = opts.nSolutions;
+            params.PoolSolutions = min(opts.nSolutions,2e9);
         end
         params.MIPFocus = opts.MIPFocus;
         result = gurobi(model,params);
