@@ -1,35 +1,23 @@
-function plot(obj,varargin)
+function [v,f] = plotZono3D(obj)
 
 % Standardized header
 
-opts = plotOptions;
-if length(varargin) == 1
-    if isa(varargin{1},'plotOptions')
-        opts = varargin{1};
-    else
-        opts.FaceColor = varargin{1};
-    end
-elseif length(varargin) == 2
-    opts.FaceColor = varargin{1};
-    opts.FaceAlpha = varargin{2};
-end
-P = plotOptionsStruct(opts);
-
-if (obj.n > 3) || (obj.n == 1)
-    disp(['Can only plot in 2 or 3 dimensions.'])
-elseif obj.n == 2
-    obj.G(:,obj.G(2,:)<0) = -1*obj.G(:,obj.G(2,:)<0); % All generators in quadrants I and II
-    angles = atan2(obj.G(2,:),obj.G(1,:));  % Compute angles
-    [~,order] = sort(angles,'descend');     
-    obj.G = obj.G(:,order);                 % Sort angles in clockwise order
-    firstVertex = sum(obj.G');              % Compute first vertex
-    % Compute remaining vertices by subtracting off one generator at a time
-    vertsA = firstVertex - 2* [zeros(1,2);cumsum(obj.G,2)']; 
-    vertsB = -vertsA; % Get centrally-symmetric vertices
-    v = obj.c' + [vertsA;vertsB(2:end-1,:)]; % Shift by center
-    P.XData = v(:,1);
-    P.YData = v(:,2);
-    patch(P)
+if rank(obj.G) == 1
+    nullVec = null(obj.G');
+    crossVec = cross(nullVec(:,1),nullVec(:,2));
+    reducedG = crossVec'*obj.G;
+    reducedObj = zono(reducedG,0);
+    opt = plotOptions('Display','off');
+    [reducedV,~] = plot(reducedObj,opt);
+    v = obj.c' + reducedV(:,1).*crossVec';
+    f = [1 2];
+elseif rank(obj.G) == 2
+    reducedG = orth(obj.G)'*obj.G;
+    reducedObj = zono(reducedG,zeros(2,1));
+    opt = plotOptions('Display','off');
+    [reducedV,~] = plot(reducedObj,opt);
+    v = obj.c' + reducedV*orth(obj.G)';
+    f = [1:size(v,1)];
 else
     twoCombos = ff2n(2); % Identify all of the combinations of {-1,1}^2
     twoCombos(twoCombos == 0) = -1; 
@@ -47,11 +35,8 @@ else
         V([1:4]+(i-1)*8,:) = centerA + verts; % Add vertices to list
         V([5:8]+(i-1)*8,:) = centerB + verts;
     end
-    F = reshape([1:size(V,1)],4,[])';
-    P.Faces = F;
-    P.Vertices = obj.c' + V;
-    patch(P)
-end
-    
+    f = reshape([1:size(V,1)],4,[])';
+    v = obj.c' + V;
 end
 
+end

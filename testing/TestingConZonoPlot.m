@@ -1,6 +1,6 @@
 rng(1)
-nG = 40;
-nC = 10;
+nG = 10;
+nC = 4;
 G = 2*rand(2,nG)-1;
 c = zeros(2,1);
 A = 2*rand(nC,nG)-1;

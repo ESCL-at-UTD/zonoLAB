@@ -1,5 +1,5 @@
 classdef plotOptions
-    % User defined plot options (subset of MATLAB's patch properties)
+    % User-defined plot options (subset of MATLAB's patch properties)
     
     properties
         EdgeAlpha           = 1
@@ -12,6 +12,8 @@ classdef plotOptions
         MarkerEdgeColor     = 'auto'
         MarkerFaceColor     = 'none'
         MarkerSize          = 6
+        Display             = 'on' % Options: 'on', 'off', 'individual' 
+        SolverOpts          = solverOptions;
     end
     
     methods
@@ -27,7 +29,7 @@ classdef plotOptions
         % Store all options in a structure for calling patch
         function P = plotOptionsStruct(opts)
             propNames = properties(opts);
-            for i = 1:length(propNames)
+            for i = 1:10 %length(propNames)  Only use first 10 properties
                 name = propNames(i);
                 P.(name{1}) = opts.(name{1});
             end

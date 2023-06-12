@@ -24,5 +24,8 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         obj = plus(obj1,obj2)       % Minkowski sum
         obj = cartProd(obj1,obj2)   % Cartesian product
         obj = mtimes(M,obj)         % Linear mapping
+
+        % Plot
+        [v,f] = plot(obj,varargin)  % Plot and output vertices and faces
     end
 end

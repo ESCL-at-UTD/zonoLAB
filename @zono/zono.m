@@ -57,6 +57,8 @@ classdef zono < abstractZono
         end
         
         % Zonotope-specific methods
-        plot(obj,varargin);
+        [v,f] = plotZono1D(obj);
+        [v,f] = plotZono2D(obj);
+        [v,f] = plotZono3D(obj);
     end
 end

@@ -107,6 +107,13 @@ classdef hybZono < abstractZono
         function nConstraints = get.nC(obj)
             nConstraints = size(obj.Ac,1);
         end
+
+        % Hybrid zonotope-specific methods
+        [v,f] = plotAsConZono(obj,optSolver);
+        [v,f] = plotHybZono1D(obj,optSolver);
+        [v,f] = plotHybZono2D(obj,optSolver);
+        [v,f] = plotHybZono3D(obj,optSolver);
+        [leaves] = getLeaves(obj,optSolver)
         
     end
 end

@@ -81,5 +81,9 @@ classdef conZono < abstractZono
             nConstraints = size(obj.A,1);
         end
 
+        % Constrained zonotope-specific methods
+        [v,f] = plotConZono1D(obj,optSolver);
+        [v,f] = plotConZono2D(obj,optSolver);
+        [v,f] = plotConZono3D(obj,optSolver);
     end
 end
