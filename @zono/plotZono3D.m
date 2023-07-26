@@ -1,6 +1,20 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Method:
+%       Return vertices and faces for a zonotope in 3D
+%   Syntax:
+%       [v,f] = plotZono3D(Z)
+%   Inputs:
+%       Z - 3D zonotope in G-Rep (zono object)
+%   Outputs:
+%       v - nV x 3 matrix, each row denoting the x (first column) and y (second column) positions
+%                          of the nV vertices
+%       f - nF x 4 vector, each row denoting the four vertices contained
+%                          in the nF faces 
+%   Notes:
+%       Not intended to be called directly by user.
+%       Use [v,f] = plot(obj,varargin) instead (method of abstractZono)
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function [v,f] = plotZono3D(obj)
-
-% Standardized header
 
 if rank(obj.G) == 1
     nullVec = null(obj.G');

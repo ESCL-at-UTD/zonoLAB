@@ -15,10 +15,10 @@ classdef hybZono < abstractZono
         Ab      % Binary constraint matrix (nC x nGb)        
         b       % Constraint vector (nC x 1)
     end
-    properties (Dependent) % These properties get automatically updates when used
+    properties (Dependent) % These properties get automatically updated when used
         n       % Dimension
         nGc     % Number of continuous generators
-        nGb     % Number of binar generators
+        nGb     % Number of binary generators
         nC      % Number of constraints
     end
     properties (Hidden) % Unused properties from superclass
@@ -76,6 +76,7 @@ classdef hybZono < abstractZono
             else
                 error('Incorrect number of inputs.')
             end
+            % Dimension compatibility checking
             try [obj.c obj.Gc obj.Gb];
             catch error('Center (c) and generator matrices (Gc and Gb) must have the same number of rows.')
             end
@@ -109,11 +110,11 @@ classdef hybZono < abstractZono
         end
 
         % Hybrid zonotope-specific methods
-        [v,f] = plotAsConZono(obj,optSolver);
-        [v,f] = plotHybZono1D(obj,optSolver);
-        [v,f] = plotHybZono2D(obj,optSolver);
-        [v,f] = plotHybZono3D(obj,optSolver);
-        [leaves] = getLeaves(obj,optSolver)
+        [v,f] = plotAsConZono(obj,optSolver);   % Plot as the union of constrained zonotopes
+        [v,f] = plotHybZono1D(obj,optSolver);   % Plot in 1 dimension
+        [v,f] = plotHybZono2D(obj,optSolver);   % Plot in 2 dimensions
+        [v,f] = plotHybZono3D(obj,optSolver);   % Plot in 3 dimensions
+        [leaves] = getLeaves(obj,optSolver)     % Identify non-empty combinations of binary factors
         
     end
 end

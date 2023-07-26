@@ -1,15 +1,29 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Method:
+%       Return vertices and faces for a zonotope in 2D
+%   Syntax:
+%       [v,f] = plotZono2D(Z)
+%   Inputs:
+%       Z - 2D zonotope in G-Rep (zono object)
+%   Outputs:
+%       v - nV x 2 matrix, each row denoting the x (first column) and y (second column) positions
+%                          of the nV vertices
+%       f - 1 x nV vector, indicating a single face containing all nV vertices 
+%   Notes:
+%       Not intended to be called directly by user.
+%       Use [v,f] = plot(obj,varargin) instead (method of abstractZono)
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function [v,f] = plotZono2D(obj)
 
-% Standardized header
-
 if rank(obj.G) == 1
+    % If generators do not span R^2, plot at 1D zonotope 
     nullVec = null(obj.G');
     reducedG = [-nullVec(2) nullVec(1)]*obj.G;
     reducedObj = zono(reducedG,0);
     opt = plotOptions('Display','off');
     [reducedV,~] = plot(reducedObj,opt);
-    v = obj.c' + reducedV(:,1).*[nullVec(1) -nullVec(2)];
-    f = [1 2];
+    v = obj.c' + reducedV(:,1).*[nullVec(1) -nullVec(2)]; 
+    f = [1 2];                                            
 else
     obj.G(:,obj.G(2,:)<0) = -1*obj.G(:,obj.G(2,:)<0); % All generators in quadrants I and II
     angles = atan2(obj.G(2,:),obj.G(1,:));  % Compute angles

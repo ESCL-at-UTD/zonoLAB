@@ -13,7 +13,7 @@ classdef conZono < abstractZono
         A       % Constraint matrix (nC x nG)
         b       % Constraint vector (nC x 1)
     end
-    properties (Dependent) % These properties get automatically updates when used
+    properties (Dependent) % These properties get automatically updated when used
         n       % Dimension
         nG      % Number of generators
         nC      % Number of constraints
@@ -24,7 +24,7 @@ classdef conZono < abstractZono
         Ac      % Continuous constraint matrix (nC x nGc)
         Ab      % Binary constraint matrix (nC x nGb)
         nGc     % Number of continuous generators
-        nGb     % Number of binar generators
+        nGb     % Number of binary generators
     end
 
     methods
@@ -56,6 +56,7 @@ classdef conZono < abstractZono
             else
                 error('Incorrect number of inputs.')
             end
+            % Dimension compatibility checking
             try [obj.c obj.G];
             catch error('Center (c) and generator matrix (G) must have the same number of rows.')
             end
@@ -82,8 +83,8 @@ classdef conZono < abstractZono
         end
 
         % Constrained zonotope-specific methods
-        [v,f] = plotConZono1D(obj,optSolver);
-        [v,f] = plotConZono2D(obj,optSolver);
-        [v,f] = plotConZono3D(obj,optSolver);
+        [v,f] = plotConZono1D(obj,optSolver);   % Plot in 1 dimension
+        [v,f] = plotConZono2D(obj,optSolver);   % Plot in 2 dimensions
+        [v,f] = plotConZono3D(obj,optSolver);   % Plot in 3 dimensions
     end
 end

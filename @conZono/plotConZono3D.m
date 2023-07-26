@@ -78,9 +78,9 @@ if max(isNewVert) == 0  % A line segment in 3D
     return
 end
 
-coPlanar(1) = det([foundVerts(2,:)-foundVerts(1,:);extreme(1,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:)]) <= 1e-6;
-coPlanar(2) = det([foundVerts(2,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:);extreme(3,:)-foundVerts(1,:)]) <= 1e-6;
-coPlanar(3) = det([foundVerts(2,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)]) <= 1e-6;
+coPlanar(1) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(1,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:)])) <= 1e-6;
+coPlanar(2) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:);extreme(3,:)-foundVerts(1,:)])) <= 1e-6;
+coPlanar(3) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)])) <= 1e-6;
 if min(coPlanar) == 1 % A planar set in 3D
     indx = find(isNewVert,1);
 %     basis = orth([foundVerts(2,:)-foundVerts(1,:);extreme(indx,:)-foundVerts(1,:)]')';
@@ -119,7 +119,7 @@ for i = 1:maxIter
     [dir,~] = faceNormal(foundVerts(f(fIndex,1:3),:),interiorPoint);
     [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
     extreme = [obj.G*x + obj.c]';
-    [foundVerts,isNew] = addIfNew(foundVerts,extreme);
+    [foundVerts,isNew] = addIfNew(foundVerts,extreme,dir);
     if isNew
         nVerts = nVerts + 1;
         % Find all faces that see the new vertex
@@ -144,7 +144,7 @@ for i = 1:maxIter
             for j = 1:size(newFaces,1)
                 [fN,~] = faceNormal(foundVerts(newFaces(j,1:3),:),interiorPoint);
                 [minVal,minIndx] = min(sum(abs(fNorms-fN),2));
-                isNewFace = minVal>=1e-6;                   % Tolerance
+                isNewFace = minVal>=1e-12;                    % Tolerance (Changed, 1e-6 too small => errors)
                 if isNewFace % Create new face
                     fNorms = [fNorms;fN];
                     f = [f;newFaces(j,:) zeros(1,size(f,2)-3)];
@@ -180,19 +180,20 @@ f(f==0) = nan;
 end
 
 % Local Functions
-function [extreme] = getVertices(obj,model,params,dir)
-model.obj = dir*obj.G;
-result = gurobi(model,params);
-extreme = [obj.G*result.x + obj.c]';
-end
-
-function [foundVerts,isNew] = addIfNew(foundVerts,extreme)
+function [foundVerts,isNew] = addIfNew(foundVerts,extreme,dir)
     isNew = 0;
+    % Check if this is the first found vertex
     if isempty(foundVerts)
         foundVerts = [foundVerts;extreme];
         isNew = 1;
         return
     end
+    % Check if this is actually more extreme in the dir direction
+    maxInDir = max(dir*foundVerts');
+    if dir*extreme' - maxInDir <= 1e-6 % Threshold
+        return % Not more extreme than existing vertices
+    end
+    % Check if this is the same as a vertex already found
     minDiff = min(sum(abs(foundVerts-extreme),2));
     if minDiff >= 1e-6 % Threshold
         isNew = 1;

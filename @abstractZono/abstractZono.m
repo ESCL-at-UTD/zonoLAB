@@ -14,12 +14,11 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         n       % Dimension
         nG      % Number of generators
         nGc     % Number of continuous generators
-        nGb     % Number of binar generators
+        nGb     % Number of binary generators
         nC      % Number of constraints
     end
 
     methods
-        
         % Arithmetic
         obj = plus(obj1,obj2)       % Minkowski sum
         obj = cartProd(obj1,obj2)   % Cartesian product

@@ -8,7 +8,7 @@ classdef zono < abstractZono
         G       % Generator matrix (n x nG)
         c       % Center (n x 1)
     end
-    properties (Dependent)
+    properties (Dependent) % These properties get automatically updated when used
         n       % Dimension
         nG      % Number of generators
     end
@@ -20,7 +20,7 @@ classdef zono < abstractZono
         Ab      % Binary constraint matrix (nC x nGb)
         b       % Constraint vector (nC x 1)
         nGc     % Number of continuous generators
-        nGb     % Number of binar generators
+        nGb     % Number of binary generators
         nC      % Number of constraints
     end
 
@@ -36,10 +36,9 @@ classdef zono < abstractZono
             else
                 error('Incorrect number of inputs.')
             end
-            try 
-                [obj.c obj.G];
-            catch
-                error('Center (c) and generator matrix (G) must have the same number of rows.')
+            % Dimension compatibility checking
+            try [obj.c obj.G];
+            catch error('Center (c) and generator matrix (G) must have the same number of rows.')
             end
             if size(obj.c,2) ~= 1
                 error('Center (c) must be a n x 1 vector.')
@@ -57,8 +56,8 @@ classdef zono < abstractZono
         end
         
         % Zonotope-specific methods
-        [v,f] = plotZono1D(obj);
-        [v,f] = plotZono2D(obj);
-        [v,f] = plotZono3D(obj);
+        [v,f] = plotZono1D(obj);    % Plot in 1 dimension
+        [v,f] = plotZono2D(obj);    % Plot in 2 dimensions
+        [v,f] = plotZono3D(obj);    % Plot in 3 dimensions
     end
 end
