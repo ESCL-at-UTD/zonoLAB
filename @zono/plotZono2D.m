@@ -20,8 +20,8 @@ if rank(obj.G) == 1
     nullVec = null(obj.G');
     reducedG = [-nullVec(2) nullVec(1)]*obj.G;
     reducedObj = zono(reducedG,0);
-    opt = plotOptions('Display','off');
-    [reducedV,~] = plot(reducedObj,opt);
+    optPlot = plotOptions('Display','off');
+    [reducedV,~] = plot(reducedObj,optPlot);
     v = obj.c' + reducedV(:,1).*[nullVec(1) -nullVec(2)]; 
     f = [1 2];                                            
 else

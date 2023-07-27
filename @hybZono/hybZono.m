@@ -1,11 +1,24 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Class:
+%       Hybrid zonotope of the form:
+%       Z = { c + Gc \xic +  Gb \xib | ||\xic||_inf <= 1, \xib \in {-1,1}^nGb, Ac \xic + Ab \xib = b }
+%   Syntax:
+%       Z = hybZono(Gc,Gb,c,Ac,Ab,b)
+%       Z = hybZono(z)
+%   Inputs:
+%       Gc - n x nGc matrix to define hybrid zonotope in R^n with nGc continuous generators
+%       Gb - n x nGb matrix to define hybrid zonotope in R^n with nGb binary generators
+%       c  - n x 1 vector to define center
+%       Ac - nC x nGc matrix to define nC equality constraints (Ac \xic + Ab \xib = b)
+%       Ab - nC x nGb matrix to define nC equality constraints (Ac \xic + Ab \xib = b)
+%       b  - nC x 1 vector to define nC equality constraints (Ac \xic + Ab \xib = b)
+%       z - zono or conZono object to be recast as hybrid zonotope 
+%   Outputs:
+%       Z - hybrid zonotope as hybZono object
+%   Notes:
+%       Inherits methods from abstractZono class
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 classdef hybZono < abstractZono
-    % Hybrid zonotope class of the form
-    %   Z = { c + Gc \xic +  Gb \xib | ||\xic||_inf <= 1 \xib \in {-1,1}^nGb, Ac \xic + Ab \xib = b }
-    % Define as:
-    %   Z = hybZono(Gc,Gb,c,Ac,Ab,b); Gc - continuous generator matrix, Gb - binary generator matrix, c - center, 
-    %                                 Ac - continuous constraint matrix, Ab - continuous constraint matrix, b - constraint vector
-    %   Z = hybZono(z); z - a zono object, Gc = G, Gb = [], Ac = Ab = [], b = []
-    %   Z = hybZono(z); z - a conZono object, Gc = G, Gb = [], Ac = A, Ab = [], b = b
 
     properties
         Gc      % Continuous generator matrix (n x nGc)

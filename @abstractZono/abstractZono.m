@@ -1,6 +1,17 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Class:
+%       Abstract zonotope used as superclass for hybZono, conZono, and zono.
+%   Syntax:
+%       None
+%   Inputs:
+%       None
+%   Outputs:
+%       None
+%   Notes:
+%       Cannot be instantiated. Used to hold properties and methods shared
+%       by hybZono, conZono, and zono classes.
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
-    % This abstract class defines the properties and methods used by the
-    % zono, conZono, and hybZono subclasses
     
     properties (Abstract) % These properties must be defined by each subclass
         G       % Generator matrix (n x nG)

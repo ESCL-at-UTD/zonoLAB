@@ -1,8 +1,18 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Class:
+%       Zonotope of the form:
+%       Z = { c + G \xi | ||\xi||_inf <= 1 }
+%   Syntax:
+%       Z = zono(G,c)
+%   Inputs:
+%       G - n x nG matrix to define zonotope in R^n with nG generators
+%       c - n x 1 vector to define center
+%   Outputs:
+%       Z - zonotope as zono object
+%   Notes:
+%       Inherits methods from abstractZono class
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 classdef zono < abstractZono
-    % Zonotope class of the form
-    %   Z = { c + G \xi | ||\xi||_inf <= 1 }
-    % Define as:
-    %   Z = zono(G,c); G - generator matrix, c - center
     
     properties
         G       % Generator matrix (n x nG)

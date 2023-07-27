@@ -1,7 +1,24 @@
-function [v,f] = plotConZono3D(obj,opts)
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Method:
+%       Return vertices and faces for a constrained zonotope in 3D
+%   Syntax:
+%       [v,f] = plotConZono3D(Z,optSolver)
+%   Inputs:
+%       Z - 3D constrained zonotope in CG-Rep (conZono object)
+%       optSolver - solver options needed for linear propgram
+%   Outputs:
+%       v - nV x 3 matrix, each row denoting the x (first column), y (second column), 
+%                          and z (third column) positions of the nV vertices
+%       f - nF x nMax matrix, each row denoting the vertices (up to nMax) contained
+%                          in the nF faces (padded with NaN if face
+%                          contains less than nMax vertices)
+%   Notes:
+%       Not intended to be called directly by user.
+%       Use [v,f] = plot(obj,varargin) instead (method of abstractZono)
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+function [v,f] = plotConZono3D(obj,optSolver)
 
-% Standardized header
-
+% Problem data for linear program (LP)
 Aeq = sparse(obj.A);
 beq = [obj.b];
 lb = -ones(obj.nG,1);
@@ -10,26 +27,26 @@ ub =  ones(obj.nG,1);
 % Find first vertex
 dir = [1 0 0];
 searchedDirs(1,:) = normalize(dir,'norm');
-[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
 foundVerts(1,:) = [obj.G*x + obj.c]';
 
 % Find second (opposite) vertex
 dir = [-1 0 0];
 searchedDirs(2,:) = normalize(dir,'norm');
-[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
 foundVerts(2,:) = [obj.G*x + obj.c]';
 
 if (foundVerts(1,:)-foundVerts(2,:) <= 1e-12) % Same vertex
     % Find first vertex
     dir = [0 1 0];
     searchedDirs(1,:) = normalize(dir,'norm');
-    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
     foundVerts(1,:) = [obj.G*x + obj.c]';
 
     % Find second (opposite) vertex
     dir = [0 -1 0];
     searchedDirs(2,:) = normalize(dir,'norm');
-    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
     foundVerts(2,:) = [obj.G*x + obj.c]';
 end
 
@@ -37,13 +54,13 @@ if (foundVerts(1,:)-foundVerts(2,:) <= 1e-12) % Same vertex
     % Find first vertex
     dir = [0 0 1];
     searchedDirs(1,:) = normalize(dir,'norm');
-    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
     foundVerts(1,:) = [obj.G*x + obj.c]';
 
     % Find second (opposite) vertex
     dir = [0 0 -1];
     searchedDirs(2,:) = normalize(dir,'norm');
-    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
     foundVerts(2,:) = [obj.G*x + obj.c]';
 end
 
@@ -54,22 +71,23 @@ if (foundVerts(1,:)-foundVerts(2,:) <= 1e-12) % Single point
     return
 end
 
+% Continue if set is not a single point
 % Find 3rd vertex
 nullDirs = null(foundVerts(1,:)-foundVerts(2,:))';
 dir = nullDirs(1,:);
-[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
 extreme(1,:) = [obj.G*x + obj.c]';
 isNewVert(1) = sum(abs(nullDirs*(extreme(1,:)-foundVerts(1,:))'))>=1e-6;           % Tolerance
 dir = -dir;
-[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
 extreme(2,:) = [obj.G*x + obj.c]';
 isNewVert(2) = sum(abs(nullDirs*(extreme(2,:)-foundVerts(1,:))'))>=1e-6;           % Tolerance
 dir = nullDirs(2,:);
-[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
 extreme(3,:) = [obj.G*x + obj.c]';
 isNewVert(3) = sum(abs(nullDirs*(extreme(3,:)-foundVerts(1,:))'))>=1e-6;           % Tolerance
 dir = -dir;
-[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
 extreme(4,:) = [obj.G*x + obj.c]';
 isNewVert(4) = sum(abs(nullDirs*(extreme(4,:)-foundVerts(1,:))'))>=1e-6;           % Tolerance
 if max(isNewVert) == 0  % A line segment in 3D
@@ -78,6 +96,7 @@ if max(isNewVert) == 0  % A line segment in 3D
     return
 end
 
+% Continue if set is not a line segment in 3D
 coPlanar(1) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(1,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:)])) <= 1e-6;
 coPlanar(2) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:);extreme(3,:)-foundVerts(1,:)])) <= 1e-6;
 coPlanar(3) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)])) <= 1e-6;
@@ -88,15 +107,16 @@ if min(coPlanar) == 1 % A planar set in 3D
     normVec = cross(foundVerts(2,:)-foundVerts(1,:),extreme(indx,:)-foundVerts(1,:));
     reducedG = obj.G(1:2,:); % Will not work if set is 'vertical';
     reducedObj = conZono(reducedG,zeros(2,1),obj.A,obj.b);
-    opt = plotOptions('Display','off');
-    opt.SolverOpts = opts;
-    [reducedV,~] = plot(reducedObj,opt);
+    optPlot = plotOptions('Display','off');
+    optPlot.SolverOpts = optSolver;
+    [reducedV,~] = plot(reducedObj,optPlot);
 %     v = obj.c' + reducedV*basis;
     v = [reducedV 1/normVec(3)*(normVec*foundVerts(1,:)'-sum(normVec(1:2).*reducedV,2))];
     f = [1:size(v,1)];
     return
 end
 
+% Continue if set is not a 2D planar set in 3D
 % Form 3-simplex
 indx = find(isNewVert,1);
 foundVerts(3,:) = extreme(indx,:);
@@ -117,7 +137,7 @@ fIndex = 1;
 nVerts = 4;
 for i = 1:maxIter
     [dir,~] = faceNormal(foundVerts(f(fIndex,1:3),:),interiorPoint);
-    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,opts);
+    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
     extreme = [obj.G*x + obj.c]';
     [foundVerts,isNew] = addIfNew(foundVerts,extreme,dir);
     if isNew
@@ -177,6 +197,7 @@ for i = 1:maxIter
 end
 v = foundVerts;
 f(f==0) = nan;
+
 end
 
 % Local Functions

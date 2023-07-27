@@ -1,7 +1,21 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Class:
+%       User-defined plot options (subset of MATLAB's patch properties)
+%   Syntax:
+%       optPlot = plotOptions('property1',value1,'property2',value2,...);
+%   Inputs:
+%       See property/value pairs below for available options
+%   Outputs:
+%       optPlot - plotting options as plotOptions object
+%   Notes:
+%       The Display option can be use to plot all patches with a single
+%       handle ('on'), not plot the set ('off), or to plot multiple patches
+%       with a handle for each face ('individual')       
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 classdef plotOptions
-    % User-defined plot options (subset of MATLAB's patch properties)
     
     properties
+        % Patch options
         EdgeAlpha           = 1
         EdgeColor           = [0 0 0]
         FaceAlpha           = 1
@@ -12,6 +26,7 @@ classdef plotOptions
         MarkerEdgeColor     = 'auto'
         MarkerFaceColor     = 'none'
         MarkerSize          = 6
+        % Other options
         Display             = 'on' % Options: 'on', 'off', 'individual' 
         SolverOpts          = solverOptions;
     end
@@ -29,12 +44,12 @@ classdef plotOptions
         % Store all options in a structure for calling patch
         function P = plotOptionsStruct(opts)
             propNames = properties(opts);
-            for i = 1:10 %length(propNames)  Only use first 10 properties
+            for i = 1:10 % Only use first 10 properties (patch options)
                 name = propNames(i);
                 P.(name{1}) = opts.(name{1});
             end
         end
         
     end
-end
 
+end

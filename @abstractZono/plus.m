@@ -1,6 +1,20 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Method:
+%       Returns the Minkowski sum of two zonotopic sets, Z = X + Y
+%   Syntax:
+%       Z = plus(X,Y)
+%   Inputs:
+%       X - zonotopic set in R^n (hybZono, conZono, or zono object) or n x 1 vector
+%       Y - zonotopic set in R^n (hybZono, conZono, or zono object) or n x 1 vector
+%   Outputs:
+%       Z - zonotopic set in R^n (hybZono, conZono, or zono object)
+%   Notes:
+%       Overloaded '+' operator
+%       If X is a hybZono and Y is a conZono, then Z is a hybZono
+%       If X is a conZono and Y is a zono, then Z is a conZono
+%       If X and Y are zono, then Z is a zono
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function out = plus(obj1,obj2)
-
-% Standardized header
 
 if ~strcmp(class(obj1),class(obj2)) % If classes do not match
     types = [isa(obj1,'hybZono') isa(obj2,'hybZono');...
@@ -28,7 +42,7 @@ if ~strcmp(class(obj1),class(obj2)) % If classes do not match
         warning(['Only hybrid zonotopes, constrained zonotopes, and zonotopes';...
                   'can be added with each other or shifted by vectors.'])
     end
-else % Once classes match then sum
+else % Once classes match then add
     switch class(obj1)
         case 'zono'
             G = [obj1.G obj2.G];
@@ -50,4 +64,5 @@ else % Once classes match then sum
             out = hybZono(Gc,Gb,c,Ac,Ab,b);
     end
 end
+
 end

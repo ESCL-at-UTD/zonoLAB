@@ -16,7 +16,7 @@
 function [v,f] = plotZono1D(obj)
 
 % Assume zonotope spans the x-direction (horizontal) with 0 in the y-direction
-v = obj.c + sum(abs(obj.G))*[-1 0; 1 0];    % Two vertices
+v = obj.c + sum(abs(obj.G))*[-1 0; 1 0];    % Upper and lower bounds
 f = [1 2];                                  % Face
 
 end

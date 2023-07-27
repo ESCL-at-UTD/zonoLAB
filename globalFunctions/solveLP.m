@@ -1,10 +1,31 @@
-function [x,fVal,exitFlag] = solveLP(f,A,b,Aeq,beq,lb,ub,opts)
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Global function:
+%       Returns the maximum value x \in R^n of a linear program (LP)
+%   Syntax:
+%       [x,fVal,exitFlag] = solveLP(f,A,b,Aeq,beq,lb,ub,opts)
+%   Inputs:
+%       f - n x 1 vector defining linear objective function to be maximized
+%       A - nC x n matrix defining equality constraints (A x = b)
+%       b - nC x 1 vector defining eqaulity constraints (A x = b)
+%       Aeq - nCeq x n matrix defining inequality constraints (Aeq x <= beq)
+%       beq - nCeq x 1 vector defining ineqaulity constraints (Aeq x <= beq)
+%       lb - n x 1 vector defining lower bounds (lb <= x)
+%       ub - n x 1 vector defining upper bounds (x <= ub)
+%       optSolver - solver options needed for linear propgram
+%   Outputs:
+%       x - n x 1 vector maximizing objective function subject to constraints
+%       fVal - 1 x 1 scalar maximum value of objective function
+%       exitFlag - 1 x 1 scalar exit condition (see solver-specific exit condition codes)
+%   Notes:
+%       Currently, only linprog and Gurobi are supported.
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+function [x,fVal,exitFlag] = solveLP(f,A,b,Aeq,beq,lb,ub,optSolver)
 
-if isempty(opts)
-    opts = solverOptions;
+if isempty(optSolver)
+    optSolver = solverOptions;
 end
 % Formulated as maximization problem
-switch opts.lpSolver
+switch optSolver.lpSolver
     case 'linprog'
         options = optimoptions('linprog','Display','off');
         [x,fVal,exitFlag,~] = linprog(-f,A,b,Aeq,beq,lb,ub,options);

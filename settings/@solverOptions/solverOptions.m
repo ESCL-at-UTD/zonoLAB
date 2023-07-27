@@ -1,3 +1,20 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Class:
+%       User-defined solver options
+%   Syntax:
+%       optSolver = solverOptions('property1',value1,'property2',value2,...);
+%   Inputs:
+%       See property/value pairs below for available options
+%   Outputs:
+%       optSolver - solver options as solverOptions object
+%   Notes:
+%       lpSolver - only linprog and gurobi are currently supported
+%       milpSolver - only gurobi is currently supported 
+%       MIPFocus - 0: balance finding new feasible solutions and proving optimality
+%                  1: focus on finding feasbile solutions quickly
+%                  2: foucs on proving optimality
+%                  3: focus on bounding objective
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 classdef solverOptions 
     % User-defined solver options.
     % Supported options:
@@ -7,7 +24,7 @@ classdef solverOptions
     properties
         lpSolver = 'linprog'        % Default comes with MATLAB
         milpSolver = 'intlinprog'   % Default comes with MATLAB
-        nSolutions = 1;             % Default number of solutions for MILP
+        nSolutions = 1;             % Default number of solutions for MILP (integer between 1 and 2e9)
         MIPFocus = 0;               % Default solution strategy for MILP
     end
     
@@ -22,5 +39,5 @@ classdef solverOptions
             end
         end
     end
-end
 
+end

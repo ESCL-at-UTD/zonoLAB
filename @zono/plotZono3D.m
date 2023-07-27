@@ -6,9 +6,9 @@
 %   Inputs:
 %       Z - 3D zonotope in G-Rep (zono object)
 %   Outputs:
-%       v - nV x 3 matrix, each row denoting the x (first column) and y (second column) positions
-%                          of the nV vertices
-%       f - nF x 4 vector, each row denoting the four vertices contained
+%       v - nV x 3 matrix, each row denoting the x (first column), y (second column), 
+%                          and z (third column) positions of the nV vertices
+%       f - nF x 4 matrix, each row denoting the four vertices contained
 %                          in the nF faces 
 %   Notes:
 %       Not intended to be called directly by user.
@@ -21,15 +21,15 @@ if rank(obj.G) == 1
     crossVec = cross(nullVec(:,1),nullVec(:,2));
     reducedG = crossVec'*obj.G;
     reducedObj = zono(reducedG,0);
-    opt = plotOptions('Display','off');
-    [reducedV,~] = plot(reducedObj,opt);
+    optPlot = plotOptions('Display','off');
+    [reducedV,~] = plot(reducedObj,optPlot);
     v = obj.c' + reducedV(:,1).*crossVec';
     f = [1 2];
 elseif rank(obj.G) == 2
     reducedG = orth(obj.G)'*obj.G;
     reducedObj = zono(reducedG,zeros(2,1));
-    opt = plotOptions('Display','off');
-    [reducedV,~] = plot(reducedObj,opt);
+    optPlot = plotOptions('Display','off');
+    [reducedV,~] = plot(reducedObj,optPlot);
     v = obj.c' + reducedV*orth(obj.G)';
     f = [1:size(v,1)];
 else

@@ -1,11 +1,23 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Class:
+%       Constrained zonotope of the form:
+%       Z = { c + G \xi | ||\xi||_inf <= 1, A \xi = b }
+%   Syntax:
+%       Z = conZono(G,c,A,b)
+%       Z = conZono(G,c)
+%       Z = conZono(z)
+%   Inputs:
+%       G - n x nG matrix to define constrained zonotope in R^n with nG generators
+%       c - n x 1 vector to define center
+%       A - nC x nG matrix to define nC equality constraints (A \xi = b)
+%       b - nC x 1 vector to define nC equality constraints (A \xi = b)
+%       z - zono object to be recast as constrained zonotope 
+%   Outputs:
+%       Z - constrained zonotope as conZono object
+%   Notes:
+%       Inherits methods from abstractZono class
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 classdef conZono < abstractZono
-    % Constrained zonotope class of the form
-    %   Z = { c + G \xi | ||\xi||_inf <= 1, A \xi = b }
-    % Define as:
-    %   Z = conZono(G,c,A,b); G - generator matrix, c - center, 
-    %                         A - constraint matrix, b - constraint vector
-    %   Z = conZono(G,c); G - generator matrix, c - center, A = [], b = []
-    %   Z = conZono(z); z - a zono object, A = [], b = []
 
     properties
         G       % Generator matrix (n x nG)

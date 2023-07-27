@@ -1,6 +1,18 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Method:
+%       Returns the linear mapping of zonotopic set X by matrix M, Z = M X
+%   Syntax:
+%       Z = mtimes(M,X)
+%   Inputs:
+%       M - m x n real matrix or a 1 x 1 scalar
+%       X - zonotopic set in R^n (hybZono, conZono, or zono object)
+%   Outputs:
+%       Z - zonotopic set in R^m (hybZono, conZono, or zono object)
+%   Notes:
+%       Overloaded '*' operator
+%       Z is the same class as X
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function out = mtimes(M,obj)
-
-% Standardized header
 
 % Check for compatable dimensions
 if (~isscalar(M)) && (~ismatrix(M))
@@ -17,4 +29,5 @@ switch class(obj)
     case 'hybZono'
         out = hybZono(M*obj.Gc,M*obj.Gb,M*obj.c,obj.Ac,obj.Ab,obj.b);
 end
+
 end

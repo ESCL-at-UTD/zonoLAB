@@ -1,6 +1,19 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Method:
+%       Returns the Cartesian product of two zonotopic sets, Z = X x Y
+%   Syntax:
+%       Z = cartProd(X,Y)
+%   Inputs:
+%       X - zonotopic set in R^n (hybZono, conZono, or zono object)
+%       Y - zonotopic set in R^m (hybZono, conZono, or zono object)
+%   Outputs:
+%       Z - zonotopic set in R^(n+m) (hybZono, conZono, or zono object)
+%   Notes:
+%       If X is a hybZono and Y is a conZono, then Z is a hybZono
+%       If X is a conZono and Y is a zono, then Z is a conZono
+%       If X and Y are zono, then Z is a zono
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function out = cartProd(obj1,obj2)
-
-% Standardized header
 
 if ~strcmp(class(obj1),class(obj2)) % If classes do not match
     types = [isa(obj1,'hybZono') isa(obj2,'hybZono');...
@@ -28,7 +41,7 @@ if ~strcmp(class(obj1),class(obj2)) % If classes do not match
         warning(['Cartesian product only works with hybrid zonotopes,';...
                   'constrained zonotopes, and zonotopes.'])
     end
-else % Once classes match then sum
+else % Once classes match then compute Cartesian product
     switch class(obj1)
         case 'zono'
             G = blkdiag(obj1.G,obj2.G);
@@ -50,4 +63,5 @@ else % Once classes match then sum
             out = hybZono(Gc,Gb,c,Ac,Ab,b);
     end
 end
+
 end

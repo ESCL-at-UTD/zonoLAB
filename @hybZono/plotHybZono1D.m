@@ -1,26 +1,24 @@
-function [v,f] = plotHybZono1D(obj,opts)
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Method:
+%       Return vertices and faces for a hybrid zonotope in 1D
+%   Syntax:
+%       [v,f] = plotHybZono1D(Z,optSolver)
+%   Inputs:
+%       Z - 1D hybrid zonotope in HCG-Rep (hybZono object)
+%       optSolver - solver options needed for linear and mixed-integer linear propgrams
+%   Outputs:
+%       v - nV x 2 matrix, each row denoting the x (first column) and y (second column) positions
+%                          of the nV vertices
+%       f - nF x 2 matrix, each row denoting the two vertices contained
+%                          in the nF faces
+%   Notes:
+%       Not intended to be called directly by user.
+%       Use [v,f] = plot(obj,varargin) instead (method of abstractZono)
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+function [v,f] = plotHybZono1D(obj,optSolver)
 
-% Standardized header
-
-
-[v,f] = plotAsConZono(obj,opts);
-
-% [leaves] = getLeaves(obj,opts);
-% nLeaves = size(leaves,2);
-% opt = plotOptions('Display','off');
-% v = [];
-% nVerts = zeros(nLeaves,1);
-% for i = 1:nLeaves
-%     Zi = conZono(obj.Gc,obj.c+obj.Gb*leaves(:,i),obj.Ac,obj.b-obj.Ab*leaves(:,i));
-%     [vi,~] = plot(Zi,opt);
-%     v = [v;vi];
-%     nVerts(i) = size(vi,1);
-% end
-% f = nan*ones(nLeaves,max(nVerts));
-% count = 1;
-% for i = 1:nLeaves
-%     f(i,1:nVerts(i)) = count+[0:nVerts(i)-1];
-%     count = count + nVerts(i);
-% end
+% Identify vertices and faces by treating hybrid zonotope at the union of
+% constrained zonotopes
+[v,f] = plotAsConZono(obj,optSolver);
 
 end
