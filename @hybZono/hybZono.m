@@ -76,7 +76,7 @@ classdef hybZono < abstractZono
                         obj.Gb = zeros(size(obj.Gc,1),0);
                         obj.c  = varargin{1}.c;
                         obj.Ac = varargin{1}.A;
-                        obj.Ab = [];
+                        obj.Ab = zeros(size(obj.Ac,1),0);
                         obj.b  = varargin{1}.b;
                     case 'double'
                         obj.Gc = zeros(length(varargin{1}),0);

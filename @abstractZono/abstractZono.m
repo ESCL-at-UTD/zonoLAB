@@ -30,6 +30,7 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
     end
 
     methods
+        
         % Arithmetic
         obj = plus(obj1,obj2)       % Minkowski sum
         obj = cartProd(obj1,obj2)   % Cartesian product

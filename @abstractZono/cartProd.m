@@ -21,21 +21,21 @@ if ~strcmp(class(obj1),class(obj2)) % If classes do not match
              isa(obj1,'zono')    isa(obj2,'zono')];
     if sum(types(1,:)) ~=0 % One of the sets is a hybrid zonotope
         if types(1,1) == 1
-            out = plus(obj1,hybZono(obj2));
+            out = cartProd(obj1,hybZono(obj2));
         else
-            out = plus(hybZono(obj1),obj2);
+            out = cartProd(hybZono(obj1),obj2);
         end
     elseif sum(types(2,:)) ~=0 % One of the sets is a constrained zonotope
         if types(2,1) == 1
-            out = plus(obj1,conZono(obj2));
+            out = cartProd(obj1,conZono(obj2));
         else
-            out = plus(conZono(obj1),obj2);
+            out = cartProd(conZono(obj1),obj2);
         end
     elseif sum(types(3,:)) ~=0 % One of the sets is a zonotope
         if types(3,1) == 1
-            out = plus(obj1,zono(obj2));
+            out = cartProd(obj1,zono(obj2));
         else
-            out = plus(zono(obj1),obj2);
+            out = cartProd(zono(obj1),obj2);
         end
     else
         warning(['Cartesian product only works with hybrid zonotopes,';...
