@@ -132,3 +132,52 @@ toc(tStart)
 % plot(Z4,opt);
 
 
+%%
+% Define set 1 dimensions and matrices
+n1 = 2;
+nGc1 = 5;
+nGb1 = 3;
+nC1 = 2;
+Z1  = randomSet(1,'zono',n1,nGc1,nGb1,nC1);
+Zc1 = randomSet(1,'conZono',n1,nGc1,nGb1,nC1);
+Zh1 = randomSet(1,'hybZono',n1,nGc1,nGb1,nC1);
+% Define set 2 dimensions and matrices
+n2 = 3;
+nGc2 = 8;
+nGb2 = 3;
+nC2 = 3;
+Z2  = randomSet(2,'zono',n2,nGc2,nGb2,nC2);
+Zc2 = randomSet(2,'conZono',n2,nGc2,nGb2,nC2);
+Zh2 = randomSet(2,'hybZono',n2,nGc2,nGb2,nC2);
+
+rng(1)
+R = rand(n2,n1);
+figure; hold on
+plot(Z1,'r',0.1)
+% plot(Z2,'b',0.1)
+plot(and(Z1,Z2,R),'g',0.5)
+
+figure; hold on
+plot(Zc1,'r',0.1)
+% plot(Zc2,'b',0.1)
+plot(and(Zc1,Zc2,R),'g',0.5)
+
+figure; hold on
+plot(Zh1,'r',0.1)
+% plot(Zh2,'b',0.1)
+plot(and(Zh1,Zh2,R),'g',0.5)
+
+% figure; hold on
+% plot(Z1,'r',0.1)
+% plot(Z2,'b',0.1)
+% plot(Z1&Z2,'g',0.5)
+% 
+% figure; hold on
+% plot(Zc1,'r',0.1)
+% plot(Zc2,'b',0.1)
+% plot(Zc1&Zc2,'g',0.5)
+% 
+% figure; hold on
+% plot(Zh1,'r',0.1)
+% plot(Zh2,'b',0.1)
+% plot(Zh1&Zh2,'g',0.5)

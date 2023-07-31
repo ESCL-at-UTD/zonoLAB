@@ -57,10 +57,10 @@ classdef hybZono < abstractZono
                     obj.Gb = zeros(size(obj.c,1),0);
                 end
                 if sum(size(obj.Ac)) == 0
-                    obj.Ac = zeros(0,size(obj.Gc,1));
+                    obj.Ac = zeros(0,size(obj.Gc,2));
                 end
                 if sum(size(obj.Ab)) == 0
-                    obj.Ab = zeros(0,size(obj.Gb,1));
+                    obj.Ab = zeros(0,size(obj.Gb,2));
                 end
             elseif nargin == 1
                 switch class(varargin{1})
@@ -81,7 +81,7 @@ classdef hybZono < abstractZono
                     case 'double'
                         obj.Gc = zeros(length(varargin{1}),0);
                         obj.Gb = zeros(length(varargin{1}),0);
-                        obj.c  = varargin{1}.c;
+                        obj.c  = varargin{1};
                         obj.Ac = [];
                         obj.Ab = [];
                         obj.b  = [];

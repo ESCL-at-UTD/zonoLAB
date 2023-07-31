@@ -21,7 +21,11 @@ function [v,f] = plotAsConZono(obj,optSolver)
 
 % Determine number of non-empty constrained zonotopes
 [leaves] = getLeaves(obj,optSolver);
+if isempty(leaves)
+    error('Empty set.')
+end
 nLeaves = size(leaves,2);
+
 optPlot = plotOptions('Display','off','SolverOpts',optSolver);
 v = [];
 f = [];

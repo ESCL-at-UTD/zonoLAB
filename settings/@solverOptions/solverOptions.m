@@ -22,8 +22,8 @@ classdef solverOptions
     % Mixed-Integer Linear Programs (MILPs): intlinprog, gurobi
     
     properties
-        lpSolver = 'linprog'        % Default comes with MATLAB
-        milpSolver = 'intlinprog'   % Default comes with MATLAB
+        lpSolver = 'gurobi'         % 'gurobi' or 'linprog'
+        milpSolver = 'gurobi'       % 'gurobi' ('intlinprog' eventually)
         nSolutions = 1;             % Default number of solutions for MILP (integer between 1 and 2e9)
         MIPFocus = 0;               % Default solution strategy for MILP
     end

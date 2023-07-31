@@ -32,11 +32,19 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
     methods
         
         % Arithmetic
-        obj = plus(obj1,obj2)       % Minkowski sum
+        obj = and(obj1,obj2,R)      % Generalized intersection
         obj = cartProd(obj1,obj2)   % Cartesian product
         obj = mtimes(M,obj)         % Linear mapping
+        obj = plus(obj1,obj2)       % Minkowski sum
+        obj = projection(obj,dims)  % Projection onto specified dimensions
+        out = stepMLD(X0,U,W,A,B_u,B_w,B_aff,E_x,E_u,E_w,E_aff) % 1-step reachable set for MLD
+        obj = union(obj1,obj2)      % Union
 
-        % Plot
+        % Visualization
         [v,f] = plot(obj,varargin)  % Plot and output vertices and faces
+
+        % Auxiliary 
+        [out1, out2] = matchSetType(obj1,obj2) % Output sets as the same class (zono, conZono, or hybZono)
+
     end
 end

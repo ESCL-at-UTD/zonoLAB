@@ -18,7 +18,13 @@
 %   Notes:
 %       Plotting of conZono and hybZono is highly dependent on tolerances
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-function [v,f] = plot(obj,varargin)
+function varargout = plot(obj,varargin)
+
+nOutputs = nargout;
+if (nOutputs == 1) || (nOutputs >= 3) 
+    error('Should either have zero outputs or 2 outputs (vertices and faces).')
+end
+varargout = cell(1,nOutputs);
 
 % Parse plotting options
 optPlot = plotOptions;
@@ -82,5 +88,10 @@ elseif strcmp(optPlot.Display,'individual')
         patch(P)
     end
 end
+
+if nOutputs == 2
+    varargout{1} = v;
+    varargout{2} = f;
+end    
 
 end

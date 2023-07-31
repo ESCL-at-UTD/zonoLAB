@@ -61,7 +61,7 @@ classdef conZono < abstractZono
                         obj.b = [];
                     case 'double'
                         obj.G = zeros(length(varargin{1}),0);
-                        obj.c = varargin{1}.c;
+                        obj.c = varargin{1};
                         obj.A = [];
                         obj.b = [];
                 end                    

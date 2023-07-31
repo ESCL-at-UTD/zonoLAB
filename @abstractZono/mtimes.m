@@ -2,7 +2,7 @@
 %   Method:
 %       Returns the linear mapping of zonotopic set X by matrix M, Z = M X
 %   Syntax:
-%       Z = mtimes(M,X)
+%       Z = mtimes(M,X) = M*X
 %   Inputs:
 %       M - m x n real matrix or a 1 x 1 scalar
 %       X - zonotopic set in R^n (hybZono, conZono, or zono object)
