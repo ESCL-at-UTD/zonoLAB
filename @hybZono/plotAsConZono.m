@@ -43,7 +43,7 @@ for i = 1:nLeaves
         f = [f nan(size(f,1),size(fi,2)-size(f,2))]; 
     end
     if size(fi,2) < size(f,2)
-        fi = [fi nan(1,size(f,2)-size(fi,2))];
+        fi = [fi nan(size(fi,1),size(f,2)-size(fi,2))];
     end
     f = [f;fi+sum(nVerts(1:i-1))];
     waitbar(i/nLeaves,waitbarHandle)

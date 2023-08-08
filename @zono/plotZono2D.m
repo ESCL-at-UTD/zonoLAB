@@ -15,7 +15,7 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function [v,f] = plotZono2D(obj)
 
-if rank(obj.G) == 1
+if rank(obj.G) == 1 % Does not seem to work if zonotope is vertical
     % If generators do not span R^2, plot at 1D zonotope 
     nullVec = null(obj.G');
     reducedG = [-nullVec(2) nullVec(1)]*obj.G;

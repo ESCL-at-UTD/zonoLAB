@@ -31,9 +31,9 @@ cx = [ -0.201 ; 1.395 ];	% Crosses the guard once
 Gx = 0.2*eye(2);
 Z0 = zono(Gx,cx);	
 % Propagate backwards two steps
-Ainv = sysD2.A^(-1);
-Z0 = Ainv*(Z0 + -1*sysD2.B);
-Z0 = Ainv*(Z0 + -1*sysD2.B);
+Ainv = Ad2^(-1);
+Z0 = Ainv*(Z0 + -1*Bd2);
+Z0 = Ainv*(Z0 + -1*Bd2);
 plot(Z0,colors(1,:),1) % Plot initial condition set
 
 % No input set

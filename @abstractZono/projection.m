@@ -16,7 +16,7 @@ function out = projection(obj,dims)
 out = obj;
 
 out.c = obj.c(dims,:);
-switch class(obj1)
+switch class(obj)
     case 'zono'
         out.G = obj.G(dims,:);
     case 'conZono'
