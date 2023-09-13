@@ -6,12 +6,15 @@
 %       Z = conZono(G,c,A,b)
 %       Z = conZono(G,c)
 %       Z = conZono(z)
+%       Z = conZono([H f])
 %   Inputs:
 %       G - n x nG matrix to define constrained zonotope in R^n with nG generators
 %       c - n x 1 vector to define center
 %       A - nC x nG matrix to define nC equality constraints (A \xi = b)
 %       b - nC x 1 vector to define nC equality constraints (A \xi = b)
-%       z - zono object to be recast as constrained zonotope 
+%       z - zono object to be recast as constrained zonotope
+%       H - nH x n matrix for set in H-rep (H x <= f)
+%       f - nH x 1 vector for set in H-rep (H x <= f)
 %   Outputs:
 %       Z - constrained zonotope as conZono object
 %   Notes:
@@ -60,10 +63,14 @@ classdef conZono < abstractZono
                         obj.A = zeros(0,obj.nG);
                         obj.b = [];
                     case 'double'
-                        obj.G = zeros(length(varargin{1}),0);
-                        obj.c = varargin{1};
-                        obj.A = [];
-                        obj.b = [];
+                        if size(varargin{1},2) == 1
+                            obj.G = zeros(length(varargin{1}),0);
+                            obj.c = varargin{1};
+                            obj.A = [];
+                            obj.b = [];
+                        else
+                            obj = hPoly2conZono(varargin{1});
+                        end
                 end                    
             else
                 error('Incorrect number of inputs.')

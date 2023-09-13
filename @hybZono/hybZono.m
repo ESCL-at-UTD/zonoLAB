@@ -5,6 +5,8 @@
 %   Syntax:
 %       Z = hybZono(Gc,Gb,c,Ac,Ab,b)
 %       Z = hybZono(z)
+%       Z = hybZono(H_collection)
+%       Z = hybZono({V,M})
 %   Inputs:
 %       Gc - n x nGc matrix to define hybrid zonotope in R^n with nGc continuous generators
 %       Gb - n x nGb matrix to define hybrid zonotope in R^n with nGb binary generators
@@ -12,7 +14,10 @@
 %       Ac - nC x nGc matrix to define nC equality constraints (Ac \xic + Ab \xib = b)
 %       Ab - nC x nGb matrix to define nC equality constraints (Ac \xic + Ab \xib = b)
 %       b  - nC x 1 vector to define nC equality constraints (Ac \xic + Ab \xib = b)
-%       z - zono or conZono object to be recast as hybrid zonotope 
+%       z - zono or conZono object to be recast as hybrid zonotope
+%       H_collection - N x 1 cell array with i^th cell [H_i f_i] defining H-rep set H_i x <= f_i
+%       V - n x nV matrix with each column defining a vertex in R^n
+%       M - nV x N matrix indicating which of the N sets the nV vertices belong
 %   Outputs:
 %       Z - hybrid zonotope as hybZono object
 %   Notes:
@@ -85,6 +90,12 @@ classdef hybZono < abstractZono
                         obj.Ac = [];
                         obj.Ab = [];
                         obj.b  = [];
+                    case 'cell'
+                        if size(varargin{1},2) == 1
+                            obj = hPoly2hybZono(varargin{1});
+                        else
+                            obj = VPoly2hybZono(varargin{1});
+                        end
                 end
             else
                 error('Incorrect number of inputs.')

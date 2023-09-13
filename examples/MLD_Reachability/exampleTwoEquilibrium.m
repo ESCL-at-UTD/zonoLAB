@@ -1,6 +1,6 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Example:
-%   Forwared reachability with a single guard condition and two equilibrium
+%   Forward reachability with a single guard condition and two equilibrium
 %   points.
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
@@ -10,10 +10,10 @@ N = 15;     % Number of discrete time steps
 bounds = 3; % Bounds on state space for analysis (assuming [-bounds bounds] in each dimension)
 
 % System dynamics
-Ad1 = [0.75,-0.25;0.25,0.75];
-Bd1 = [0.25;-0.25];
-Ad2 = [0.75,0.25;-0.25,0.75];
-Bd2 = [-0.25;-0.25];
+Ad1 = [0.75,0.25;-0.25,0.75];
+Bd1 = [-0.25;-0.25];
+Ad2 = [0.75,-0.25;0.25,0.75];
+Bd2 = [0.25;-0.25];
 
 % Initialize plotting
 figure; hold on;
@@ -31,9 +31,9 @@ cx = [ -0.201 ; 1.395 ];	% Crosses the guard once
 Gx = 0.2*eye(2);
 Z0 = zono(Gx,cx);	
 % Propagate backwards two steps
-Ainv = Ad2^(-1);
-Z0 = Ainv*(Z0 + -1*Bd2);
-Z0 = Ainv*(Z0 + -1*Bd2);
+Ainv = Ad1^(-1);
+Z0 = Ainv*(Z0 + -1*Bd1);
+Z0 = Ainv*(Z0 + -1*Bd1);
 plot(Z0,colors(1,:),1) % Plot initial condition set
 
 % No input set
@@ -61,19 +61,42 @@ for i = 1:N
     plot(Z,colors(i+1,:),1) % Plot reachable set
 end
 
-% Additional plot information
 legend(p,{'Guard'},'interpreter','latex')
+
+% exportgraphics(gcf,'twoEquilibrium.pdf')
 
 %% Testing
 % figure; hold on
-% X0 = zono(bounds*eye(2),zeros(2,1));
+X0 = zono(bounds*eye(2),zeros(2,1));
 % plot(X0,'k',0.1)
-% X0a = halfspaceIntersection(X0,[1 0],0);
-% X0b = halfspaceIntersection(X0,[-1 0],0);
+X0a = halfspaceIntersection(X0,[1 0],0);
+X0b = halfspaceIntersection(X0,[-1 0],0);
 % plot(X0a,'m',0.1)
 % plot(X0b,'g',0.1)
-% X1a = Ad1*X0a + Bd1;
-% plot(X1a,'m',0.1)
-% X1b = Ad2*X0b + Bd2;
-% plot(X1b,'g',0.1)
-% plot(union(X1a,X1b),'k',0.5)
+
+Phia = [eye(2);Ad1]*X0a + [zeros(2,1);Bd1];
+Phib = [eye(2);Ad2]*X0b + [zeros(2,1);Bd2];
+
+Phi = union(Phia,Phib);
+
+% Initialize plotting
+figure; hold on;
+axis([ -2 2 -1 3 ]);
+xlabel('$x_1$','interpreter','latex')
+ylabel('$x_2$','interpreter','latex')
+set(gca,'fontsize',18,'fontname','times new roman')
+plot(-1,0, 'k.','markersize',25) % Left equilibrium
+plot(1,0, 'k.','markersize',25)  % Right equilibrium
+p = plot([ 0 0 ] , [ -bounds bounds ], 'g--','linewidth',2); % Guard
+colors = interp1([1;N+1],[0 0 1;1 0 0],1:1:N+1);
+
+plot(Z0,colors(1,:),1) % Plot initial condition set
+
+% Compute and plot reachable sets
+Z = Z0;
+for i = 1:N
+    Z = [zeros(2) eye(2)]*and(Phi,Z,[eye(2) zeros(2)]);
+    plot(Z,colors(i+1,:),1) % Plot reachable set
+end
+
+legend(p,{'Guard'},'interpreter','latex')
