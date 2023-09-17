@@ -12,11 +12,11 @@ Ab = a/2*[-2;-1];
 b = a/2*[0;-1];
 
 % Hybrid Zonotope of a single ReLU
-relu = hybZono(c,Gc,Gb,Ac,Ab,b);
+relu = hybZono(Gc,Gb,c,Ac,Ab,b);
 
 if nargin < 4
     [n2,n1] = size(Ws{1});
-    X = hybZono( zeros([n1,1]), a*eye(n1), [],[],[],[]);
+    X = hybZono(a*eye(n1),[],zeros([n1,1]),[],[],[]);
 end
 
 % Neural network hybrid zonotope
@@ -32,9 +32,10 @@ for i = 1:(length(bs)-1)
 
     In2 = eye(n2);
     % [v1 x1 ... vn xn] ordering
-    relu_layer_stacked = hybZono( repmat(c,n2,1), ...
+    relu_layer_stacked = hybZono( ...
                           kron(In2,Gc), ...
                           kron(In2,Gb), ...
+                          repmat(c,n2,1), ...
                           kron(In2,Ac), ...
                           kron(In2,Ab), ...
                           repmat(b,n2,1));
@@ -50,7 +51,7 @@ for i = 1:(length(bs)-1)
     idx_max = idx_max+n2;
 
     % cartesian product to add layer to the hybrid zonotope neural network
-    NN = stack_zonotopes(NN,relu_layer);
+    NN = cartProd(NN,relu_layer);
 end
 
 % make layer-to-layer connections via constraints
@@ -63,14 +64,15 @@ end
 
 % make connections from final hidden layer to output
 Rx = selection_matrix(x_indices{1},NN);
-RvL = selection_matrix(v_indices{end},NN);
+RxL = selection_matrix(x_indices{end},NN);
 
 X = Rx*NN;  % this version of X has all the factors from the neural network
-Y = Ws{end}*RvL*NN+bs{end};
+Y = Ws{end}*RxL*NN+bs{end};
 
-XY = hybZono( [X.c;Y.c], ...
+XY = hybZono( ...
                 [X.Gc;Y.Gc], ...
                 [X.Gb;Y.Gb], ...
+                [X.c;Y.c], ...
                 X.Ac, ...
                 X.Ab, ...
                 X.b);
@@ -79,8 +81,6 @@ end
 
 % This assumes the set of generators of X and Y are exactly the same!
 function Z = intersect_in_place(X,Y,R)
-    X = X.getDimensions;
-    Y = Y.getDimensions;
 	Z = X;
 	
 	if nargin < 3
@@ -96,21 +96,4 @@ end
 function [R] = selection_matrix(idx_range,Z)
     R = zeros([length(idx_range),Z.n]);
     R(:,idx_range) = eye(length(idx_range));
-end
-
-% same as Cartesian product
-% for some reason the OG hybZono toolbox wasn't doing the same thing?
-function [Z] = stack_zonotopes(X,Y)
-% Stacking two independent zonotopes. 
-nx = max( size(X.Gc,1) , size(X.Gb,1) );
-ny = max( size(Y.Gc,1) , size(Y.Gb,1) );
-ncx = max( size(X.Ac,1) , size(X.Ab,1) );
-ncy = max( size(Y.Ac,1) , size(Y.Ab,1) );
-
-Z = hybZono( [X.c ; Y.c], ...
-             [X.Gc , zeros(nx,size(Y.Gc,2)) ; zeros(ny,size(X.Gc,2)) , Y.Gc, ], ...
-             [X.Gb , zeros(nx,size(Y.Gb,2)) ; zeros(ny,size(X.Gb,2)) , Y.Gb, ], ...
-             [X.Ac , zeros(ncx,size(Y.Gc,2)) ; zeros(ncy,size(X.Gc,2)) , Y.Ac], ...
-             [X.Ab , zeros(ncx,size(Y.Gb,2)) ; zeros(ncy,size(X.Gb,2)) , Y.Ab], ...
-             [X.b ; Y.b]);
 end
