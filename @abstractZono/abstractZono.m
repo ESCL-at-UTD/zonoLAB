@@ -34,8 +34,10 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         % Arithmetic
         obj = and(obj1,obj2,R)      % Generalized intersection
         obj = cartProd(obj1,obj2)   % Cartesian product
+        obj = convexHull(obj1,obj2) % Convex hull
         obj = mtimes(M,obj)         % Linear mapping
         obj = plus(obj1,obj2)       % Minkowski sum
+        obj = pontryDif(obj1,obj2)  % Pontryagin difference
         obj = projection(obj,dims)  % Projection onto specified dimensions
         out = stepMLD(X0,U,W,A,B_u,B_w,B_aff,E_x,E_u,E_w,E_aff) % 1-step reachable set for MLD
         obj = union(obj1,obj2)      % Union

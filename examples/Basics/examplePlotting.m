@@ -14,7 +14,7 @@
 % toc(tStart)
 
 %% Constrained Zonotope
-nG = 50;
+nG = 10;
 nC = ceil(nG/2);
 Zc  = randomSet(1,'conZono',n,nG,[],nC);
 

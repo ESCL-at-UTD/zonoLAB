@@ -181,3 +181,33 @@ plot(and(Zh1,Zh2,R),'g',0.5)
 % plot(Zh1,'r',0.1)
 % plot(Zh2,'b',0.1)
 % plot(Zh1&Zh2,'g',0.5)
+
+%% Convex Hull
+n = 2;
+nG = 5;
+nC = ceil(nG/2);
+X  = randomSet(1,'conZono',n,nG,[],nC);
+Y  = randomSet(2,'conZono',n,nG,[],nC);
+Z = convexHull(X,Y);
+figure; hold on
+tStart = tic;
+[v,f] = plot(X,'b',0.1);
+[v,f] = plot(Y,'m',0.1);
+[v,f] = plot(Z,'g',0.1);
+toc(tStart)
+
+
+%% Pontryagin Difference
+n = 2;
+nG = 7;
+nC = ceil(nG/2);
+nb = 2;
+X  = 30*randomSet(1,'hybZono',n,nG,nb,nC);
+Y  = randomSet(2,'zono',n,nG,[],[]);
+Z = pontryDiff(X,Y);
+figure; hold on
+tStart = tic;
+[v,f] = plot(X,'b',0.1);
+[v,f] = plot(Y,'m',0.1);
+[v,f] = plot(Z,'g',0.1);
+toc(tStart)
