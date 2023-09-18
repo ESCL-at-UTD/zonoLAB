@@ -1,5 +1,11 @@
-clear all; close all; clc;
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% Example:
+%   Exactly representing a neural network composed entirely of ReLU 
+%   activation functions as a hybrid zonotope.
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
+% Load parameters from mat file
+% This neural network approximates the function f = cos(X1)+sin(X2) over the domain [-5,5]x[-5,5]
 load("relu_sin_cos_2_20_10_10_1.mat");
 
 % Plotting function over the trained dataset
@@ -27,6 +33,7 @@ Gx = diag([g11, g22]);
 cx = zeros(2, 1);
 X = hybZono(Gx, [], cx, [], [], []);
 
+% Construct the output zonotope Z and the lifted input-output mapping XZ
 tic
 [Z,XZ] = relu_neural_network(Ws,bs,a,X);
 fprintf('Zonotope model: ')
