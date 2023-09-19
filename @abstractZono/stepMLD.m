@@ -4,8 +4,7 @@
 %   Syntax:
 %       Z = stepMLD(X)
 %   Inputs:
-%       X - zonotopic set in R^n (hybZono, conZono, or zono object)
-%       
+%       X - zonotopic set in R^n (hybZono, conZono, or zono object) 
 %   Outputs:
 %       Z - hybZono in R^m
 %   Notes:

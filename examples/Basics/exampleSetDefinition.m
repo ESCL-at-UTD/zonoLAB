@@ -92,4 +92,4 @@ xlabel('$z(1)$')
 ylabel('$z(2)$')
 title('(f)','position', [-3.5 1.5]);
 
-exportgraphics(gcf,'setDefinition.pdf','ContentType','vector')
+% exportgraphics(gcf,'setDefinition.pdf','ContentType','vector')
