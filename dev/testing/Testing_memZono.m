@@ -6,3 +6,5 @@ temp2 = memZono(2*Z,{'test_2','test_3'});
 
 % minSum(temp,temp2)
 % temp+temp2
+
+cartProd(temp,temp2)

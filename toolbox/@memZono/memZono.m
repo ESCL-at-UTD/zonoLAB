@@ -146,7 +146,7 @@ classdef memZono
         
         % In/Out Zono
         function out = get.baseClass(obj)
-            if isempty(obj.tags.factors.vset)
+            if all(obj.vset)
                 if isempty(obj.A_)
                     out = 'zono';
                 else
@@ -164,8 +164,8 @@ classdef memZono
                 case 'conZono'
                     Z = conZono(obj.G,obj.c,obj.A,obj.b);
                 case 'hybZono'
-                    Z = hybZono(obj.G.Gc,obj.G.Gb,obj.c,...
-                        obj.A.Ac,obj.A.Ab,obj.b);
+                    Z = hybZono(obj.Gc,obj.Gb,obj.c,...
+                        obj.Ac,obj.Ab,obj.b);
             end
         end
 
@@ -199,7 +199,7 @@ classdef memZono
         function out = get.conKeys(obj); out = obj.keys.cons; end
 
         function obj = set.keys(obj,in)
-            if isstruct(in)
+            if isstruct(in) %<-- add better checks?
                 obj.keys = in;
             else
                 obj.factorKeys = in;
@@ -243,6 +243,20 @@ classdef memZono
                 k2 = setdiff(in2,ks);
             end
         end
+
+        function [idxk1,idxks1,idxks2,idxk2] = getKeyIndices(in1,in2)
+            [k1,ks,k2] = memZono.getUniqueKeys(in1,in2);
+
+            [~,idxk1] = ismember(k1,in1);
+            [~,idxk2] = ismember(k2,in2);
+            if isempty(ks)
+                idxks1 = []; idxks2 = [];
+            else
+                [~,idxks1] = ismember(ks,in1);
+                [~,idxks2] = ismember(ks,in2);
+            end
+        end
+
     end
         
 
@@ -269,8 +283,8 @@ classdef memZono
     methods
         %% Set Operations
         obj = minSum(obj1,obj2);
-        obj = cartprod(obj1,obj2);
         obj = linMap(M,obj);
+        obj = cartProd(obj1,obj2);
 
 
 
@@ -289,9 +303,8 @@ classdef memZono
             % TODO: assuming forward... include other as well
             if ~isnumeric(in1); error('only coded one way'); end
             if class(in2) == 'memZono'
-                obj = in2;
-                obj.G = in1*in2.G;
-                obj.c = in1*in2.c;
+                obj = linMap(in1,in2);
+                
             else
                 error('not codded')
             end
