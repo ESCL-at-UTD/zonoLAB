@@ -1,10 +1,14 @@
 clear
-Z = zono(eye(2),ones(2,1));
+Z = zono([eye(2),ones(2)],ones(2,1));
+Z2 = zono([eye(2),2*eye(2)],zeros(2,1));
 
 temp = memZono(Z,'test');
-temp2 = memZono(2*Z,{'test_2','test_3'});
+temp2 = memZono(Z2,{'test_2','test_3','test_4','test_5'});
+
+temp.dimKeys = 'test';
+temp2.dimKeys = {'test_2','test_3'};
 
 % minSum(temp,temp2)
 % temp+temp2
 
-cartProd(temp,temp2)
+and(temp,temp2)

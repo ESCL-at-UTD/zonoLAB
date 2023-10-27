@@ -191,7 +191,8 @@ classdef memZono
         end
 
     end
-        %% Labeling
+    
+    %% Labeling
     methods
         function out = get.keys(obj); out = obj.keys; end
         function out = get.factorKeys(obj); out = obj.keys.factors; end
@@ -285,6 +286,8 @@ classdef memZono
         obj = minSum(obj1,obj2);
         obj = linMap(M,obj);
         obj = cartProd(obj1,obj2);
+        obj = generalizedIntersection(obj1,obj2,R);
+        obj = labeledIntersection(obj1,obj2,dims);
 
 
 
@@ -309,7 +312,23 @@ classdef memZono
                 error('not codded')
             end
         end
+        function obj = and(obj1,obj2)
+            obj = labeledIntersection(obj1,obj2); %<-- intersects shared dims
+        end
                 
+
+
+
+
+        %% Indexing
+        B = subsref(A,S);
+        % A = subsasgn(A,S,B); %<---- not completed
+        
+        function out = projection(in,dims)
+            [~,idx] = ismember(dims,in.dimKeys);
+            out = memZono(in.G(idx,:),in.c(idx,:),in.A,in.b,in.vset,dims);
+        end
+
 
 
     end

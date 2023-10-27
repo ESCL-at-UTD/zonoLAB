@@ -52,7 +52,7 @@ function obj = cartProd(obj1,obj2)
     % Labeling
     keys_.factors = [k1,ks,k2];
     keys_.dims = [d1,ds,d2]; %<--- add check for same?
-    % constraints
+    % Constraints
     if isempty(cs)
         cs1 = cs; cs2 = [];
     else
@@ -71,6 +71,7 @@ function obj = cartProd(obj1,obj2)
     end
     keys_.cons = [c1,cs1,cs2,c2,cds];
 
+    % Define memZono
     obj = memZono(G_,c_,A_,b_,vset_,keys_);
     
 end
