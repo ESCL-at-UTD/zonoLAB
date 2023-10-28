@@ -56,16 +56,25 @@ W = hybZono([diag((wUB(1:2)-wLB(1:2))/2);zeros(1,2)],[zeros(2,1);diag((wUB(3)-wL
 
 % Compute and plot reachable sets
 Z = Z0;
-for i = 1:N
+tickLab{1} = ['$\mathcal{R}_{',num2str(0),'}$'];
+for i = 1:N+1
     Z = stepMLD(Z,U,W,A,B_u,B_w,B_aff,E_x,E_u,E_w,E_aff);
-    plot(Z,colors(i+1,:),1) % Plot reachable set
+    plot(Z,plotOptions('EdgeColor',colors(i,:),'FaceColor',colors(i,:))) % Plot reachable set
+    tickLab{i} = ['$\mathcal{R}_{',num2str(i-1),'}$'];
 end
 
 legend(p,{'Guard'},'interpreter','latex')
+colormap(colors);
+cbar = colorbar;
+cbar.TicksMode = 'manual';
+val = 1/(((N+1)));
+cbar.Ticks = val/2+[0:val:1-val];
+cbar.TickLabelInterpreter = 'latex';
+cbar.TickLabels = tickLab;
 
 % exportgraphics(gcf,'twoEquilibrium.pdf')
 
-%% Testing
+%% PWA Approach
 % figure; hold on
 X0 = zono(bounds*eye(2),zeros(2,1));
 % plot(X0,'k',0.1)
