@@ -291,10 +291,8 @@ classdef memZono
 
 
 
-
-
-
-
+        %% Ploting
+        function plot(obj,varargin), plot(obj.Z,varargin{:}); end
 
 
         %% Overloading
@@ -314,6 +312,10 @@ classdef memZono
         end
         function obj = and(obj1,obj2)
             obj = labeledIntersection(obj1,obj2); %<-- intersects shared dims
+        end
+        function obj = or(obj1,obj2)
+            error('Union Not Coded')
+            % obj = union(obj1,obj2);
         end
                 
 

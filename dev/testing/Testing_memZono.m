@@ -11,4 +11,6 @@ temp2.dimKeys = {'test_2','test_3'};
 % minSum(temp,temp2)
 % temp+temp2
 
-and(temp,temp2)
+temp3 = and(temp,temp2)
+
+plot(temp3)
