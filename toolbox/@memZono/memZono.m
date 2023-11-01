@@ -111,7 +111,6 @@ classdef memZono
 
     %% Get/Set Functions
     methods
-
         %% System Definitions
         
         % Standard Matrices
@@ -295,7 +294,7 @@ classdef memZono
 
 
         %% Ploting
-        function plot(obj,varargin), plot(obj.Z,varargin{:}); end
+        plot(obj,dims,varargin);
 
 
         %% Overloading
@@ -316,12 +315,12 @@ classdef memZono
         function obj = and(obj1,obj2)
             obj = labeledIntersection(obj1,obj2); %<-- intersects shared dims
         end
-        function obj = or(obj1,obj2)
-            error('Union Not Coded')
-            % obj = union(obj1,obj2);
-        end
+        % function obj = or(obj1,obj2)
+        %     error('Union Not Coded')
+        %     % obj = union(obj1,obj2);
+        % end
                 
-
+        % Extended CartProd
         function obj = vertcat(varargin)
             obj = varargin{1};
             for i = 2:nargin
@@ -337,8 +336,13 @@ classdef memZono
         % A = subsasgn(A,S,B); %<---- not completed
         
         function out = projection(in,dims)
+            if ~ismember(dims,in.dimKeys)
+                dims = in.dimKeys(startsWith(in.dimKeys,dims));
+            end
             [~,idx] = ismember(dims,in.dimKeys);
-            out = memZono(in.G(idx,:),in.c(idx,:),in.A,in.b,in.vset,dims);
+            keys_ = in.keys;
+            keys_.dims = dims;
+            out = memZono(in.G(idx,:),in.c(idx,:),in.A,in.b,in.vset,keys_);
         end
 
 

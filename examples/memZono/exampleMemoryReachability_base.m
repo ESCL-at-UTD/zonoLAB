@@ -1,4 +1,4 @@
-clear; clc; clf;
+clear; %clc; clf;
 
 % Time
 T = 2*pi;  % this will get slower the longer you run it because the X zonotope will get more and more complex!
@@ -90,7 +90,7 @@ for j = 1:Ns  % = 1,3,5,7,9,11 to select the different time steps
     R(:,rx{j}) = eye(n);
     plot( R*XX, clr, 0.6)
     hold on;
-    plot( X{j}, clr, 0.2)
+    plot(X{j}, clr, 0.2)
     drawnow;
     
 end
