@@ -6,7 +6,7 @@ function obj = minSum(obj1,obj2)
     
     % get shared keys
     [k1,ks,k2] = memZono.getUniqueKeys(obj1.factorKeys,obj2.factorKeys);
-    [idxk1,idxks1,idxks2,idxk2] = getKeyIndices(obj1.factorKeys,obj2.factorKeys);
+    [idxk1,idxks1,idxks2,idxk2] = memZono.getKeyIndices(obj1.factorKeys,obj2.factorKeys);
 
     % Data selection
     G_ = [obj1.G(:,idxk1),obj1.G(:,idxks1)+obj2.G(:,idxks2), obj2.G(:,idxk2)];

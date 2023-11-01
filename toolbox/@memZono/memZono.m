@@ -92,6 +92,7 @@ classdef memZono
                 % end
                 
                 obj.factorKeys = varargin{2};
+                obj.dimKeys = varargin{2};
             elseif nargin == 6
                 obj.Z = conZono(varargin{1:4});
                 % obj.G_ = varargin{1};
@@ -204,6 +205,8 @@ classdef memZono
                 obj.keys = in;
             else
                 obj.factorKeys = in;
+                % obj.dimKeys = in;
+                % obj.conKeys = in;
             end
         end
         function obj = set.factorKeys(obj,in)
@@ -318,6 +321,13 @@ classdef memZono
             % obj = union(obj1,obj2);
         end
                 
+
+        function obj = vertcat(varargin)
+            obj = varargin{1};
+            for i = 2:nargin
+                obj = cartProd(obj,varargin{i});
+            end
+        end
 
 
 
