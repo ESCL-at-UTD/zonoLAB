@@ -38,22 +38,25 @@ U_0 = memZono(U_nom,'u_0');
 
 %% Reachability Calculation
 % Initialization
-Xall = [X_0; U_0]; %<--- cart prod but extendable to many of them
+X_all = [X_0; U_0]; %<--- cart prod but extendable to many of them
 X_{1} = A*X_0 + B*U_0;
-for k = 1:N
+X_{1}.dimKeys = 'x_1';
+U_{1} = memZono(U_nom,'u_1');
+X_all = [X_all; X_{1}; U_{1}];
+for k = 2:N
     % TODO: Add Measurement/Noise?
+    % Next Time-step
+    X_{k} = A*X_{k-1} + B*U_{k-1};
+    X_{k}.dimKeys = sprintf('x_%d',k);
     % Input Calculation
     U_{k} = memZono(U_nom,sprintf('u_%d',k));
     % Name and save/label
-    X_{k}.dimKeys = sprintf('x_%d',k);
-    Xall = [Xall; X_{k}; U_{k}]; %<--- could add measurements/noise/etc too
-    % Next Time-step
-    X_{k+1} = A*X_{k} + B*U_{k};
+    X_all = [X_all; X_{k}; U_{k}]; %<--- could add measurements/noise/etc too
 end
 
 %% Intersection
-X_F.dimKeys = sprintf('x_%d',k);
-Xall_inter_F = Xall & X_F; %
+X_F.dimKeys = sprintf('x_%d',k-1);
+Xall_inter_F = X_all & X_F; % <--- intersect common dimensions
 
 %% Plotting
 fig = figure;
@@ -82,8 +85,8 @@ ylabel('$x_2$','Interpreter','latex');
 % Input Plots
 subplot(1,2,2);
 hold on;
-plot([U_{1}; U_{2}],'all','b',0.2);
-plot(Xall_inter_F,{'u_1','u_2'},'b',0.6);
+plot([U_0; U_{1}],'all','b',0.2);
+plot(Xall_inter_F,{'u_0','u_1'},'b',0.6);
 drawnow
 hold off;
 

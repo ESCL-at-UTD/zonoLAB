@@ -25,15 +25,15 @@ for i=1:length(tau)
 end
 G = trapz(tau, expmAtauB, 3); % numerically integrate (along dimension 3)
 
-eta = 1; % noise level - noise will be pulled from [-eta,eta]
-
-% select estimator gain to be stable - for discrete systems it means
-% eigenvalues between (-1,1):
-C = eye(2); % we assume we'll measure both states
-L = place(F',C',0.8*[1,1]); %%%%% You can try different eigenvalues here between (-1,1)
-
-% select controller gain to be stable
-K = -place(F,G,[0.5;0.4]);
+% eta = 1; % noise level - noise will be pulled from [-eta,eta]
+% 
+% % select estimator gain to be stable - for discrete systems it means
+% % eigenvalues between (-1,1):
+% C = eye(2); % we assume we'll measure both states
+% L = place(F',C',0.8*[1,1]); %%%%% You can try different eigenvalues here between (-1,1)
+% 
+% % select controller gain to be stable
+% K = -place(F,G,[0.5;0.4]);
 
 %% Test
 Ns = 3;
