@@ -1,62 +1,42 @@
-clear; %close all;
+clear;
 
 %% Simulation Settings
 N = 3; %< number of timesteps to do reachability
 dt = 0.25;
 
 %% System Definition
-% Continous Time
-A_ct = [0,1;-2,-1];
-B_ct = [0;1];
-C_ct = eye(2);
-D_ct = 0;
-sys_ct = ss(A_ct,B_ct,C_ct,D_ct);
+% DT-LTI System
+A = [   1, 0.25;
+     -0.5, 0.75];
+B = [   0.025;
+        0.25];
 
-% Discrete Time
-sys = c2d(sys_ct,dt);
-[A,B,C,D] = ssdata(sys);
-
-% % Controller
-% K_eig = [0.5;0.4];
-% K = -place(A,B,K_eig);
-% 
-% % Estimator
-% L_eig = 0.8*[1,1];
-% L = place(A',C',L_eig);
-
-% % Noise (not used? idk... it's weird)
-% eta_ = 1; % \eta \in [-eta_,eta_]
-% Eta_ = memZono()
-
-% Initial and Final Sets %%%% (really need to get constructor better)
-X_0 = memZono(zono(diag([1,2]),zeros(2,1)),'x_0');
-X_F = memZono(zono(0.25*eye(2),ones(2,1)),'x_f');
-
-% Input Set
+%% Reachability Setup
+X_0 = zono(diag([1,2]),zeros(2,1));
+X_F = zono(0.25*eye(2),ones(2.,1));
 U_nom = zono(1.5,0);
-U_0 = memZono(U_nom,'u_0');
 
 %% Reachability Calculation
-% Initialization
-X_all = [X_0; U_0]; %<--- cart prod but extendable to many of them
-X_{1} = A*X_0 + B*U_0;
-X_{1}.dimKeys = 'x_1';
-U_{1} = memZono(U_nom,'u_1');
-X_all = [X_all; X_{1}; U_{1}];
-for k = 2:N
-    % TODO: Add Measurement/Noise?
-    % Next Time-step
-    X_{k} = A*X_{k-1} + B*U_{k-1};
-    X_{k}.dimKeys = sprintf('x_%d',k);
-    % Input Calculation
+% Initial Conditions
+X_{1} = memZono(X_0,'x_1');
+X_all = X_{1};
+
+% Time-evolution
+for k = 1:N
+    % Current Input
     U_{k} = memZono(U_nom,sprintf('u_%d',k));
-    % Name and save/label
-    X_all = [X_all; X_{k}; U_{k}]; %<--- could add measurements/noise/etc too
+
+    % Step Update
+    X_{k+1} = A*X_{k} + B*U_{k};
+    X_{k+1}.dimKeys = sprintf('x_%d',k+1);
+
+    % Save Data
+    X_all = [X_all; U_{k}; X_{k+1}];
 end
 
 %% Intersection
-X_F.dimKeys = sprintf('x_%d',k-1);
-Xall_inter_F = X_all & X_F; % <--- intersect common dimensions
+X_F = memZono(X_F,sprintf('x_%d',k+1));
+X_inter = X_all & X_F; % <--- intersect common dimensions
 
 %% Plotting
 fig = figure;
@@ -65,11 +45,9 @@ fig = figure;
 subplot(1,2,1);
 hold on;
 plot(X_F, 'all', 'g', 1);
-plot(X_0, 'all', selectColor(0), 0.6)
-plot(Xall_inter_F, sprintf('x_%d',0), selectColor(0), 0.6);
 drawnow;
-for k = 1:N-1
-    plot(Xall_inter_F, sprintf('x_%d',k), selectColor(k), 0.6);
+for k = 1:N
+    plot(X_inter, sprintf('x_%d',k), selectColor(k), 0.6);
     plot(X_{k}, 'all', selectColor(k), 0.2);
     drawnow;
 end
@@ -85,8 +63,8 @@ ylabel('$x_2$','Interpreter','latex');
 % Input Plots
 subplot(1,2,2);
 hold on;
-plot([U_0; U_{1}],'all','b',0.2);
-plot(Xall_inter_F,{'u_0','u_1'},'b',0.6);
+plot([U_{1}; U_{2}],'all','b',0.2);
+plot(X_inter,{'u_1','u_2'},'b',0.6);
 drawnow
 hold off;
 

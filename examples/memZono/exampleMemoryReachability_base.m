@@ -1,98 +1,65 @@
-clear; %clc; clf;
+clear;
 
-% Time
-T = 2*pi;  % this will get slower the longer you run it because the X zonotope will get more and more complex!
+%% Simulation Settings
+N = 3; %< number of timesteps to do reachability
 dt = 0.25;
-N = round(T/dt)+1;
-time = linspace(0,T,N);
 
-%%  System definition
-% Harmonic Oscillator:
-% w = 1;  % Dynamic variable
-% A = [0,1;-w,0]; % Continuous-time dynamics
-% B = [1;0]; % Continuous-time input matrix
-% Spring-Mass-Damper:
-A = [0,1;-2,-1];
-B = [0;1];
+%% System Definition
+% DT-LTI System
+A = [   1, 0.25;
+     -0.5, 0.75];
+B = [   0.025;
+        0.25];
 
-F = expm(A*dt); % Discrete-time dynamics
-[n,m] = size(B);
+%% Reachability Setup
+X_0 = zono(diag([1,2]),zeros(2,1));
+X_F = zono(0.25*eye(2),ones(2.,1));
+U_nom = zono(1.5,0);
 
-tau = linspace(0,dt,1001); % integration steps for calculating G
-expmAtauB = zeros(n,m,length(tau));
-for i=1:length(tau)
-    expmAtauB(:,:,i) = expm(A*tau(i))*B;
+% Dimensions
+n = size(A,1);
+p = size(B,2);
+% q = size(C,1);
+
+% Indexs
+rx = {}; %<--- states
+ru = {}; %<--- inputs
+ri = 0; %<-- last index used
+
+%% Reachability
+% Initial Conditions
+X_{1} = X_0; %<-- initial conditions
+X_all = X_{1}; rx{1} = ri + (1:n); ri = ri + n;
+
+% Time-evolution
+for k = 1:N
+    % Current Input
+    U_{k} = U_nom;
+    X_all = extend_zonotope(X_all,U_{k}); ru{k} = ri + (1:p); ri = ri + p;
+
+    % Step Update
+    X_{k+1} = A*X_{k} + B*U_{k};
+    X_all = extend_zonotope(X_all,X_{k+1}); rx{k+1} = ri + (1:n); ri = ri + n;
 end
-G = trapz(tau, expmAtauB, 3); % numerically integrate (along dimension 3)
 
-% eta = 1; % noise level - noise will be pulled from [-eta,eta]
-% 
-% % select estimator gain to be stable - for discrete systems it means
-% % eigenvalues between (-1,1):
-% C = eye(2); % we assume we'll measure both states
-% L = place(F',C',0.8*[1,1]); %%%%% You can try different eigenvalues here between (-1,1)
-% 
-% % select controller gain to be stable
-% K = -place(F,G,[0.5;0.4]);
+%% Intersection
+R = zeros(n,X_all.n);
+R(:,rx{k+1}) = eye(n);
+X_inter = and(X_all,X_F,R);
 
-%% Test
-Ns = 3;
-Unom = conZono(1.5,0,[],[]); % just a big set for input
-X={}; X{1} = conZono(diag([1,2]),zeros(2,1),[],[]);
-XF = conZono(0.25*diag([1,1]),ones(2,1),[],[]);
+%% Plotting
+fig = figure;
 
-XX = X{1};
-rx = {}; rx{1} = 1:n; % use for indexes that correspond to states
-ru = {}; % use for indexes that correspond to inputs
-ri = n; % last used index
-for k = 2:Ns
-    % Compute input set from Hybrid Zonotope verison Neural Net
-    U{k-1} = Unom;
-    % Compute AX + BU
-    X{k} = plus( F*X{k-1} , G*U{k-1} );
-    %XU = X{k};
-    XU = extend_zonotope(X{k},U{k-1});
-%     % enforcing the intersection along the way
-%     if k == Ns
-%         R = zeros(n,length(XU.c));
-%         R(:,1:n) = eye(n);
-%         XU = generalizedIntersection(XU,XF,R);
-%     end
-    rx{k} = ri+1:ri+n; ri = ri+n;
-    ru{k-1} = ri+1:ri+m; ri = ri+m;
-
-    % Now stack X_k and X_{k+1} so that we keep factors across time
-    XX = extend_zonotope(XX,XU);
-end 
-% if we want to do the intersection at the end
-R = zeros(n,length(XX.c));
-R(:,rx{3}) = eye(n);
-XX = and(XX,XF,R);
-
-%% Plot Sets
-figure(1)
-clf
-
-subplot(1,2,1)
-plot(XF, 'g', 1);
-drawnow;
+% State plots
+subplot(1,2,1);
 hold on;
-for j = 1:Ns  % = 1,3,5,7,9,11 to select the different time steps
-    clr='k'; 
-    if mod(j,2) == 0
-        clr = 'b';
-    elseif j == 1
-        clr = 'k'; 
-    else
-        clr = 'r';
-    end
-    R = zeros(n,length(XX.c));
-    R(:,rx{j}) = eye(n);
-    plot( R*XX, clr, 0.6)
-    hold on;
-    plot(X{j}, clr, 0.2)
+plot(X_F, 'g', 1);
+drawnow;
+for k = 1:N
+    R = zeros(n,X_inter.n); R(:,rx{k}) = eye(n);
+    plot(R*X_inter, selectColor(k), 0.6);
+    plot(X_{k}, selectColor(k), 0.2);
     drawnow;
-    
 end
 hold off;
 
@@ -102,69 +69,63 @@ ylim([-3 3]);
 xlabel('$x_1$','Interpreter','latex');
 ylabel('$x_2$','Interpreter','latex');
 
-subplot(1,2,2)
-R = zeros(2,length(XX.c));
-R(1,ru{1}) = 1;
-R(2,ru{2}) = 1;
-plot( R*XX, 'b', 0.6)
+
+% Input Plots
+subplot(1,2,2);
 hold on;
-plot( stack_zonotopes(U{1},U{2}) , 'b', 0.2)
+R = zeros(2,X_inter.n); R(1,ru{2}) = 1; R(2,ru{3}) = 1;
+plot(R*X_inter,'b',0.6);
+plot(cartProd(U_{1}, U_{2}),'b',0.2);
+drawnow
 hold off;
-drawnow;
-% for j = 1:Ns-1
-%     R = zeros(m,length(XX.c));
-%     R(:,ru{j}) = eye(m);
-%     Ui = R*XX;
-%     Ui.c = [j;Ui.c];
-%     Ui.Gc = [j*zeros(1,size(Ui.Gc,2));Ui.Gc];
-%     Ui.Gb = [j*zeros(1,size(Ui.Gb,2));Ui.Gb];
-%     plot( Ui, 'b', 0.6)
-%     drawnow;
-%     hold on;
-% end
-hold off;
+
 axis equal;
 xlim([-2 2]);
 ylim([-2 2]);
-
 xlabel('$u(1)$','Interpreter','latex');
 ylabel('$u(2)$','Interpreter','latex');
 
+%% Local functions
+function color = selectColor(i)
+    colors = {'k','b','r'};
+    color = colors{mod(i,length(colors))+1};
+end
+
 %% Functions
 
-function [Z] = extend_zonotope(X,Y)
-% Extending X with Y. 
-nx = size(X.G,1);
+function [Z] = extend_zonotope(X_,Y)
+% Extending X_ with Y. 
+nx = size(X_.G,1);
 ny = size(Y.G,1);
-ncx = size(X.A,1);
+ncx = size(X_.A,1);
 ncy = size(Y.A,1);
 r_ngc_diff = 0;
 l_ngc_diff = 0;
-if size(Y.G,2) >= size(X.G,2)
-    %If X has f factors, then the first f factors of Y are the same as X 
-    r_ngc_diff = size(Y.G,2) - size(X.G,2); % num new cont. factors
-elseif size(X.G,2) > size(Y.G,2)
-    %If Y has f factors, then the last f factors of X are the same as Y 
-    l_ngc_diff = size(X.G,2) - size(Y.G,2); % num new cont. factors
+if size(Y.G,2) >= size(X_.G,2)
+    %If X_ has f factors, then the first f factors of Y are the same as X_ 
+    r_ngc_diff = size(Y.G,2) - size(X_.G,2); % num new cont. factors
+elseif size(X_.G,2) > size(Y.G,2)
+    %If Y has f factors, then the last f factors of X_ are the same as Y 
+    l_ngc_diff = size(X_.G,2) - size(Y.G,2); % num new cont. factors
 else
     error(sprintf('Ambiguous extension. One set should have more generators than the other (both binary and continuous).')) 
 end
 
-Z = conZono( [X.G , zeros(nx,r_ngc_diff) ; zeros(ny,l_ngc_diff) , Y.G, ], ...
-             [X.c ; Y.c], ...
-             [X.A , zeros(ncx,r_ngc_diff) ; zeros(ncy,l_ngc_diff) , Y.A], ...
-             [X.b ; Y.b]);
+Z = conZono( [X_.G , zeros(nx,r_ngc_diff) ; zeros(ny,l_ngc_diff) , Y.G, ], ...
+             [X_.c ; Y.c], ...
+             [X_.A , zeros(ncx,r_ngc_diff) ; zeros(ncy,l_ngc_diff) , Y.A], ...
+             [X_.b ; Y.b]);
 end
 
-function [Z] = stack_zonotopes(X,Y)
-% Stacking two independent zonotopes. 
-nx = size(X.G,1);
-ny = size(Y.G,1);
-ncx = size(X.A,1);
-ncy = size(Y.A,1);
-
-Z = conZono( [X.G , zeros(nx,size(Y.G,2)) ; zeros(ny,size(X.G,2)) , Y.G, ], ...
-             [X.c ; Y.c], ...
-             [X.A , zeros(ncx,size(Y.G,2)) ; zeros(ncy,size(X.G,2)) , Y.A], ...
-             [X.b ; Y.b]);
-end
+% function [Z] = cartProd(X_,Y)
+% % Stacking two independent zonotopes. 
+% nx = size(X_.G,1);
+% ny = size(Y.G,1);
+% ncx = size(X_.A,1);
+% ncy = size(Y.A,1);
+% 
+% Z = conZono( [X_.G , zeros(nx,size(Y.G,2)) ; zeros(ny,size(X_.G,2)) , Y.G, ], ...
+%              [X_.c ; Y.c], ...
+%              [X_.A , zeros(ncx,size(Y.G,2)) ; zeros(ncy,size(X_.G,2)) , Y.A], ...
+%              [X_.b ; Y.b]);
+% end
