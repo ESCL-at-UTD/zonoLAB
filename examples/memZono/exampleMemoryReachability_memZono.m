@@ -22,7 +22,7 @@ X_{1} = memZono(X_0,'x_1');
 X_all = X_{1};
 
 % Time-evolution
-for k = 1:N
+for k = 1:N-1
     % Current Input
     U_{k} = memZono(U_nom,sprintf('u_%d',k));
 
@@ -31,11 +31,11 @@ for k = 1:N
     X_{k+1}.dimKeys = sprintf('x_%d',k+1);
 
     % Save Data
-    X_all = [X_all; U_{k}; X_{k+1}];
+    X_all = [X_all; U_{k}; X_{k+1}]; %<---- vertcat() = cartProd()
 end
 
 %% Intersection
-X_F = memZono(X_F,sprintf('x_%d',k+1));
+X_F = memZono(X_F,sprintf('x_%d',N));
 X_inter = X_all & X_F; % <--- intersect common dimensions
 
 %% Plotting

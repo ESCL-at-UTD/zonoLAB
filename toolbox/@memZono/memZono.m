@@ -57,8 +57,6 @@ classdef memZono
         nGc
         nGb
         nC
-        nCc
-        nCb
     end
 
     % Labeling
@@ -141,8 +139,6 @@ classdef memZono
         function nGc = get.nGc(obj); nGc = size(obj.Gc,2); end
         function nGb = get.nGb(obj); nGb = size(obj.Gb,2); end
         function nC = get.nC(obj); nC = size(obj.A,1); end
-        function nCc = get.nCc(obj); nCc = size(obj.Ac,1); end
-        function nCb = get.nCb(obj); nCb = size(obj.Ab,1); end
         
         % In/Out Zono
         function out = get.baseClass(obj)
