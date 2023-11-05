@@ -172,8 +172,6 @@ Cx = 1:1:n_plot+1; % Values to interpolate on
 CxOk = [1;n_plot+1];
 colors = interp1(CxOk,[blu;red],Cx);
 % Color bar
-tickNum = 2;	% how often to print a label on color bar?
-tickLab = cell(tickNum,1);
 tickLab{1} = ['$\mathcal{X}_{',num2str(0),'}$'];
 
 
