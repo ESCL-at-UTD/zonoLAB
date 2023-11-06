@@ -98,8 +98,11 @@ end
 
 % Continue if set is not a line segment in 3D
 coPlanar(1) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(1,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:)])) <= 1e-6;
-coPlanar(2) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:);extreme(3,:)-foundVerts(1,:)])) <= 1e-6;
-coPlanar(3) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)])) <= 1e-6;
+coPlanar(2) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(1,:)-foundVerts(1,:);extreme(3,:)-foundVerts(1,:)])) <= 1e-6;
+coPlanar(3) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(1,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)])) <= 1e-6;
+coPlanar(4) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:);extreme(3,:)-foundVerts(1,:)])) <= 1e-6;
+coPlanar(5) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)])) <= 1e-6;
+coPlanar(6) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(3,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)])) <= 1e-6;
 if min(coPlanar) == 1 % A planar set in 3D
     indx = find(isNewVert,1);
 %     basis = orth([foundVerts(2,:)-foundVerts(1,:);extreme(indx,:)-foundVerts(1,:)]')';
