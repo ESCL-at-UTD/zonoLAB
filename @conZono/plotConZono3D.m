@@ -97,19 +97,18 @@ if max(isNewVert) == 0  % A line segment in 3D
 end
 
 % Continue if set is not a line segment in 3D
-coPlanar(1) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(1,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:)])) <= 1e-6;
-coPlanar(2) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(1,:)-foundVerts(1,:);extreme(3,:)-foundVerts(1,:)])) <= 1e-6;
-coPlanar(3) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(1,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)])) <= 1e-6;
-coPlanar(4) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:);extreme(3,:)-foundVerts(1,:)])) <= 1e-6;
-coPlanar(5) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(2,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)])) <= 1e-6;
-coPlanar(6) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(3,:)-foundVerts(1,:);extreme(4,:)-foundVerts(1,:)])) <= 1e-6;
+indxPairs = [1 2; 1 3; 1 4; 2 3; 2 4; 3 4];
+coPlanar = zeros(6,1);
+for i = 1:6
+    coPlanar(i) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(indxPairs(i,1),:)-foundVerts(1,:);extreme(indxPairs(i,2),:)-foundVerts(1,:)])) <= 1e-6;
+end
 if min(coPlanar) == 1 % A planar set in 3D
     indx = find(isNewVert,1);
 %     basis = orth([foundVerts(2,:)-foundVerts(1,:);extreme(indx,:)-foundVerts(1,:)]')';
 %     reducedG = basis*obj.G;
     normVec = cross(foundVerts(2,:)-foundVerts(1,:),extreme(indx,:)-foundVerts(1,:));
     reducedG = obj.G(1:2,:); % Will not work if set is 'vertical';
-    reducedObj = conZono(reducedG,zeros(2,1),obj.A,obj.b);
+    reducedObj = conZono(reducedG,obj.c(1:2),obj.A,obj.b);
     optPlot = plotOptions('Display','off');
     optPlot.SolverOpts = optSolver;
     [reducedV,~] = plot(reducedObj,optPlot);
@@ -121,10 +120,13 @@ end
 
 % Continue if set is not a 2D planar set in 3D
 % Form 3-simplex
-indx = find(isNewVert,1);
-foundVerts(3,:) = extreme(indx,:);
+% indx = find(isNewVert,1);
+% foundVerts(3,:) = extreme(indx,:);
+% indx = find(coPlanar==0,1); 
+% foundVerts(4,:) = extreme(indx+1,:);
 indx = find(coPlanar==0,1);
-foundVerts(4,:) = extreme(indx+1,:);
+foundVerts(3,:) = extreme(indxPairs(indx,1),:);
+foundVerts(4,:) = extreme(indxPairs(indx,2),:);
 % Interior point
 interiorPoint = sum(foundVerts(1:4,:))/4;
 % Faces, vertices, and normals

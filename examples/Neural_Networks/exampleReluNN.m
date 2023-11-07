@@ -57,6 +57,7 @@ toc
 
 % Plot Hybrid Zonotope
 subplot(1,4,4)
+figure
 plot(NN,'r',1);
 grid on;
 title('Hybrid Zonotope')

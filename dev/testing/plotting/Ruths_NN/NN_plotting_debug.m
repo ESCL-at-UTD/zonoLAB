@@ -52,7 +52,7 @@ hold off;
 grid on;
 view(az,el);
 xlabel('\theta'); ylabel('v'); zlabel('dx')
-%%
+
 subplot(3,2,6);
 cla;
 plot(Rxz_thvy*XZ,'b',0.7);
@@ -63,36 +63,36 @@ view(az,el);
 xlabel('\theta'); ylabel('v'); zlabel('dy')
 
 %% Plot the HybZono using lines
-figure(3)
-subplot(3,2,5);
-cla;
-Rxz_vx = zeros(2,6); Rxz_vx(:,[2,4]) = eye(2);
-for th=theta
-theta_zono = hybZono([],[],[th],[],[],[]);
-theta_strip = Rxz_vx*and(XZ,theta_zono,[1,0,0,0,0,0]);
-theta_strip.Gc = [zeros(1,theta_strip.nGc);theta_strip.Gc];
-theta_strip.Gb = [zeros(1,theta_strip.nGb);theta_strip.Gb];
-theta_strip.c = [th;theta_strip.c];
-plot(theta_strip,'r',1);
-hold on;
-end
-hold off;
-grid on;
-view(az,el);
-xlabel('\theta'); ylabel('v'); zlabel('dx')
-
-subplot(3,2,6);
-Rxz_vy = zeros(2,6); Rxz_vy(:,[2,5]) = eye(2);
-for th=theta
-theta_zono = hybZono([],[],[th],[],[],[]);
-theta_strip = Rxz_vy*and(XZ,theta_zono,[1,0,0,0,0,0]);
-theta_strip.Gc = [zeros(1,theta_strip.nGc);theta_strip.Gc];
-theta_strip.Gb = [zeros(1,theta_strip.nGb);theta_strip.Gb];
-theta_strip.c = [th;theta_strip.c];
-plot(theta_strip,'r',1);
-hold on;
-end
-hold off;
-grid on;
-view(az,el);
-xlabel('\theta'); ylabel('v'); zlabel('dy')
+% figure(3)
+% subplot(3,2,5);
+% cla;
+% Rxz_vx = zeros(2,6); Rxz_vx(:,[2,4]) = eye(2);
+% for th=theta
+% theta_zono = hybZono([],[],[th],[],[],[]);
+% theta_strip = Rxz_vx*and(XZ,theta_zono,[1,0,0,0,0,0]);
+% theta_strip.Gc = [zeros(1,theta_strip.nGc);theta_strip.Gc];
+% theta_strip.Gb = [zeros(1,theta_strip.nGb);theta_strip.Gb];
+% theta_strip.c = [th;theta_strip.c];
+% plot(theta_strip,'r',1);
+% hold on;
+% end
+% hold off;
+% grid on;
+% view(az,el);
+% xlabel('\theta'); ylabel('v'); zlabel('dx')
+% 
+% subplot(3,2,6);
+% Rxz_vy = zeros(2,6); Rxz_vy(:,[2,5]) = eye(2);
+% for th=theta
+% theta_zono = hybZono([],[],[th],[],[],[]);
+% theta_strip = Rxz_vy*and(XZ,theta_zono,[1,0,0,0,0,0]);
+% theta_strip.Gc = [zeros(1,theta_strip.nGc);theta_strip.Gc];
+% theta_strip.Gb = [zeros(1,theta_strip.nGb);theta_strip.Gb];
+% theta_strip.c = [th;theta_strip.c];
+% plot(theta_strip,'r',1);
+% hold on;
+% end
+% hold off;
+% grid on;
+% view(az,el);
+% xlabel('\theta'); ylabel('v'); zlabel('dy')
