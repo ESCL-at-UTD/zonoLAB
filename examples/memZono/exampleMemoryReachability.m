@@ -6,10 +6,3 @@ exampleMemoryReachability_base
 
 %% Memoory Version
 exampleMemoryReachability_memZono
-
-
-
-
-
-
-
