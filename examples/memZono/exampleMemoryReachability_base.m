@@ -73,9 +73,9 @@ ylabel('$x_2$','Interpreter','latex');
 % Input Plots
 subplot(1,2,2);
 hold on;
-R = zeros(2,X_inter.n); R(1,ru{2}) = 1; R(2,ru{3}) = 1; %<--- figure out why this is weird
+R = zeros(2,X_inter.n); R(1,ru{1}) = 1; R(2,ru{2}) = 1; %<--- figure out why this is weird
 plot(R*X_inter,'b',0.6);
-plot(cartProd(U_{2}, U_{3}),'b',0.2);
+plot(cartProd(U_{1}, U_{2}),'b',0.2);
 drawnow
 hold off;
 
