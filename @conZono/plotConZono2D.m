@@ -16,8 +16,6 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function [v,f] = plotConZono2D(obj,optSolver)
 
-if isempty(obj.A); [v,f] = plotZono2D(zono(obj.G,obj.c)); return; end
-
 % Problem data for linear program (LP)
 Aeq = sparse(obj.A);
 beq = [obj.b];
