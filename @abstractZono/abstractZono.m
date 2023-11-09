@@ -11,7 +11,7 @@
 %       Cannot be instantiated. Used to hold properties and methods shared
 %       by hybZono, conZono, and zono classes.
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-classdef (Abstract) abstractZono% < DisplayNonScalarObjectAsTable
+classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
     
     properties (Abstract) % These properties must be defined by each subclass
         G       % Generator matrix (n x nG)
