@@ -32,10 +32,10 @@ X_{1} = X_0; %<-- initial conditions
 X_all = X_{1}; rx{1} = ri + (1:n); ri = ri + n;
 
 % Time-evolution
-for k = 1:N
+for k = 1:N-1
     % Current Input
     U_{k} = U_nom;
-    X_all = extend_zonotope(X_all,U_{k}); ru{k} = ri + (1:p); ri = ri + p;
+    X_all = cartProd(X_all,U_{k}); ru{k} = ri + (1:p); ri = ri + p;
 
     % Step Update
     X_{k+1} = A*X_{k} + B*U_{k};
