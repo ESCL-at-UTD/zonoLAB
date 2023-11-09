@@ -33,6 +33,7 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         
         % Arithmetic
         obj = and(obj1,obj2,R)      % Generalized intersection
+        obj = boundingBox(obj)      % Bounding box
         obj = cartProd(obj1,obj2)   % Cartesian product
         obj = convexHull(obj1,obj2) % Convex hull
         obj = mtimes(M,obj)         % Linear mapping
@@ -41,6 +42,7 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         obj = projection(obj,dims)  % Projection onto specified dimensions
         [NN,Y] = reluNN(X,Ws,bs,a)  % Input-output mapping of a ReLU neural network
         out = stepMLD(X0,U,W,A,B_u,B_w,B_aff,E_x,E_u,E_w,E_aff) % 1-step reachable set for MLD
+        [s,x] = supportFunc(obj,d)  % Support function
         obj = union(obj1,obj2)      % Union
 
         % Visualization
