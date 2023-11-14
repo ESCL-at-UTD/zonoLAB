@@ -31,7 +31,7 @@ function obj = cartProd(obj1,obj2)
     c_ = [
         obj1.c(idxd1);
         obj1.c(idxds1);
-        obj1.c(idxd2)
+        obj2.c(idxd2)
         ];
     A_ = [
         obj1.A(idxc1,idxk1), obj1.A(idxc1,idxks1), zeros(length(c1),length(k2));
