@@ -246,13 +246,27 @@ classdef memZono
         function [idxk1,idxks1,idxks2,idxk2] = getKeyIndices(in1,in2)
             [k1,ks,k2] = memZono.getUniqueKeys(in1,in2);
 
-            [~,idxk1] = ismember(k1,in1);
-            [~,idxk2] = ismember(k2,in2);
+            % [~,idxk1] = ismember(k1,in1);
+            % [~,idxk2] = ismember(k2,in2);
+            idxk1 = zeros(1,length(k1));
+            idxk2 = zeros(1,length(k2));
+            for k = 1:length(k1)
+                idxk1(k) = find(strcmp(in1,k1{k}));
+            end
+            for k = 1:length(k2)
+                idxk2(k) = find(strcmp(in2,k2{k}));
+            end
             if isempty(ks)
                 idxks1 = []; idxks2 = [];
             else
-                [~,idxks1] = ismember(ks,in1);
-                [~,idxks2] = ismember(ks,in2);
+                % [~,idxks1] = ismember(ks,in1);
+                % [~,idxks2] = ismember(ks,in2);
+                idxks1 = zeros(1,length(ks));
+                idxks2 = zeros(1,length(ks));
+                for k = 1:length(ks)
+                    idxks1(k) = find(strcmp(in1,ks{k}));
+                    idxks2(k) = find(strcmp(in2,ks{k}));
+                end
             end
         end
 

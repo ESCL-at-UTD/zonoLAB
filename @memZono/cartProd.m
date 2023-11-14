@@ -49,7 +49,7 @@ function obj = cartProd(obj1,obj2)
         ];
     vset_ = [obj1.vset(idxk1),obj1.vset(idxks1),obj2.vset(idxk2)]; %<--- add check for c/d the same?
 
-    % Labeling
+    %% Labeling
     keys_.factors = [k1,ks,k2];
     keys_.dims = [d1,ds,d2]; %<--- add check for same?
     % Constraints
@@ -66,7 +66,17 @@ function obj = cartProd(obj1,obj2)
     else
         cds{length(ds)} = [];
         for i = 1:length(ds)
-            cds{i} = sprintf('intersect_%s',ds{i});
+            max_iter=1000;
+            for j = 1:max_iter
+                cds{i} = sprintf('i%i_%s',j,ds{i});
+                if all(~ismember(cds{i},c1)) && all(~ismember(cds{i},cs)) && all(~ismember(cds{i},c2))
+                    cds{i} = sprintf('i%i_%s',j,ds{i});
+                    break
+                end
+                if j == max_iter
+                    fprintf('ERROR: constraint at max number of iterations\n');
+                end
+            end
         end
     end
     keys_.cons = [c1,cs1,cs2,c2,cds];
