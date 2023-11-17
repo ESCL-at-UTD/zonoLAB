@@ -18,12 +18,12 @@ function [out] = simplifySetType(obj)
 out = obj;
 
 if isa(obj,'conZono') && obj.nC == 0 % a conZono without constraints is a zono
-    out = zono(obj);
+    out = zono(obj.G,obj.c);
 elseif isa(obj,'hybZono') && obj.nGb == 0 % a hybZono without binary factors
     if obj.nC == 0 % and without constraints is a zono
-        out = zono(obj);
+        out = zono(obj.Gc,obj.c);
     else % otherwise a conZono
-        out = conZono(obj);
+        out = conZono(obj.Gc,obj.c,obj.Ac,obj.b);
     end
 end
 
