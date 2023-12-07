@@ -40,6 +40,8 @@ elseif length(varargin) == 2
 end
 P = plotOptionsStruct(optPlot);
 
+obj = simplifySetType(obj);
+
 % Add cases for empty sets and sets with a single point %%%%%%%%%%%%%%%%%%
 if (obj.n > 3)
     disp(['Can only plot in 1, 2, or 3 dimensions.'])
