@@ -17,12 +17,13 @@ function [v,f] = plotZono2D(obj)
 
 if rank(obj.G) == 1 % Does not seem to work if zonotope is vertical
     % If generators do not span R^2, plot at 1D zonotope 
-    nullVec = null(obj.G');
-    reducedG = [-nullVec(2) nullVec(1)]*obj.G;
-    reducedObj = zono(reducedG,0);
-    optPlot = plotOptions('Display','off');
-    [reducedV,~] = plot(reducedObj,optPlot);
-    v = obj.c' + reducedV(:,1).*[nullVec(1) -nullVec(2)]; 
+%     nullVec = null(obj.G');
+%     reducedG = [-nullVec(2) nullVec(1)]*obj.G;
+%     reducedObj = zono(reducedG,0);
+%     optPlot = plotOptions('Display','off');
+%     [reducedV,~] = plot(reducedObj,optPlot);
+%     v = obj.c' + reducedV(:,1).*[nullVec(1) -nullVec(2)]; 
+    v = obj.c' + [sum(obj.G,2)'; -sum(obj.G,2)'];
     f = [1 2];                                            
 else
     obj.G(:,obj.G(2,:)<0) = -1*obj.G(:,obj.G(2,:)<0); % All generators in quadrants I and II

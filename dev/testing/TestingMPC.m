@@ -118,7 +118,7 @@ cz = Zb.c;
 % formulate the hybrid zonotopes Z* and Xfeas
 
 % M = 1e3*ones(nh,1);
-muMaxT = 1e5*ones(nh,1);
+muMaxT = 1e3*ones(nh,1);
 
 % Compute bounds
 ZX = conZono([H S f]);
@@ -129,6 +129,16 @@ ZX_mappedZono = zono(ZX_mapped.Gc,ZX_mapped.c); % Conver to zonotope overapprox 
 ZX_mapped_box = boundingBox(ZX_mapped);
 M = abs(ZX_mapped_box.c - ZX_mapped_box.G*ones(nh,1));
 
+muMaxT0 = 1e3*ones(nh,1); % Initial guess
+Zmu0 = zono(diag(muMaxT0)/2,muMaxT0/2);
+
+ZXmu = cartProd(ZX,Zmu0);
+ZXmu.Ac = [ZXmu.Ac; [Q zeros(nz,nx) H']*ZXmu.Gc];
+ZXmu.Ab = [ZXmu.Ab; [Q zeros(nz,nx) H']*ZXmu.Gb];
+ZXmu.b = [ZXmu.b; -q-[Q zeros(nz,nx) H']*ZXmu.c];
+
+Zmu = [zeros(nh,nx+nz) eye(nh)]*ZXmu;
+Zmu_box = boundingBox(Zmu); % This appraoch does not work because not enforcing active constraints
 
 % for now take bounds on big-M of mu as max value.. don't want to accidentally trim feasible space just yet
 % muMaxTt = muMaxT;
@@ -188,13 +198,13 @@ toc(tStart)
 figure;
 plot(Xfeas,'b',0.1)
 %%
-R = rref([Xfeas.Ac Xfeas.Ab Xfeas.b]);
-Xfeas.Ac = R(:,1:Xfeas.nGc);
-Xfeas.Ab = R(:,1+Xfeas.nGc:end-1);
-Xfeas.b = R(:,end);
-
-figure;
-plot(Xfeas,'b',0.1)
+% R = rref([Xfeas.Ac Xfeas.Ab Xfeas.b]);
+% Xfeas.Ac = R(:,1:Xfeas.nGc);
+% Xfeas.Ab = R(:,1+Xfeas.nGc:end-1);
+% Xfeas.b = R(:,end);
+% 
+% figure;
+% plot(Xfeas,'b',0.1)
 
 % cartesian product for 3D plot of explicit control law
 % IOs = [ 1 zeros(1,nz-1) ];
