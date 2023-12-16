@@ -38,7 +38,7 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         obj = convexHull(obj1,obj2) % Convex hull
         obj = mtimes(M,obj)         % Linear mapping
         obj = plus(obj1,obj2)       % Minkowski sum
-        obj = pontryDif(obj1,obj2)  % Pontryagin difference
+        obj = pontryDiff(obj1,obj2)  % Pontryagin difference
         obj = projection(obj,dims)  % Projection onto specified dimensions
         [NN,Y] = reluNN(X,Ws,bs,a)  % Input-output mapping of a ReLU neural network
         out = stepMLD(X0,U,W,A,B_u,B_w,B_aff,E_x,E_u,E_w,E_aff) % 1-step reachable set for MLD
