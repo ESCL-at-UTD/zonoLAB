@@ -218,6 +218,7 @@ classdef memZono
 
     methods (Static)
         function out = keysCheck(in,n)
+            if n == 0; out = []; return; end
             if ~iscell(in); in = cellstr(in); end
             if length(in) == n
                 out = in; 
@@ -296,7 +297,7 @@ classdef memZono
     methods
         %% Set Operations
         obj = minSum(obj1,obj2);
-        obj = linMap(M,obj);
+        obj = linMap(obj,M);
         obj = cartProd(obj1,obj2);
         obj = generalizedIntersection(obj1,obj2,R);
         obj = labeledIntersection(obj1,obj2,dims);
@@ -314,12 +315,10 @@ classdef memZono
         end
         function obj = mtimes(in1,in2)
             % TODO: assuming forward... include other as well
-            if ~isnumeric(in1); error('only coded one way'); end
             if class(in2) == 'memZono'
-                obj = linMap(in1,in2);
-                
+                obj = in2.linMap(in1);
             else
-                error('not codded')
+                error('not coded')
             end
         end
         function obj = and(obj1,obj2)
