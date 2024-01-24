@@ -105,5 +105,7 @@ classdef conZono < abstractZono
         [v,f] = plotConZono1D(obj,optSolver);   % Plot in 1 dimension
         [v,f] = plotConZono2D(obj,optSolver);   % Plot in 2 dimensions
         [v,f] = plotConZono3D(obj,optSolver);   % Plot in 3 dimensions
+        [out] = checkEmpty(obj);
+        [out] = checkPointContain(obj,point);
     end
 end
