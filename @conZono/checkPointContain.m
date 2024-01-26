@@ -4,7 +4,7 @@
 %       Based on Proposition 2 of Scott et al. Constrained Zonotopes: A new tool for 
 %       set-based estimation and fault detection 
 %   Syntax:
-%       result = pointContain(Z, point)
+%       result = checkPointContain(Z, point)
 %   Inputs:
 %       Z - constrained zonotope
 %       point - n x 1 vector defining the point to be analyzed
