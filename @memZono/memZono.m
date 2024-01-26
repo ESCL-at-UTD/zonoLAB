@@ -78,6 +78,8 @@ classdef memZono
         function obj = memZono(varargin)
             if nargin == 2
                 obj.Z = varargin{1};
+                obj.keys = varargin{2};
+
                 % if isstruct(varargin{2})
                 %     obj.tags = varargin{2};
                 % elseif isalpha_num(varargin{2})
@@ -89,8 +91,9 @@ classdef memZono
                 %     case 'hybZono'
                 % end
                 
-                obj.factorKeys = varargin{2};
-                obj.dimKeys = varargin{2};
+                % obj.factorKeys = varargin{2};
+                % obj.dimKeys = varargin{2};
+                % obj.dimKeys = varargin{2};
             elseif nargin == 6
                 obj.Z = conZono(varargin{1:4});
                 % obj.G_ = varargin{1};
@@ -170,19 +173,19 @@ classdef memZono
                 case 'zono'
                     obj.G_ = Z.G;
                     obj.c_ = Z.c;
-                    obj.vset = ones(1,Z.nG);
+                    obj.vset = true(1,Z.nG);
                 case 'conZono'
                     obj.G_ = Z.G;
                     obj.c_ = Z.c;
                     obj.A_ = Z.A;
                     obj.b_ = Z.b;
-                    obj.vset = ones(1,Z.nG);
+                    obj.vset = true(1,Z.nG);
                 case 'hybZono'
                     obj.G_ = [Z.Gc,Z.Gb];
                     obj.c_ = Z.c;
-                    obj.A_ = [Z.Ac,Z.Ac];
+                    obj.A_ = [Z.Ac,Z.Ab];
                     obj.b_ = Z.b;
-                    obj.vset = [ones(1,Z.nGc),zeros(1,Z.nGb)];
+                    obj.vset = [true(1,Z.nGc),false(1,Z.nGb)];
             end
         end
 
@@ -200,18 +203,24 @@ classdef memZono
                 obj.keys = in;
             else
                 obj.factorKeys = in;
-                % obj.dimKeys = in;
-                % obj.conKeys = in;
+                obj.dimKeys = in;
+                obj.conKeys = in;
             end
         end
         function obj = set.factorKeys(obj,in)
-            obj.keys.factors = obj.keysCheck(in,obj.nG); 
+            try obj.keys.factors = obj.keysCheck(in,obj.nG); 
+            catch; warning('factor key set issue');
+            end
         end
         function obj = set.dimKeys(obj,in)
-            obj.keys.dims = obj.keysCheck(in,obj.n);  
+            try obj.keys.dims = obj.keysCheck(in,obj.n);  
+            catch; warning('dim key set issue'); 
+            end
         end
         function obj = set.conKeys(obj,in)
-            obj.keys.cons = obj.keysCheck(in,obj.nC); 
+            try obj.keys.cons = obj.keysCheck(in,obj.nC); 
+            catch; warning('con key set issue');
+            end
         end
            
     end
@@ -227,6 +236,8 @@ classdef memZono
                 for i = 1:n
                     out{i} = sprintf('%s_%d',in{1},i);
                 end
+            elseif length(in) ~= n
+                warning('keys not assigned correctly/wrong size')
             else
                 error('keys broken');
             end
