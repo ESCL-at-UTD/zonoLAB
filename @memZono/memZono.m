@@ -76,37 +76,19 @@ classdef memZono
     %% Constructor
     methods
         function obj = memZono(varargin)
-            if nargin == 2
+            if nargin == 1 % <--- unnamed...
+                obj.Z = varargin{1};
+            elseif nargin == 2
                 obj.Z = varargin{1};
                 obj.keys = varargin{2};
-
-                % if isstruct(varargin{2})
-                %     obj.tags = varargin{2};
-                % elseif isalpha_num(varargin{2})
-                %     obj.factorTags = varargin{2};
-                % end
-
-                % obj.tags = varargin{2};
-                % switch class(varargin{1})
-                %     case 'hybZono'
-                % end
-                
-                % obj.factorKeys = varargin{2};
-                % obj.dimKeys = varargin{2};
-                % obj.dimKeys = varargin{2};
             elseif nargin == 6
                 obj.Z = conZono(varargin{1:4});
-                % obj.G_ = varargin{1};
-                % obj.c_ = varargin{2};
-                % obj.A_ = varargin{3};
-                % obj.b_ = varargin{4};
-                %  TODO: add checks?
                 obj.vset = varargin{5};
-                % obj.factorKeys = varargin{end};
                 obj.keys = varargin{6};
             else
                 error('non-simple constructor not specified')
             end
+            % TODO: add hybZono?
         end
     end
 
@@ -168,24 +150,28 @@ classdef memZono
             end
         end
 
-        function obj = set.Z(obj,Z)
-            switch class(Z)
+        function obj = set.Z(obj,in)
+            switch class(in)
+                case 'double'
+                    obj.G_ = zeros(size(in,1),0);
+                    obj.c_ = in;
+                    obj.vset = [];
                 case 'zono'
-                    obj.G_ = Z.G;
-                    obj.c_ = Z.c;
-                    obj.vset = true(1,Z.nG);
+                    obj.G_ = in.G;
+                    obj.c_ = in.c;
+                    obj.vset = true(1,in.nG);
                 case 'conZono'
-                    obj.G_ = Z.G;
-                    obj.c_ = Z.c;
-                    obj.A_ = Z.A;
-                    obj.b_ = Z.b;
-                    obj.vset = true(1,Z.nG);
+                    obj.G_ = in.G;
+                    obj.c_ = in.c;
+                    obj.A_ = in.A;
+                    obj.b_ = in.b;
+                    obj.vset = true(1,in.nG);
                 case 'hybZono'
-                    obj.G_ = [Z.Gc,Z.Gb];
-                    obj.c_ = Z.c;
-                    obj.A_ = [Z.Ac,Z.Ab];
-                    obj.b_ = Z.b;
-                    obj.vset = [true(1,Z.nGc),false(1,Z.nGb)];
+                    obj.G_ = [in.Gc,in.Gb];
+                    obj.c_ = in.c;
+                    obj.A_ = [in.Ac,in.Ab];
+                    obj.b_ = in.b;
+                    obj.vset = [true(1,in.nGc),false(1,in.nGb)];
             end
         end
 
@@ -321,8 +307,8 @@ classdef memZono
 
         %% Overloading
         function obj = plus(in1,in2)
-            % TODO: add if unlabeled
             obj = minSum(in1,in2);
+            % % TODO: add if unlabeled
         end
         function obj = mtimes(in1,in2)
             % TODO: assuming forward... include other as well
@@ -335,6 +321,7 @@ classdef memZono
         function obj = and(obj1,obj2)
             obj = labeledIntersection(obj1,obj2); %<-- intersects shared dims
         end
+        
         % function obj = or(obj1,obj2)
         %     error('Union Not Coded')
         %     % obj = union(obj1,obj2);
