@@ -38,15 +38,24 @@ function obj = cartProd(obj1,obj2)
         obj1.A(idxcs1,idxk1), obj1.A(idxcs1,idxks1), zeros(length(cs),length(k2));
         zeros(length(cs),length(k1)), obj2.A(idxcs2,idxks2), obj2.A(idxcs2,idxk2);
         zeros(length(c2),length(k1)), obj2.A(idxc2,idxks2), obj2.A(idxc2,idxk2);
-        R*obj1.G(:,idxk1), R*obj1.G(:,idxks1)-obj2.G(idxds2,idxks2), -obj2.G(idxds2,idxk2) %<-- intersection term
+        % R*obj1.G(:,idxk1), R*obj1.G(:,idxks1)-obj2.G(idxds2,idxks2), -obj2.G(idxds2,idxk2) %<-- intersection term
         ];
     b_ = [
         obj1.b(idxc1);
         obj1.b(idxcs1);
         obj2.b(idxcs2);
         obj2.b(idxc2);
-        obj2.c(idxds2) - R*obj1.c;
+        % obj2.c(idxds2) - R*obj1.c;
         ];
+    if ~isempty(idxds2)
+        A_ = [
+            A_;
+            R*obj1.G(:,idxk1), R*obj1.G(:,idxks1)-obj2.G(idxds2,idxks2), -obj2.G(idxds2,idxk2) %<-- intersection term
+        ];
+        b_ = [b_;
+            obj2.c(idxds2) - R*obj1.c;
+        ];
+    end
     vset_ = [obj1.vset(idxk1),obj1.vset(idxks1),obj2.vset(idxk2)]; %<--- add check for c/d the same?
 
     %% Labeling
