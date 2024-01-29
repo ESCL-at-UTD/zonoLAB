@@ -199,7 +199,7 @@ classdef memZono
             end
         end
         function obj = set.dimKeys(obj,in)
-            try obj.keys.dims = obj.keysCheck(in,obj.n);  
+            try obj.keys.dims = obj.keysCheck(in,obj.n);
             catch; warning('dim key set issue'); 
             end
         end
@@ -223,7 +223,7 @@ classdef memZono
                     out{i} = sprintf('%s_%d',in{1},i);
                 end
             elseif length(in) ~= n
-                warning('keys not assigned correctly/wrong size')
+                warning('keys not assigned correctly/wrong size');
             else
                 error('keys broken');
             end
@@ -290,7 +290,7 @@ classdef memZono
         % end
 
 
-
+    %% General Methods
     methods
         %% Set Operations
         obj = minSum(obj1,obj2);
@@ -303,7 +303,6 @@ classdef memZono
 
         %% Ploting
         plot(obj,dims,varargin);
-
 
         %% Overloading
         function obj = plus(in1,in2)
@@ -321,7 +320,7 @@ classdef memZono
         function obj = and(obj1,obj2)
             obj = labeledIntersection(obj1,obj2); %<-- intersects shared dims
         end
-        
+
         % function obj = or(obj1,obj2)
         %     error('Union Not Coded')
         %     % obj = union(obj1,obj2);
@@ -330,13 +329,10 @@ classdef memZono
         % Extended CartProd
         function obj = vertcat(varargin)
             obj = varargin{1};
-            for i = 2:nargin
+            for i = 2:nargin %<========= not really efficient
                 obj = cartProd(obj,varargin{i});
             end
         end
-
-
-
 
         %% Indexing
         B = subsref(A,S);
@@ -352,15 +348,5 @@ classdef memZono
             out = memZono(in.G(idx,:),in.c(idx,:),in.A,in.b,in.vset,keys_);
         end
 
-
-
     end
-
-
-
-
-
-
-
-
 end
