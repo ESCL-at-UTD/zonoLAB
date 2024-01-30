@@ -35,8 +35,10 @@ function obj = cartProd(obj1,obj2)
         ];
     A_ = [
         obj1.A(idxc1,idxk1), obj1.A(idxc1,idxks1), zeros(length(c1),length(k2));
-        obj1.A(idxcs1,idxk1), obj1.A(idxcs1,idxks1), zeros(length(cs),length(k2));
-        zeros(length(cs),length(k1)), obj2.A(idxcs2,idxks2), obj2.A(idxcs2,idxk2);
+        % (need to ensure unique and not have shared constraints that have different factors)
+        zeros(length(cs), length(k1)), obj1.A(idxcs1,idxks1), zeros(length(cs),length(k2));
+        % obj1.A(idxcs1,idxk1), obj1.A(idxcs1,idxks1), zeros(length(cs),length(k2));
+        % zeros(length(cs),length(k1)), obj2.A(idxcs2,idxks2), obj2.A(idxcs2,idxk2);
         zeros(length(c2),length(k1)), obj2.A(idxc2,idxks2), obj2.A(idxc2,idxk2);
         % R*obj1.G(:,idxk1), R*obj1.G(:,idxks1)-obj2.G(idxds2,idxks2), -obj2.G(idxds2,idxk2) %<-- intersection term
         ];
@@ -56,20 +58,25 @@ function obj = cartProd(obj1,obj2)
             obj2.c(idxds2) - R*obj1.c;
         ];
     end
+    if obj1.vset(idxks1) ~= obj1.vset(idxks2); error('c/d factors not lining up'); end
     vset_ = [obj1.vset(idxk1),obj1.vset(idxks1),obj2.vset(idxk2)]; %<--- add check for c/d the same?
 
     %% Labeling
     keys_.factors = [k1,ks,k2];
     keys_.dims = [d1,ds,d2]; %<--- add check for same?
     % Constraints
-    if isempty(cs)
-        cs1 = cs; cs2 = [];
-    else
-        cs1 = cs; cs2{length(cs)} = [];
-        for i = 1:length(cs)
-            cs2{i} = sprintfs('%s_%d',cs{i},2);
-        end
-    end
+    % incoming constraints... ensuring that cons with same name are
+    % maintainted... should eliminate when con keys are the same
+    % if isempty(cs)
+    %     cs1 = cs; cs2 = [];
+    % else
+    %     cs1 = cs; cs2{length(cs)} = [];
+    %     for i = 1:length(cs)
+    %         cs2{i} = sprintfs('%s_%d',cs{i},2);
+    %     end
+    % end
+    % just keep one copy (but ensure they are the same)
+    % shared dim constraints
     if isempty(ds)
         cds = [];
     else

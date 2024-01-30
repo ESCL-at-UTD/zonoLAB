@@ -1,8 +1,9 @@
-function obj = labeledIntersection(obj1,obj2,dims)
+function obj = labeledIntersection(obj1,obj2,dims,consKeyPrefix)
     arguments
         obj1 memZono
         obj2 memZono
         dims = [];
+        consKeyPrefix = 'intersect';
     end
 
     % Select Dims if not defined....
@@ -26,5 +27,5 @@ function obj = labeledIntersection(obj1,obj2,dims)
     end
 
     % obj = generalizedIntersection(obj1,obj2,R);
-    obj = generalizedIntersection(obj1,obj2.projection(dims),R);
+    obj = generalizedIntersection(obj1,obj2.projection(dims),R,consKeyPrefix);
 end

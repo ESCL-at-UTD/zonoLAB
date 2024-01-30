@@ -1,8 +1,9 @@
-function obj = generalizedIntersection(obj1,obj2,R)
+function obj = generalizedIntersection(obj1,obj2,R,consKeyPrefix)
     arguments
         obj1 memZono
         obj2 memZono
         R = [];
+        consKeyPrefix = 'intersect';
     end
 
     if isempty(R); R = eye(obj2.n,obj1.n); end
@@ -50,7 +51,7 @@ function obj = generalizedIntersection(obj1,obj2,R)
     % Constraints
     cons_new{size(R,1)} = [];
     for i = 1:size(R,1)
-        cons_new{i} = sprintf('intersect_%d',i);
+        cons_new{i} = sprintf('%s_%d',consKeyPrefix,i);
     end
     keys_.cons = [obj1.conKeys,obj2.conKeys,cons_new];
 

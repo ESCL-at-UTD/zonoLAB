@@ -76,8 +76,13 @@ classdef memZono
     %% Constructor
     methods
         function obj = memZono(varargin)
-            if nargin == 1 % <--- unnamed...
-                obj.Z = varargin{1};
+            if nargin == 1 % <--- can't call if unnamed...
+                if isa(varargin{1},'memZono')
+                    obj = varargin{1};
+                else
+                    error('Needs to be ')
+                end
+                % obj.Z = varargin{1};
             elseif nargin == 2
                 obj.Z = varargin{1};
                 obj.keys = varargin{2};
@@ -306,6 +311,7 @@ classdef memZono
 
         %% Overloading
         function obj = plus(in1,in2)
+            % if class(in1) ~= 'memZono'
             obj = minSum(in1,in2);
             % % TODO: add if unlabeled
         end
@@ -339,9 +345,9 @@ classdef memZono
         % A = subsasgn(A,S,B); %<---- not completed
         
         function out = projection(in,dims)
-            if ~ismember(dims,in.dimKeys)
-                dims = in.dimKeys(startsWith(in.dimKeys,dims));
-            end
+            % if ~ismember(dims,in.dimKeys)
+            %     dims = in.dimKeys(startsWith(in.dimKeys,dims));
+            % end
             [~,idx] = ismember(dims,in.dimKeys);
             keys_ = in.keys;
             keys_.dims = dims;

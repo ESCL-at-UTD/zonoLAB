@@ -16,14 +16,13 @@ for k = 3:5
 end
 % X_{end}.G, X_{end}.c
 
-% % sym propogation <=== doesn't work w/ sym (but does for memZono)
+% % propogation <=== doesn't work (but does for memZono)
 % A = sym('A',[n,n]); b = sym('b',[n,1]);
 % X_{1} = X;
 % X_{2} = X_{1}.mtimes(A) + X + b;
 % for k = 3:5
 %     X_{k} = X_{k-1}.mtimes(A) + X_{k-2} + b;
 % end
-
 
 %% Cartisian Product
 Y1 = cartProd(X_{end-1},X_{end-2});
