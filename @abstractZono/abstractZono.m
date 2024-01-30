@@ -29,11 +29,6 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         nC      % Number of constraints
     end
 
-    properties (Hidden,Dependent)
-        ub
-        lb
-    end
-
     methods
         
         % Arithmetic

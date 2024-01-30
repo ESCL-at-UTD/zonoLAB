@@ -12,9 +12,7 @@ function obj = generalizedIntersection(obj1,obj2,R,consKeyPrefix)
     % shared factors
     [k1,ks,k2] = memZono.getUniqueKeys(obj1.factorKeys,obj2.factorKeys);
     [idxk1,idxks1,idxks2,idxk2] = memZono.getKeyIndices(obj1.factorKeys,obj2.factorKeys);
-    
-    
-    
+        
     % TODO?????? add shared dims/cons?
     % % shared dims
     % if isempty(obj1.dimKeys); obj1.dimKeys = 'd1'; end
