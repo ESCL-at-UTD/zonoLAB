@@ -107,5 +107,6 @@ classdef conZono < abstractZono
         [v,f] = plotConZono3D(obj,optSolver);   % Plot in 3 dimensions
         [out] = checkEmpty(obj,varargin);
         [out] = checkPointContain(obj,point,varargin);
+        [out] = checkSetContain(obj,X,varargin);
     end
 end
