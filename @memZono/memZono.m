@@ -80,7 +80,7 @@ classdef memZono
                 if isa(varargin{1},'memZono') % <--- must have labels
                     obj = varargin{1};
                 else
-                    error('Needs to be labeld in some way')
+                    error('A memZono must be created with labels.')
                 end
             elseif nargin == 2 % <--- base object and labels
                 obj.Z = varargin{1};
@@ -90,7 +90,7 @@ classdef memZono
                 obj.c_ = varargin{2};
                 obj.A_ = varargin{3};
                 obj.b_ = varargin{4};
-                obj.vset = varargin{5};
+                obj.vset = logical(varargin{5});
                 obj.keys = varargin{6};
             elseif nargin == 3 % <-- zono-based constructor
                 obj.Z = zono(varargin{1:2});
@@ -138,7 +138,7 @@ classdef memZono
         function obj = set.Ab(obj,in); obj.A_(:,~obj.vset) = in; end
 
         % Dimensions
-        function n = get.n(obj); n = size(obj.G,1); end
+        function n = get.n(obj); n = size(obj.c,1); end
         function nG = get.nG(obj); nG = size(obj.G,2); end
         function nC = get.nC(obj); nC = size(obj.A,1); end
         % hybZono dims

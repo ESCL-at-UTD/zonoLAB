@@ -5,7 +5,9 @@ function obj = minSum(obj1,obj2)
     end
 
     % Confirm same size
-    if obj1.n ~= obj2.n || obj1.dimKeys ~= obj2.dimKeys
+    % TODO - change this check...?  we should just take Minkowski sum of
+    % any shared dimensions and the others "pass through"?
+    if obj1.n ~= obj2.n %|| obj1.dimKeys ~= obj2.dimKeys % the second half doesn't work --> ~= is not supported for cell arrays
         error('dimensions must be identical')
     end
     

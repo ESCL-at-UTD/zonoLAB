@@ -50,10 +50,15 @@ cx = zeros(2, 1);
 X = hybZono(Gx, [], cx, [], [], []);
 
 % Construct the output zonotope Z and the lifted input-output mapping XZ
-tic
-[NN,Y] = reluNN(X,Ws,bs,a);
 fprintf('Zonotope model: ')
+tic
+[NN1,Y] = reluNN(X,Ws,bs,a);
 toc
+tic
+[NN2,Y2] = reluNN_memZono(X,Ws,bs,a);
+toc
+
+NN = NN2;
 
 % Plot Hybrid Zonotope
 subplot(1,4,4)

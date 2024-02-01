@@ -2,14 +2,14 @@ function obj = labeledIntersection(obj1,obj2,dims,conKeyPrefix)
     arguments
         obj1 memZono
         obj2 memZono
-        dims = [];
+        dims = {};
         conKeyPrefix = 'intersect';
     end
 
     % Select Dims if not defined....
     if isempty(obj1.dimKeys); obj1.dimKeys = 'd1'; end
     if isempty(obj2.dimKeys); obj2.dimKeys = 'd2'; end
-    if isempty(dims) || strcmp(dims,'all')
+    if isempty(dims)
         [~,dims,~] = memZono.getUniqueKeys(obj1.dimKeys,obj2.dimKeys);
     end
     [~,idxd1] = ismember(dims,obj1.dimKeys);

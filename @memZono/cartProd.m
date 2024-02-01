@@ -80,7 +80,8 @@ function obj = cartProd(obj1,obj2,cdsKeyPrefix)
 
     %% Shared Constraints
     if ~isempty(cs)
-        if obj1.A(idxcs1,:) ~= obj2.A(idxcs2,:) || obj1.b(idxcs1) ~= obj2.b(idxcs2)
+        % @JONAS - needed to add the shared factors indicies.  Also needed to use 'all' since we're comparing arrays...
+        if all(obj1.A(idxcs1,idxks1) ~= obj2.A(idxcs2,idxks2),'all') || all(obj1.b(idxcs1) ~= obj2.b(idxcs2),'all')
             error('Shared Constraints are not identical')
             % TODO???: add option for non-identical constraints
         end
