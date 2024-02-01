@@ -76,56 +76,76 @@ classdef memZono
     %% Constructor
     methods
         function obj = memZono(varargin)
-            if nargin == 1 % <--- unnamed...
-                obj.Z = varargin{1};
-            elseif nargin == 2
+            if nargin == 1
+                if isa(varargin{1},'memZono') % <--- must have labels
+                    obj = varargin{1};
+                else
+                    error('Needs to be labeld in some way')
+                end
+            elseif nargin == 2 % <--- base object and labels
                 obj.Z = varargin{1};
                 obj.keys = varargin{2};
-            elseif nargin == 6
-                obj.Z = conZono(varargin{1:4});
+            elseif nargin == 6 % <--- direct definition
+                obj.G_ = varargin{1};
+                obj.c_ = varargin{2};
+                obj.A_ = varargin{3};
+                obj.b_ = varargin{4};
                 obj.vset = varargin{5};
                 obj.keys = varargin{6};
+            elseif nargin == 3 % <-- zono-based constructor
+                obj.Z = zono(varargin{1:2});
+                obj.keys = varargin{3};
+            elseif nargin == 5 % <--- conzono-based constructor
+                obj.Z = conZono(varargin{1:4});
+                obj.keys = varargin{5};
+            elseif nargin == 7 % <--- hybZono-based constructor
+                obj.Z = hybZono(varargin{1:6});
+                obj.keys = varargin{7};
             else
                 error('non-simple constructor not specified')
             end
-            % TODO: add hybZono?
         end
     end
 
     %% Get/Set Functions
     methods
-        %% System Definitions
-        
-        % Standard Matrices
-        function G = get.G(obj); G = obj.G_; end
-        function c = get.c(obj); c = obj.c_; end
-        function A = get.A(obj)
+        % Matrices
+        % Get Matrices
+        function out = get.G(obj); out = obj.G_; end
+        function out = get.c(obj); out = obj.c_; end
+        function out = get.A(obj)
             if isempty(obj.A_); obj.A_ = zeros(0,obj.nG); end
-            A = obj.A_; 
+            out = obj.A_; 
         end
-        function b = get.b(obj); b = obj.b_; end
+        function out = get.b(obj); out = obj.b_; end
 
-        function obj = set.G(obj,G); obj.G_ = G; end
-        function obj = set.c(obj,c); obj.c_ = c; end
-        function obj = set.A(obj,A); obj.A_ = A; end
-        function obj = set.b(obj,b); obj.b_ = b; end
+        % Set Matrices
+        function obj = set.G(obj,in); obj.G_ = in; end
+        function obj = set.c(obj,in); obj.c_ = in; end
+        function obj = set.A(obj,in); obj.A_ = in; end
+        function obj = set.b(obj,in); obj.b_ = in; end
 
-        % HybZono Matrices
-        function Gc = get.Gc(obj); Gc = obj.G(:,obj.vset); end
-        function Gb = get.Gb(obj); Gb = obj.G(:,~obj.vset); end
-        function Ac = get.Ac(obj); Ac = obj.A(:,obj.vset); end
-        function Ab = get.Ab(obj); Ab = obj.A(:,~obj.vset); end
+        % hybZono Matrices
+        function out = get.Gc(obj); out = obj.G(:,obj.vset); end
+        function out = get.Gb(obj); out = obj.G(:,~obj.vset); end
+        function out = get.Ac(obj); out = obj.A(:,obj.vset); end
+        function out = get.Ab(obj); out = obj.A(:,~obj.vset); end
 
-        % TODO: set for hyb stuff...
+        % Set hybZono Matrices
+        function obj = set.Gc(obj,in); obj.G_(:,obj.vset) = in; end
+        function obj = set.Gb(obj,in); obj.G_(:,~obj.vset) = in; end
+        function obj = set.Ac(obj,in); obj.A_(:,obj.vset) = in; end
+        function obj = set.Ab(obj,in); obj.A_(:,~obj.vset) = in; end
 
         % Dimensions
         function n = get.n(obj); n = size(obj.G,1); end
         function nG = get.nG(obj); nG = size(obj.G,2); end
-        function nGc = get.nGc(obj); nGc = size(obj.Gc,2); end
-        function nGb = get.nGb(obj); nGb = size(obj.Gb,2); end
         function nC = get.nC(obj); nC = size(obj.A,1); end
+        % hybZono dims
+        function nGc = get.nGc(obj); nGc = sum(obj.vset); end
+        function nGb = get.nGb(obj); nGb = sum(~obj.vset); end
         
-        % In/Out Zono
+        % In/Out with base Zonotope
         function out = get.baseClass(obj)
             if all(obj.vset)
                 if isempty(obj.A_)
@@ -204,15 +224,18 @@ classdef memZono
             end
         end
         function obj = set.conKeys(obj,in)
-            try obj.keys.cons = obj.keysCheck(in,obj.nC); 
+            try obj.keys.cons = obj.keysCheck(in,obj.nC);
             catch; warning('con key set issue');
             end
         end
            
     end
 
+    %% Keys Stuff
     methods (Static)
         function out = keysCheck(in,n)
+            % keysCheck(in,n) - checks to ensure the keys(in) is structured
+            % currently for a dimension of n
             if n == 0; out = []; return; end
             if ~iscell(in); in = cellstr(in); end
             if length(in) == n
@@ -296,16 +319,15 @@ classdef memZono
         obj = minSum(obj1,obj2);
         obj = linMap(obj,M);
         obj = cartProd(obj1,obj2);
-        obj = generalizedIntersection(obj1,obj2,R);
-        obj = labeledIntersection(obj1,obj2,dims);
-
-
+        obj = generalizedIntersection(obj1,obj2,R,conKeyPrefix);
+        obj = labeledIntersection(obj1,obj2,dims,conKeyPrefix);
 
         %% Ploting
         plot(obj,dims,varargin);
 
         %% Overloading
         function obj = plus(in1,in2)
+            % if class(in1) ~= 'memZono'
             obj = minSum(in1,in2);
             % % TODO: add if unlabeled
         end
@@ -339,9 +361,9 @@ classdef memZono
         % A = subsasgn(A,S,B); %<---- not completed
         
         function out = projection(in,dims)
-            if ~ismember(dims,in.dimKeys)
-                dims = in.dimKeys(startsWith(in.dimKeys,dims));
-            end
+            % if ~ismember(dims,in.dimKeys)
+            %     dims = in.dimKeys(startsWith(in.dimKeys,dims));
+            % end
             [~,idx] = ismember(dims,in.dimKeys);
             keys_ = in.keys;
             keys_.dims = dims;

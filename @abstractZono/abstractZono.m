@@ -29,11 +29,6 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         nC      % Number of constraints
     end
 
-    properties (Hidden,Dependent)
-        ub
-        lb
-    end
-
     methods
         
         % Arithmetic
@@ -59,8 +54,21 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
     end
 
 
+
+    %% Hidden/Dependent Parameters
+    properties (Hidden,Dependent)
+        ub
+        lb
+        bounds
+    end
     % Getter/Setter
     methods
+        function out = get.bounds(obj)
+            bb = obj.boundingBox;
+            ub = bb.c + sum(abs(bb.G),2);
+            lb = bb.c - sum(abs(bb.G),2);
+            out = [lb,ub];
+        end
         function out = get.ub(obj)
             bb = obj.boundingBox;
             out = bb.c + sum(abs(bb.G),2);
