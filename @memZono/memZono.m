@@ -85,22 +85,22 @@ classdef memZono
             elseif nargin == 2 % <--- base object and labels
                 obj.Z = varargin{1};
                 obj.keys = varargin{2};
-            elseif nargin == 6 % <--- direct definition
+            elseif nargin == 6 % <--- direct definition (primarily internal use)
                 obj.G_ = varargin{1};
                 obj.c_ = varargin{2};
                 obj.A_ = varargin{3};
                 obj.b_ = varargin{4};
                 obj.vset = logical(varargin{5});
                 obj.keys = varargin{6};
-            elseif nargin == 3 % <-- zono-based constructor
-                obj.Z = zono(varargin{1:2});
-                obj.keys = varargin{3};
-            elseif nargin == 5 % <--- conzono-based constructor
-                obj.Z = conZono(varargin{1:4});
-                obj.keys = varargin{5};
-            elseif nargin == 7 % <--- hybZono-based constructor
-                obj.Z = hybZono(varargin{1:6});
-                obj.keys = varargin{7};
+            % elseif nargin == 3 % <-- zono-based constructor
+            %     obj.Z = zono(varargin{1:2});
+            %     obj.keys = varargin{3};
+            % elseif nargin == 5 % <--- conzono-based constructor
+            %     obj.Z = conZono(varargin{1:4});
+            %     obj.keys = varargin{5};
+            % elseif nargin == 7 % <--- hybZono-based constructor
+            %     obj.Z = hybZono(varargin{1:6});
+            %     obj.keys = varargin{7};
             else
                 error('non-simple constructor not specified')
             end
@@ -316,45 +316,44 @@ classdef memZono
     %% General Methods
     methods
         %% Set Operations
-        obj = minSum(obj1,obj2);
-        obj = linMap(obj,M);
-        obj = cartProd(obj1,obj2);
-        obj = generalizedIntersection(obj1,obj2,R,conKeyPrefix);
-        obj = labeledIntersection(obj1,obj2,dims,conKeyPrefix);
+        out = affine(obj,in1,in2,options);
+        obj = intersect(obj1,obj2,sharedDimLabels);
+        % obj = minSum(obj1,obj2);
+        % obj = linMap(obj,M);
+        % obj = cartProd(obj1,obj2);
+        % obj = generalizedIntersection(obj1,obj2,R,conKeyPrefix);
+        % obj = labeledIntersection(obj1,obj2,dims,conKeyPrefix);
 
         %% Ploting
         plot(obj,dims,varargin);
 
         %% Overloading
-        function obj = plus(in1,in2)
-            % if class(in1) ~= 'memZono'
-            obj = minSum(in1,in2);
-            % % TODO: add if unlabeled
+        function out = plus(in1,in2)
+            out = in1.affine(in2);
         end
-        function obj = mtimes(in1,in2)
-            % TODO: assuming forward... include other as well
-            if class(in2) == 'memZono'
-                obj = in2.linMap(in1);
+        function out = mtimes(in1,in2)
+            if isa(in2,'memZono')
+                out = in2.affine(in1); %<== flip the syntax order
             else
                 error('not coded')
             end
         end
-        function obj = and(obj1,obj2)
-            obj = labeledIntersection(obj1,obj2); %<-- intersects shared dims
+        function out = and(obj1,obj2)
+            out = intersect(obj1,obj2);
         end
 
-        % function obj = or(obj1,obj2)
-        %     error('Union Not Coded')
-        %     % obj = union(obj1,obj2);
-        % end
-                
-        % Extended CartProd
-        function obj = vertcat(varargin)
-            obj = varargin{1};
-            for i = 2:nargin %<========= not really efficient
-                obj = cartProd(obj,varargin{i});
-            end
+        function obj = or(obj1,obj2)
+            error('Union Not Coded')
+            % obj = union(obj1,obj2);
         end
+                
+        % % Extended CartProd (what we select?)
+        % function obj = vertcat(varargin)
+        %     obj = varargin{1};
+        %     for i = 2:nargin %<========= not really efficient
+        %         obj = cartProd(obj,varargin{i});
+        %     end
+        % end
 
         %% Indexing
         B = subsref(A,S);
