@@ -333,7 +333,7 @@ classdef memZono
         end
         function out = mtimes(in1,in2)
             if isa(in2,'memZono')
-                out = in2.affine(in1); %<== flip the syntax order
+                out = in2.affine([],in1); %<== flip the syntax order
             else
                 error('not coded')
             end
@@ -347,19 +347,20 @@ classdef memZono
             % obj = union(obj1,obj2);
         end
                 
-        % % Extended CartProd (what we select?)
-        % function obj = vertcat(varargin)
-        %     obj = varargin{1};
-        %     for i = 2:nargin %<========= not really efficient
-        %         obj = cartProd(obj,varargin{i});
-        %     end
-        % end
+        % Extended intersect (what we select?)
+        function obj = vertcat(varargin)
+            obj = varargin{1};
+            for i = 2:nargin %<========= not really efficient
+                obj = intersect(obj,varargin{i});
+            end
+        end
 
         %% Indexing
         B = subsref(A,S);
         % A = subsasgn(A,S,B); %<---- not completed
         
-        function out = projection(in,dims)
+        function out = projection(in,dims) 
+            if ~iscell(dims), if strcmp(dims,'all'), dims = in.dimKeys; end; end
             % if ~ismember(dims,in.dimKeys)
             %     dims = in.dimKeys(startsWith(in.dimKeys,dims));
             % end

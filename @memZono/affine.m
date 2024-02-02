@@ -1,49 +1,48 @@
-function out = affine(obj,in1,in2,options)
+function out = affine(obj1,obj2,M, inDims, outDims)
 
 % Syntax:
-%   out = Z.affine(M)       <= out = M Z
+%   out = Z.affine([],M)       <= out = M Z
 %   out = Z.affine(b)       <= out = Z + b
-%   out = Z.affine(M,b)     <= out = M Z + b
+%   out = Z.affine(b,M)     <= out = M Z + b
 %   out = Z.affine(Y)       <= out = Z \oplus Y
 %   out = Z.affine(Y,M)     <= out = M Z \oplus Y
 
     arguments
-        obj
-        in1
-        in2 = [];
-        options.inDims = {};
-        options.outDims = {};
+        obj1
+        obj2
+        M = [];
+        inDims = {};
+        outDims = {};
     end
     
     %% Input Conditioning
-    if isempty(options.inDims); 
-        options.inDims = obj.dimKeys; 
+    if isempty(inDims)
+        inDims = obj1.dimKeys; 
     end
 
     %% Operation Logic
-    obj1 = obj.projection(options.inDims);
-    if isa(in1,'memZono') %<== thus minkowski sum
-        obj2 = in1;
-        if ~isempty(in2) %-- transformation matrix
-            out = genMinSum(obj1,obj2,in2); %<= M Z \oplus Y
+    obj1 = obj1.projection(inDims); % select inDims from obj1
+    if isempty(obj2) %<== thus linear maping
+        out = linMap(obj1,M);
+    elseif isa(obj2,'memZono') %<== thus minkowski sum
+        if ~isempty(M) %-- transformation matrix
+            out = genMinSum(obj1,obj2,M); %<= M Z \oplus Y
         else
             out = minSum(obj1,obj2); %<= Z \oplus Y
         end
-
-    elseif size(in1,2) == 1 %<== vector addition
-        if isempty(in2)
+    elseif size(obj2,2) == 1 %<== vector addition
+        if isempty(M)
             out = obj1; 
-            out.c = out.c + in2; %<= Z + b
+            out.c = out.c + M; %<= Z + b
         else
             error('not coded')
         end
-    elseif
-    elseif isscaler(in1) || size(in1,2) == obj1.n  %<== thus Affine Operation
-        M = in1;
-        if isempty(in2) %<== Linear Map
+    elseif isscalar(obj2) || size(obj2,2) == obj1.n  %<== thus Affine Operation
+        M = obj2;
+        if isempty(M) %<== Linear Map
             out = linMap(obj1,M); %<= M Z
-        elseif size(in2,1) == size(M,1) %<== Affine Operation
-            b = in2; 
+        elseif size(M,1) == size(M,1) %<== Affine Operation
+            b = M; 
             out = affineMap(obj1,M,b); %<= M Z + b
         else
             error("M and b don't line up")
@@ -54,13 +53,12 @@ function out = affine(obj,in1,in2,options)
     %% Out dimensions
         % @jruths - is this functionality correct? 
         % select specific dims if less then actual?
-    if ~isempty(options.outDims)
-        if iscell(options.outDims)
-            if length(options.outDims) ~= out.n
-                out = out.projection(options.outDims);
-                return; %<== double check correct/desired operation
-            end
-        out.dimKeys = options.outDims;
+    if ~isempty(outDims)
+        if iscell(outDims) && length(outDims) ~= out.n
+            out = out.projection(outDims);
+            return; %<== double check correct/desired operation
+        end
+        out.dimKeys = outDims;
     end
 
 
@@ -110,19 +108,19 @@ end
 
 % Linear Map
 function out = linMap(in,M)
-    out = memZono(M*in.G, M*in.c, in.A, in.B, in.vset, in.keys);
+    out = memZono(M*in.G, M*in.c, in.A, in.b, in.vset, in.keys);
 end
 
 
 % Affine Operation
 function out = affineMap(in,M,b)
-    out = memZono(M*in.G, M*in.c + b, in.A, in.B, in.vset, in.keys);
+    out = memZono(M*in.G, M*in.c + b, in.A, in.b, in.vset, in.keys);
 end
 
 
 % Vector Sum
 function out = vecSum(in,b)
-    out = memZono(in.G, in.c + b, in.A, in.B, in.vset, in.keys);
+    out = memZono(in.G, in.c + b, in.A, in.b, in.vset, in.keys);
 end
 
 % Generalized Minkowski Sum
@@ -154,4 +152,6 @@ function obj = minSum(obj1,obj2)
     keys_.factors = [k1,ks,k2];
     keys_.dims = obj1.dimKeys; %<--- add check for same?
     keys_.cons = [obj1.conKeys; obj2.conKeys];
+
+    obj = memZono(G_,c_,A_,b_,vset_,keys_);
 end

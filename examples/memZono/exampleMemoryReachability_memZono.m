@@ -21,6 +21,8 @@ U_nom = zono(1.5,0);
 X_{1} = memZono(X_0,'x_1');
 X_all = X_{1};
 
+switch 'withOverload' %'withOverload' 'affine&intersect'
+    case 'withOverload'
 % Time-evolution
 for k = 1:N-1
     % Current Input
@@ -31,7 +33,25 @@ for k = 1:N-1
     X_{k+1}.dimKeys = sprintf('x_%d',k+1);
 
     % Save Data
-    X_all = [X_all; U_{k}; X_{k+1}]; %<---- vertcat() = cartProd()
+    % X_all = [X_all; U_{k}; X_{k+1}]; %<---- vertcat() = intersect()
+    X_all = X_all & U_{k} & X_{k+1}; %<--- w/ and()
+
+end
+    case 'affine&intersect'
+% Time-evolution
+for k = 1:N-1
+    % Current Input
+    U_{k} = memZono(U_nom,sprintf('u_%d',k));
+
+
+    % Step Update
+    X_{k+1} = X_{k}.affine(U_{k}.affine([],B,{},{}),A,{},sprintf('x_%d',k+1));
+
+    % Save Data
+    X_all = X_all.intersect(U_{k});
+    X_all = X_all.intersect(X_{k+1});
+end
+
 end
 
 %% Intersection
@@ -47,7 +67,7 @@ hold on;
 plot(X_F, 'all', 'g', 1);
 drawnow;
 for k = 1:N
-    plot(X_inter, sprintf('x_%d',k), selectColor(k), 0.6);
+    plot(X_inter, {sprintf('x_%d_1',k),sprintf('x_%d_2',k)}, selectColor(k), 0.6);
     plot(X_{k}, 'all', selectColor(k), 0.2);
     drawnow;
 end

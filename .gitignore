@@ -1,4 +1,5 @@
 *.asv
 *.log
+.vscode/
 
 test.m

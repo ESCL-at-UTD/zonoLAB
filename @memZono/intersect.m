@@ -77,7 +77,9 @@ function obj = intersect(obj1,obj2,sharedDimLabels)
 
         % Labels
         if ~isa(sharedDimLabels,'cell')
-            if ~isalpha_num(sharedDimLabels); error('labels need to be specified'); end
+            if ~(isstring(sharedDimLabels)||ischar(sharedDimLabels))
+                error('labels need to be specified'); 
+            end
             cds{length(ds)} = [];
             for i = 1:length(ds)
                 cds{k} = sprintf('%s_%s_%d',sharedDimLabels,ds{k},k);
