@@ -78,7 +78,8 @@ for k = 1:T     % loop over every time step
             L{k,i} = plus(X_nom{k},L{k,i});                                 % add state uncertainty without constraints
             L{k,i}.dimKeys = sprintf('L_%ie',i);                            % label dimensions properly
             % add new landmark to zono by cartprod or generalized intersection
-            X{k} = [X{k}; L{k,i}];
+            X{k} = X{k}.intersect(L{k,i},sprintf('L%i_k%i',i,k));
+            % X{k} = [X{k}; L{k,i}];
         end
     end
 end
@@ -131,7 +132,7 @@ for k = 1:T % loop over every time step
 
         % plot zonotopes
         if last_measurement >= 1                        % ensure landmark has been measured
-            plot(X{k},{sprintf('L_%ie',i)},'r',0.6);    % plot landmark zonotope
+            plot(X{k},sprintf('L_%ie',i),'r',0.6);    % plot landmark zonotope
             plot(landmarks{i}(1),landmarks{i}(2),'bx'); % plot landmarks accurate location
             drawnow;
         end       
@@ -141,7 +142,7 @@ for k = 1:T % loop over every time step
     for prev_k = 1:k                                        % plot all previous time step states
         plot(x(1,prev_k),x(2,prev_k),'k.','MarkerSize',12); % plot actual state
         plot(X_nom{prev_k},'all','k',0.2);                  % plot unconstrained state zonotope
-        plot(X{k},{sprintf('x_%ie',prev_k-1)},'g',0.3);     % plot constrained state zonotope
+        plot(X{k},sprintf('x_%ie',prev_k-1),'g',0.3);     % plot constrained state zonotope
         drawnow;
     end
     % xlim([-6 6]);ylim([-6 6]);
@@ -159,4 +160,10 @@ function Z_prime = rotate_zonotope(Z, radians)
     R = [cos(radians) -sin(radians); sin(radians) cos(radians)];
     Z_prime = R * Z;
     Z_prime.c = Z_prime.c + center;
+end
+
+% random_sample_zonotope()
+function s = random_sample_zonotope(z)
+    g = 2*rand([z.nG,1])-1;
+    s = z.c + z.G*g;
 end

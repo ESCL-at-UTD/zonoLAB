@@ -1,4 +1,4 @@
-function out = affine(obj1,obj2,M, inDims, outDims)
+function obj = affine(obj1,obj2,M, inDims, outDims)
 
 % Syntax:
 %   out = Z.affine([],M)       <= out = M Z
@@ -23,21 +23,21 @@ function out = affine(obj1,obj2,M, inDims, outDims)
     %% Operation Logic
     obj1 = obj1.projection(inDims); % select inDims from obj1
     if isempty(obj2) %<== thus linear maping
-        out = linMap(obj1,M);
+        obj = linMap(obj1,M);
     elseif isa(obj2,'memZono') %<== thus minkowski sum
         if ~isempty(M) %-- transformation matrix
-            out = genMinSum(obj1,obj2,M); %<= M Z \oplus Y
+            obj = genMinSum(obj1,obj2,M); %<= M Z \oplus Y
         else
-            out = minSum(obj1,obj2); %<= Z \oplus Y
+            obj = minSum(obj1,obj2); %<= Z \oplus Y
         end
     elseif size(obj2,2) == 1 && isempty(M) %<== vector addition
-        out = obj1.vecSum(obj2);
+        obj = obj1.vecSum(obj2);
     elseif isscalar(M) || size(M,2) == obj1.n  %<== thus Affine Operation
         if isempty(obj2) %<== Linear Map
-            out = linMap(obj1,M); %<= M Z
+            obj = linMap(obj1,M); %<= M Z
         elseif size(obj2,1) == size(M,1) %<== Affine Operation
             b = obj2; 
-            out = affineMap(obj1,M,b); %<= M Z + b
+            obj = affineMap(obj1,M,b); %<= M Z + b
         else
             error("M and b don't line up")
         end
@@ -48,11 +48,11 @@ function out = affine(obj1,obj2,M, inDims, outDims)
         % @jruths - is this functionality correct? 
         % select specific dims if less then actual?
     if ~isempty(outDims)
-        if iscell(outDims) && length(outDims) ~= out.n
-            out = out.projection(outDims);
+        if iscell(outDims) && length(outDims) ~= obj.n
+            obj = obj.projection(outDims);
             return; %<== double check correct/desired operation
         end
-        out.dimKeys = outDims;
+        obj.dimKeys = outDims;
     end
 
 

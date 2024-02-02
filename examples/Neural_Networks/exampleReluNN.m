@@ -63,17 +63,17 @@ toc
 
 NN = NN2;
 
-% Plot Hybrid Zonotope
-subplot(1,4,4)
-figure
-plot(NN,'r',1);
-grid on;
-title('Hybrid Zonotope')
-xlabel('$x_1$','interpreter','latex')
-ylabel('$x_2$','interpreter','latex')
-zlabel('$\hat{y}$','interpreter','latex')
-zlim([-2 2])
-set(gca,'fontsize',18,'fontname','times new roman')
-toc
+% % Plot Hybrid Zonotope
+% subplot(1,4,4)
+% figure
+% plot(NN,'r',1);
+% grid on;
+% title('Hybrid Zonotope')
+% xlabel('$x_1$','interpreter','latex')
+% ylabel('$x_2$','interpreter','latex')
+% zlabel('$\hat{y}$','interpreter','latex')
+% zlim([-2 2])
+% set(gca,'fontsize',18,'fontname','times new roman')
+% toc
 
 % exportgraphics(gcf,'cosSinNN.pdf','ContentType','vector')

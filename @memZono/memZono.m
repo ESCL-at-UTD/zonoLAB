@@ -316,7 +316,7 @@ classdef memZono
     %% General Methods
     methods
         %% Set Operations
-        out = affine(obj,in1,in2,options);
+        obj = affine(obj1,obj2,M,inDims,outDims);
         obj = intersect(obj1,obj2,sharedDimLabels);
         % obj = minSum(obj1,obj2);
         % obj = linMap(obj,M);
@@ -360,10 +360,12 @@ classdef memZono
         % A = subsasgn(A,S,B); %<---- not completed
         
         function out = projection(in,dims) 
-            if ~iscell(dims), if strcmp(dims,'all'), dims = in.dimKeys; end; end
-            % if ~ismember(dims,in.dimKeys)
-            %     dims = in.dimKeys(startsWith(in.dimKeys,dims));
-            % end
+            if ~iscell(dims), 
+                if strcmp(dims,'all'), dims = in.dimKeys; 
+                elseif ~ismember(dims,in.dimKeys)
+                    dims = in.dimKeys(startsWith(in.dimKeys,dims));
+                end
+            end
             [~,idx] = ismember(dims,in.dimKeys);
             keys_ = in.keys;
             keys_.dims = dims;
