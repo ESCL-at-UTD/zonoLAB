@@ -42,7 +42,7 @@ function obj = intersect(obj1,obj2,sharedDimLabels)
         ];
 
     % hybrid Zono
-    if obj1.vset(idxks1) ~= obj1.vset(idxks2)
+    if obj1.vset(idxks1) ~= obj2.vset(idxks2)
         error('c/d factors not lining up');
     end
     vset_ = [obj1.vset(idxk1),obj1.vset(idxks1),obj2.vset(idxk2)];
@@ -81,7 +81,7 @@ function obj = intersect(obj1,obj2,sharedDimLabels)
                 error('labels need to be specified'); 
             end
             cds{length(ds)} = [];
-            for i = 1:length(ds)
+            for k = 1:length(ds)
                 cds{k} = sprintf('%s_%s_%d',sharedDimLabels,ds{k},k);
             end
         elseif length(sharedDimLabels) ~= length(ds)

@@ -30,19 +30,13 @@ function out = affine(obj1,obj2,M, inDims, outDims)
         else
             out = minSum(obj1,obj2); %<= Z \oplus Y
         end
-    elseif size(obj2,2) == 1 %<== vector addition
-        if isempty(M)
-            out = obj1; 
-            out.c = out.c + M; %<= Z + b
-        else
-            error('not coded')
-        end
-    elseif isscalar(obj2) || size(obj2,2) == obj1.n  %<== thus Affine Operation
-        M = obj2;
-        if isempty(M) %<== Linear Map
+    elseif size(obj2,2) == 1 && isempty(M) %<== vector addition
+        out = obj1.vecSum(obj2);
+    elseif isscalar(M) || size(M,2) == obj1.n  %<== thus Affine Operation
+        if isempty(obj2) %<== Linear Map
             out = linMap(obj1,M); %<= M Z
-        elseif size(M,1) == size(M,1) %<== Affine Operation
-            b = M; 
+        elseif size(obj2,1) == size(M,1) %<== Affine Operation
+            b = obj2; 
             out = affineMap(obj1,M,b); %<= M Z + b
         else
             error("M and b don't line up")

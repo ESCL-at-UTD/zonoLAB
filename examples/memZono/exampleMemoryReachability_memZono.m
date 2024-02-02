@@ -23,35 +23,34 @@ X_all = X_{1};
 
 switch 'withOverload' %'withOverload' 'affine&intersect'
     case 'withOverload'
-% Time-evolution
-for k = 1:N-1
-    % Current Input
-    U_{k} = memZono(U_nom,sprintf('u_%d',k));
+        % Time-evolution
+        for k = 1:N-1
+            % Current Input
+            U_{k} = memZono(U_nom,sprintf('u_%d',k));
 
-    % Step Update
-    X_{k+1} = A*X_{k} + B*U_{k};
-    X_{k+1}.dimKeys = sprintf('x_%d',k+1);
+            % Step Update
+            X_{k+1} = A*X_{k} + B*U_{k};
+            X_{k+1}.dimKeys = sprintf('x_%d',k+1);
 
-    % Save Data
-    % X_all = [X_all; U_{k}; X_{k+1}]; %<---- vertcat() = intersect()
-    X_all = X_all & U_{k} & X_{k+1}; %<--- w/ and()
+            % Save Data
+            % X_all = [X_all; U_{k}; X_{k+1}]; %<---- vertcat() = intersect()
+            X_all = X_all & U_{k} & X_{k+1}; %<--- w/ and()
 
-end
+        end
     case 'affine&intersect'
-% Time-evolution
-for k = 1:N-1
-    % Current Input
-    U_{k} = memZono(U_nom,sprintf('u_%d',k));
+        % Time-evolution
+        for k = 1:N-1
+            % Current Input
+            U_{k} = memZono(U_nom,sprintf('u_%d',k));
 
 
-    % Step Update
-    X_{k+1} = X_{k}.affine(U_{k}.affine([],B,{},{}),A,{},sprintf('x_%d',k+1));
+            % Step Update
+            X_{k+1} = X_{k}.affine(U_{k}.affine([],B,{},{}),A,{},sprintf('x_%d',k+1));
 
-    % Save Data
-    X_all = X_all.intersect(U_{k});
-    X_all = X_all.intersect(X_{k+1});
-end
-
+            % Save Data
+            X_all = X_all.intersect(U_{k});
+            X_all = X_all.intersect(X_{k+1});
+        end
 end
 
 %% Intersection

@@ -54,8 +54,11 @@ fprintf('Zonotope model: ')
 tic
 [NN1,Y] = reluNN(X,Ws,bs,a);
 toc
+% tic
+% [NN2,Y2] = reluNN_memZono(X,Ws,bs,a);
+% toc
 tic
-[NN2,Y2] = reluNN_memZono(X,Ws,bs,a);
+[NN2,Y2] = reluNN_memZono_unified(X,Ws,bs,a);
 toc
 
 NN = NN2;
