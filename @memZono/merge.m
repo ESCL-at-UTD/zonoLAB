@@ -1,11 +1,32 @@
-function obj = intersect(obj1,obj2,sharedDimLabels)
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%   Method:
+%       A dimension-aware and memory-enabled generalization of the hybrid 
+%       zonotope intersection operation.
+%   Syntax:
+%       [Z] = merge(X,Y,sharedDimLabels)
+%   Inputs:
+%       X               - memZono in R^n
+%       Y               - memZono in R^m
+%       sharedDimLabels - either (1) a cell array of new constraint key 
+%                                    labels
+%                                (2) a string prefix to use for new 
+%                                    constraint key labels
+%   Outputs:
+%       Z - memZono in R^p, where n,m < p <= n+m
+%           Shared dimensions are intersected - these intersections result
+%           in new constraints (labels for these are provided by 
+%           sharedDimLabels). The unshared dimensions are kept.
+%   Notes:
+%       The intended functionality when there are no shared dimensions is
+%       that the resulting memZono stacks the two input memZonos (aligning
+%       factors).
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+function obj = merge(obj1,obj2,sharedDimLabels)
     arguments
         obj1
         obj2
-        sharedDimLabels = "sharedDim";
+        sharedDimLabels = {};
     end
-
-    
 
     % Input Conditioning
     if ~isa(obj1,'memZono') || ~isa(obj2,'memZono')
@@ -57,9 +78,9 @@ function obj = intersect(obj1,obj2,sharedDimLabels)
         % Intersection terms
         R = zeros(length(ds),obj1.n);
         for k = 1:length(ds)
-            i = idxds2(k); j = idxds1(k); R(i,j) = 1; 
+            j = idxds1(k); 
+            R(k,j) = 1; 
         end
-        
         
         % Matrices
         G_ = [G_;
@@ -78,14 +99,15 @@ function obj = intersect(obj1,obj2,sharedDimLabels)
         % Labels
         if ~isa(sharedDimLabels,'cell')
             if ~(isstring(sharedDimLabels)||ischar(sharedDimLabels))
-                error('labels need to be specified'); 
+                error('Intersection operation will add additional constraints but labels for new constraints are not given.'); 
             end
             cds{length(ds)} = [];
             for k = 1:length(ds)
+                % TODO: Warning if these new conKey labels already exist in either obj1 or obj2
                 cds{k} = sprintf('%s_%s_%d',sharedDimLabels,ds{k},k);
             end
         elseif length(sharedDimLabels) ~= length(ds)
-            error('Not correct number of label constraints specified');
+            error('Intersection operation will add additional constraints but labels for new constraints are not given (or not enough given).');
         end
         keys_.dims = [keys_.dims, ds];
         keys_.cons = [keys_.cons, cds];

@@ -54,26 +54,23 @@ fprintf('Zonotope model: ')
 tic
 [NN1,Y] = reluNN(X,Ws,bs,a);
 toc
-% tic
-% [NN2,Y2] = reluNN_memZono(X,Ws,bs,a);
-% toc
 tic
 [NN2,Y2] = reluNN_memZono_unified(X,Ws,bs,a);
 toc
 
 NN = NN2;
 
-% % Plot Hybrid Zonotope
-% subplot(1,4,4)
+% Plot Hybrid Zonotope
+subplot(1,4,4)
 % figure
-% plot(NN,'r',1);
-% grid on;
-% title('Hybrid Zonotope')
-% xlabel('$x_1$','interpreter','latex')
-% ylabel('$x_2$','interpreter','latex')
-% zlabel('$\hat{y}$','interpreter','latex')
-% zlim([-2 2])
-% set(gca,'fontsize',18,'fontname','times new roman')
-% toc
+plot(NN,'r',1);
+grid on;
+title('Hybrid Zonotope')
+xlabel('$x_1$','interpreter','latex')
+ylabel('$x_2$','interpreter','latex')
+zlabel('$\hat{y}$','interpreter','latex')
+zlim([-2 2])
+set(gca,'fontsize',18,'fontname','times new roman')
+toc
 
 % exportgraphics(gcf,'cosSinNN.pdf','ContentType','vector')

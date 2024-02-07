@@ -111,7 +111,10 @@ classdef memZono
     methods
         % Matrices
         % Get Matrices
-        function out = get.G(obj); out = obj.G_; end
+        function out = get.G(obj) 
+            if isempty(obj.G_); obj.G_ = zeros(obj.n,0); end
+            out = obj.G_; 
+        end
         function out = get.c(obj); out = obj.c_; end
         function out = get.A(obj)
             if isempty(obj.A_); obj.A_ = zeros(0,obj.nG); end
@@ -228,7 +231,26 @@ classdef memZono
             catch; warning('con key set issue');
             end
         end
-           
+        function out = keysStartsWith(obj,pattern)
+            out.factorKeys = {};
+            out.dimKeys = {};
+            out.conKeys = {};
+            for i=1:length(obj.factorKeys)
+                if startsWith(obj.factorKeys{i},pattern)
+                    out.factorKeys = [out.factorKeys,obj.factorKeys{i}];
+                end
+            end
+            for i=1:length(obj.dimKeys)
+                if startsWith(obj.dimKeys{i},pattern)
+                    out.dimKeys = [out.dimKeys,obj.dimKeys{i}];
+                end
+            end
+            for i=1:length(obj.conKeys)
+                if startsWith(obj.conKeys{i},pattern)
+                    out.conKeys = [out.conKeys,obj.conKeys{i}];
+                end
+            end
+        end
     end
 
     %% Keys Stuff
@@ -291,6 +313,11 @@ classdef memZono
             end
         end
 
+        function [out] = genKeys(prefix,nums)
+            labeler = @(letter,num)sprintf('%s_%i',letter,num);
+            out = arrayfun(@(num){labeler(prefix,num)},nums);
+        end
+
     end
         
 
@@ -316,9 +343,9 @@ classdef memZono
     %% General Methods
     methods
         %% Set Operations
-        obj = affine(obj1,obj2,M,inDims,outDims);
-        obj = intersect(obj1,obj2,sharedDimLabels);
-        % obj = minSum(obj1,obj2);
+        obj = transform(obj1,obj2,M,inDims,outDims);
+        obj = merge(obj1,obj2,sharedDimLabels);
+        obj = combine(obj1,obj2);
         % obj = linMap(obj,M);
         % obj = cartProd(obj1,obj2);
         % obj = generalizedIntersection(obj1,obj2,R,conKeyPrefix);
@@ -329,17 +356,17 @@ classdef memZono
 
         %% Overloading
         function out = plus(in1,in2)
-            out = in1.affine(in2);
+            out = in1.combine(in2);
         end
         function out = mtimes(in1,in2)
             if isa(in2,'memZono')
-                out = in2.affine([],in1); %<== flip the syntax order
+                out = in2.transform([],in1); %<== flip the syntax order
             else
                 error('not coded')
             end
         end
         function out = and(obj1,obj2)
-            out = intersect(obj1,obj2);
+            out = merge(obj1,obj2);
         end
 
         function obj = or(obj1,obj2)
@@ -351,7 +378,7 @@ classdef memZono
         function obj = vertcat(varargin)
             obj = varargin{1};
             for i = 2:nargin %<========= not really efficient
-                obj = intersect(obj,varargin{i});
+                obj = merge(obj,varargin{i});
             end
         end
 
@@ -359,17 +386,20 @@ classdef memZono
         B = subsref(A,S);
         % A = subsasgn(A,S,B); %<---- not completed
         
-        function out = projection(in,dims) 
-            if ~iscell(dims), 
-                if strcmp(dims,'all'), dims = in.dimKeys; 
-                elseif ~ismember(dims,in.dimKeys)
-                    dims = in.dimKeys(startsWith(in.dimKeys,dims));
+        function out = projection(obj,dims) 
+            if ~iscell(dims) 
+                if strcmp(dims,'all'), dims = obj.dimKeys; 
+                % elseif ~ismember(dims,obj.dimKeys)
+                %     dims = obj.dimKeys(startsWith(obj.dimKeys,dims));
                 end
             end
-            [~,idx] = ismember(dims,in.dimKeys);
-            keys_ = in.keys;
+            [~,idx] = ismember(dims,obj.dimKeys);
+            keys_ = obj.keys;
             keys_.dims = dims;
-            out = memZono(in.G(idx,:),in.c(idx,:),in.A,in.b,in.vset,keys_);
+            out = memZono(obj.G(idx,:),obj.c(idx,:),obj.A,obj.b,obj.vset,keys_);
+
+            % if ~iscell(dims) && strcmp(dims,'all'); dims = obj.dimKeys; end
+            % out = obj(dims);
         end
 
     end

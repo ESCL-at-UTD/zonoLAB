@@ -21,41 +21,42 @@ U_nom = zono(1.5,0);
 X_{1} = memZono(X_0,'x_1');
 X_all = X_{1};
 
-switch 'withOverload' %'withOverload' 'affine&intersect'
-    case 'withOverload'
-        % Time-evolution
-        for k = 1:N-1
-            % Current Input
-            U_{k} = memZono(U_nom,sprintf('u_%d',k));
+% Terminal Set
+X_F = memZono(X_F,sprintf('x_%d',N));
 
-            % Step Update
-            X_{k+1} = A*X_{k} + B*U_{k};
-            X_{k+1}.dimKeys = sprintf('x_%d',k+1);
+switch 'affine&intersect' %'withOverload' 'affine&intersect'
+    % case 'withOverload'
+    %     % Time-evolution
+    %     for k = 1:N-1
+    %         % Current Input
+    %         U_{k} = memZono(U_nom,sprintf('u_%d',k));
 
-            % Save Data
-            % X_all = [X_all; U_{k}; X_{k+1}]; %<---- vertcat() = intersect()
-            X_all = X_all & U_{k} & X_{k+1}; %<--- w/ and()
+    %         % Step Update
+    %         X_{k+1} = A*X_{k} + U_{k}.affine([],B,{},sprintf('x_%d',k));
+    %         X_{k+1}.dimKeys = sprintf('x_%d',k+1);
 
-        end
+    %         % Save Data
+    %         % X_all = [X_all; U_{k}; X_{k+1}]; %<---- vertcat() = intersect()
+    %         X_all = X_all & U_{k} & X_{k+1}; %<--- w/ and()
+
+    %     end
+    %     X_inter = X_all & X_F; % <--- intersect common dimensions
     case 'affine&intersect'
         % Time-evolution
         for k = 1:N-1
             % Current Input
             U_{k} = memZono(U_nom,sprintf('u_%d',k));
 
-
             % Step Update
-            X_{k+1} = X_{k}.affine(U_{k}.affine([],B,{},{}),A,{},sprintf('x_%d',k+1));
+            newDims = {sprintf('x_%d_1',k+1),sprintf('x_%d_2',k+1)};
+            X_{k+1} = X_{k}.transform(U_{k}.transform([],B,{},newDims),A,{},newDims);
 
             % Save Data
-            X_all = X_all.intersect(U_{k});
-            X_all = X_all.intersect(X_{k+1});
+            X_all = X_all.merge(U_{k});
+            X_all = X_all.merge(X_{k+1});
         end
+        X_inter = X_all.merge(X_F,'terminal_cons'); % <--- intersect common dimensions
 end
-
-%% Intersection
-X_F = memZono(X_F,sprintf('x_%d',N));
-X_inter = X_all & X_F; % <--- intersect common dimensions
 
 %% Plotting
 fig = figure;
