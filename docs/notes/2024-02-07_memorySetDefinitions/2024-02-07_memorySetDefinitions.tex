@@ -1,0 +1,335 @@
+% 
+\documentclass[11pt]{article}
+% Packages
+\usepackage{physics}
+\usepackage{amsmath, amssymb, empheq}
+\usepackage{thmtools}
+
+\usepackage{todonotes}
+\usepackage{endnotes}
+\usepackage{hyperref}
+
+% Page Setup
+\usepackage{geometry}
+\geometry{
+    paper = letterpaper,
+    top=3cm, % Top margin
+	bottom=3cm, % Bottom margin
+	left=2.5cm, % Left margin
+	right=2.5cm, % Right margin
+	headheight=14pt, % Header height
+	footskip=1.4cm, % Space from the bottom margin to the baseline of the footer
+	headsep=1.2cm, % Space from the top margin to the baseline of the header
+}
+\setlength\parindent{0pt}
+
+% Headings
+\usepackage{fancyhdr,titling}
+\pagestyle{fancy}
+\fancyhf{}
+
+\chead{\thetitle}
+\lfoot{\thepage}
+\rfoot{\theauthor}
+
+% Theorems
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}
+
+% Custom Commands
+\newcommand{\R}{\mathbb{R}} % Real numbers
+\newcommand{\C}{\mathbb{C}} % Complex numbers
+\newcommand{\N}{\mathbb{N}} % Natural Numbers
+\newcommand{\Z}{\mathbb{Z}} % Integers
+
+\newcommand{\st}{ \ | \ }
+\newcommand{\Rel}{\ \mathcal{R} \ }
+
+\newcommand{\V}{\mathbb{V}} % Vector-Space
+\newcommand{\F}{\mathbb{F}} % Field
+
+\newcommand{\Key}{\nu} % key indicator
+\newcommand{\Dict}{\mathcal{D}} % dictionary
+
+\newcommand{\dimKey}{\prescript{}{d}{\Key}} % dimKey indicator
+\newcommand{\dimDict}{\prescript{}{d}{\Dict}} % dimDict dictionary
+\newcommand{\factorKey}{\prescript{}{g}{\Key}} % factorKey indicator
+\newcommand{\factorDict}{\prescript{}{g}{\Dict}} % factorDict dictionary
+\newcommand{\conKey}{\prescript{}{c}{\Key}} % conKey indicator
+\newcommand{\conDict}{\prescript{}{c}{\Dict}} % conDict dictionary
+
+\newcommand{\starCross}{\overset{*}{\cross}} % star cross
+\newcommand{\starOplus}{\overset{*}{\oplus}} % star oplus
+\newcommand{\starCup}{\overset{*}{\cup}} % star cup
+\newcommand{\starCap}{\overset{*}{\cap}} % star cap
+\newcommand{\starRel}{\overset{*}{\Rel}} % star \Rel
+
+\newcommand{\dSet}{\kappa} % discrete set vector
+
+
+
+%% Document Info
+\title{Dimension-aware and Memory-based Set Operations}
+\author{Jonas Wagner (Applied Systems Lab @ UTD)}
+\date{}
+
+%% Begin Document
+\begin{document}
+
+
+Note:
+This document is a working document and isn't not fully fleshed out (or as formal as desired)
+
+\section{General Sets}
+
+\subsection{Dimension-awareness}
+\footnote{
+	The specific-base variable-type of any set of dimensions is not restricted to any particular $\R$,$\Z$,$\C$ (or in MALTAB class()=double,sym,int,optimvar,etc.) however if the notation of $\R^n$ is used this should still be true...
+} 
+\footnote{
+	Should we restrict to just a collection of 1-D dimensions or keep it general to any dimensional spaces being labeled together???
+	I'm thinking the later as I'm not restricting it to n-dimensional fields anyway...
+} 
+\footnote{
+	So I think we could restrict this to a banach space or less to a field, but technically I think any vector space should work...
+	And if we restrict to a space consisting of 1-D (scaler?) for each dimension that could also work...
+}	
+
+\begin{definition}[Dimensional Aware Set Definition]
+	
+	Let $\Dict_{V} : \Key_{i} \to {i}$ be a dictionary that relates the key $\Key_{i}$ to each of the vector fields $\V_{i} \subset \V$, $\forall_{i \in \N}$.
+	\todo{do we want to use ``dictionary'' or some ``indexed family'' type definition?}
+
+	Let $X = \qty(X_{1},X_{2},\dots,X_{n}) \subseteq \qty(\V_{1}, \V_{2}, \dots, \V_{n})$ and $\Dict_{X} = \{\Key_{1} \to 1,\dots,\Key_{n} \to n\} \subseteq \Dict_{V}$.
+	The set and the dictionary $(X,\Dict_{X}) \subseteq (V,\Dict_{V})$ is then considered \emph{\underline{dimensional-aware}} as the dictionary relates the key $\Key_{i}$ with the associated set $X_{i} \subseteq \V_{i}$.
+
+	
+	Denote $(\V,\Dict_{V})$ as a space of all \emph{\underline{dimensionally-aware}} sets.
+\end{definition}
+
+
+\begin{definition}[Dimensional Aware Relations]
+	A dimensionally-aware relation, $\starRel$, between the two dimensionally-aware sets $(X,\Dict_{X}), (Y,\Dict_{Y}) \subseteq (V,\Dict_{V})$ is defined differently depending on the keys in each associated dictionary:
+	\begin{enumerate}
+		\item For unique keys, 
+		% $\nexists_{j \in 1,\dots,n_b} \st \Key_{j} \in \Dict_{X}$,
+		% $\Key_{i} \notin \Dict_{Y}$ and $\Key_{j} \notin \Dict_{X}$, 
+		\todo{look at the best way to notate this... do we need to make $\Key$ within a set? does this make sense as is?}
+		$\Key$,
+		within each dictionary $\Dict_{X}$ and $\Dict_{Y}$, the associated sets, $X_{i}$ and $Y_{j}$ are kept and associated within $\Dict_{C}$ to the appropriate index in the new collection as $C_{k}$.
+		\item For keys that are shared between the two dictionaries $\Key_{i} \in \Dict_{X} = \Key_{j} \in \Dict_{Y}$ the relation is then applied to the corresponding sets $C_{k} = X_{i} \Rel Y_{j}$ and associated within $\Dict_{C}$ to the appropriate index $k$ in the new collection.
+	\end{enumerate}
+	(i.e) 
+	\begin{equation}
+		\begin{aligned}
+			(X,\Dict_{X}) \starRel (Y,\Dict_{Y}) &= (C, \Dict_{C})\\
+				&= ((X_{1}, \dots, X_{n_a}), \Dict_{X}) \starRel
+					((Y_{1}, \dots, Y_{n_b}), \Dict_{Y})\\
+				&= ((\qty[X_{i}]_{\forall_{i\in I_{x}}}, \qty[Y_{j}]_{\forall j \in J_{y}}, \qty[X_{i} \Rel Y_{j}]_{\forall i \in I_{xy}, j \in J_{xy}}), \Dict_{C})
+		\end{aligned}
+	\end{equation}
+	where $I_{x} = \{i \st \Key^{x}_{i} \notin \Dict_{Y}\}$, $J_{y} = \{j \st \Key^{y}_{j} \notin \Dict_{X}\}$, $I_{xy} = \{i \st \Key^{x}_{i} \in \Dict_{Y}\}$, $J_{xy} = \{j \st \Key^{y}_{j} \in \Dict_{X}\}$, and $\Dict_{C} : \Key^{c}_{k} \to k$ relates the shared keys to the appropriate sets in collection $C$.
+	\todo{look at notation...}
+\end{definition}
+
+\endnote{
+	Previous from when I did Cart Prod first
+
+	A relation $\mathcal{R}$ between the two dimensionally-aware sets $(X,\Dict_{X}), (Y,\Dict_{Y}) \subseteq (V,\Dict_{V})$ is ultimately a subset of the standard Cartesian product of the two sets, i.e. $(X,\Dict_{X}) \mathcal{R} (Y,\Dict_{Y}) \subseteq (X,\Dict_{X}) \cross (Y,\Dict_{Y})$.
+	\todo{make this better/confirm... is it an algebra?}
+	For dimensional aware sets and associated relations/set-operations this is instead redefined under a dimensional-aware Cartesian product.
+
+	\begin{definition}[Dimensional Aware Cartesian Product]
+		A dimensionally-aware Cartesian product, $\starCross$, between the two dimensionally-aware sets $(X,\Dict_{X}), (Y,\Dict_{Y}) \subseteq (V,\Dict_{V})$ is defined differently depending on the keys in each associated dictionary:
+		\begin{enumerate}
+			\item For unique keys, 
+			% $\nexists_{j \in 1,\dots,n_b} \st \Key_{j} \in \Dict_{X}$,
+			% $\Key_{i} \notin \Dict_{Y}$ and $\Key_{j} \notin \Dict_{X}$, 
+			\todo{look at the best way to notate this... do we need to make $\Key$ within a set? does this make sense as is?}
+			$\Key$,
+			within each dictionary $\Dict_{X}$ and $\Dict_{Y}$, the associated sets, $X_{i}$ and $Y_{j}$ are kept and associated within $\Dict_{C}$ to the appropriate index in the new collection $C$.
+			\item For keys that are shared between the two dictionaries 
+		\end{enumerate}
+		(i.e) 
+		\begin{equation}
+			\begin{aligned}
+				(X,\Dict_{X}) \starCross (Y,\Dict_{Y}) &= (C, \Dict_{C})\\
+					&= ((X_{1}, \dots, X_{n_a}), \Dict_{X})
+						\starCross 
+						((Y_{1}, \dots, Y_{n_b}), \Dict_{Y})\\
+					&= ((\qty[X_{i}]_{\forall_{i\in I_{x}}}, \qty[Y_{j}]_{\forall j \in J_{y}}, \qty[X_{i} \cross Y_{j}]_{\forall i \in I_{xy}, j \in J_{xy}}), \Dict_{C})
+			\end{aligned}
+		\end{equation}
+		where $I_{x} = \{i \st \Key_{ai} \notin \Dict_{Y}\}$, $J_{y} = \{j \st \Key_{bi} \notin \Dict_{X}\}$, $I_{xy} = \{i \st \Key_{ai} \in \Dict_{Y}\}$, $J_{xy} = \{j \st \Key_{bj} \in \Dict_{X}\}$, and $\Dict_{C}$ is relates the keys in $\Dict_{X} \cup \Dict_{Y}$ to the appropriate sets in collection $C$.
+	\end{definition}
+
+	This same method of separating between unique and shared dimensions is used in all dimension-aware set operations where all unique sets are maintained and
+
+}
+
+\begin{remark}[Dimension-aware set operations]
+	Since set operations are in essence just relations, any set operations between two dimension-aware sets can be implemented as described with the appropriate relation applied upon the appropriate dimension.
+\end{remark}
+
+\begin{remark}[Additional Remark on Dimension-aware Set Operations]
+	Under dimension-aware operations, any dimensions that are unique (i.e. not defined in the other dictionary) then either $\emptyset$ (for cartisian product, union, minkowski sum...) or $\V$ (intersection, ...) may instead be associated with the specific key, $\Key$, and the operation being applied between the appropriate sets would result in the same operation.
+\end{remark}
+
+
+\subsection{Memory-based (``Lazy'')-set Definition}
+
+\todo{copy over notes form before or re-write the ideas from the SetDictionaryMethod notes from before}
+
+
+
+\section{Zonotope-based Set Implementation}
+
+Zonotopes are built upon the basic principles of a Minkowski Sum to represent closed and bounded sets within an $n$-dimensional vector space.
+\todo{is vector-space too broad? does it need to be restricted to banach space?}
+
+Standard zonotopes are represented strictly as the minkowski sum of line-segments, often described in an affine form constructed of a center-vector $(c \in \V^{n})$ and a generator matrix $(G \in \V^{n\cross n_g})$ with factors $(\xi_{i} \in [0,1])$ acting upon individual generators$g_{i} \in \V^{n}$:\[
+	Z = \qty{G, c} = \qty{c + G \xi \st \forall_{\xi \in \R^{n_g}} \norm{\xi}_{\infty} \leq 1}
+\]
+In order to represent non-symetric convex polytopes, additional constraints can be introduced upon the factors using constraint matrix $X \in \R^{n_c \cross n_g}$ and vector $b \in \R^{n_c}$, $(X \xi = b)$, to break symmetry and represent more complicated shapes:\[
+	Z = \qty{G, c, A, b} = \qty{c + G \xi \st \forall_{\xi \in \R^{n_g}} \norm{\xi}_{\infty} \leq 1 \land A \xi = b}
+\]
+Another extension involves the introduction of a restriction upon certain factors to become discrete factors (i.e. $\xi_{i} \in \{-1,1\}$).
+This ``hybrid-zonotope'' can be represented as two separate generator and constraint matrices (as is common in other literature)
+\footnote{I don't want to use that notation... it's too confusing to me when comparing to the full zonotope framework}
+% ($G_c \in \V^{n\cross n_{g_c}$, $G_d \in \V^{n\corss n_{g_d}}}$) 
+or alternatively an additional constraint can be placed upon certain generators that requires them to be discrete.
+This can be easily described with an additional vector $\dSet \in \{0,1\}^{n_g}$, in which the boolean true $(\dSet_{i} = 1)$ indicates that the generator is discrete.
+This restriction can either be ensured with distinct constraints of $\abs{\xi_{i}} = 1 \forall_{i \st \dSet_{i} = 1}$ or through an element-wise 1-norm constraint of $\norm{\dSet \odot \xi}_{1} = \norm{\dSet}_{1}$. \[
+\begin{aligned}
+	Z &= \{G,c,A,b,\dSet\} \\
+		&= \qty{c + G \xi,  \forall_{\xi \in \R^{n_g}} \norm{\xi}_\infty \leq 1 \land \norm{\dSet \odot \xi}_{1} = \norm{\dSet}_{1} \land A\xi = b}
+\end{aligned}
+\]
+
+% \begin{definition}[Zonotope-based Set Definition]
+% 	Let $G \in \V^{n \cross n_g}$, $c \in \V^{n}$, $A \in \R^{n_c \cross n_g}$, $b \in \R^{n_c}$, and $\dSet \in \{0,1\}^{n_g}$.
+% 	A zonotope-based constrained set $Z$ is defined as
+% 	\begin{equation}
+% 		\begin{aligned}
+% 			Z &= \{G,c,A,b,\dSet\} \\
+% 			&= \qty{c + G \xi,  \forall_{\xi \in \R^{n_g}} \norm{\xi}_\infty \leq 1 \land \norm{\dSet \odot \xi}_{1} = \norm{\dSet}_{1} \land A\xi = b}
+% 		\end{aligned}
+% 	\end{equation}
+% \end{definition}
+
+\subsection{Dimension-awareness in Zonotope-based Sets}
+Given the structure of the affine and generator-based construction of a zonotope within an $n$-dimensional space, it makes sense to label each of the dimensions of the center and generator matrices instead of maintaining the ordered collection (family?) of vector-spaces for each set.
+Thus, for zonotope-based set $Z = \{G_{Z},c_{Z},A_{Z},b_{Z},\dSet_{Z}\}$, each of the keys, $\dimKey^{Z}_{i} \in \dimDict_{Z}$, will be associated with a row index $i$ of generator matrix $G_{Z}$ and center vector $c_{Z}$.
+
+\subsection{Memory-preservation within Zonotope-based sets}
+Under all the defined memory-perserving set-operations (as defined above/below?), the information of volume origin is solely contained within the generators and any associated origin constraints, while the relationships between sets imparted by set-operations appear as additional constraints.
+This allows for memory of origin to be maintained through labeling and appropriate bookkeeping of factors as the columns of the generator and constraint matrices (and $\dSet$ indices) with $\factorKey^{Z}_{i} \in \factorDict_{Z}$, while the memory of both origin and relationship constraints can be maintained by keeping track of the rows of the constraint matrix and vector with $\conKey^{Z}_{i} \in \conDict_{Z}$.
+
+\subsection{Dimension-awareness and Memory-preservation within zonotope-based sets}
+
+To preserve both dimension-awareness and memory-preservation, the dictionaries associated with dimensions, factors, and constraints are maintained.
+Since each of the keys has a one-to-one correspondence(bi-jective?), each dictionary can represented as an ordered sets \footnote{string/cell-array in matlab} where the index within the set (or array) directly corresponds with the index of the dimensions, factors, or constraints.
+
+\begin{definition}[Dimension-aware and Memory-preserving Zonotope-based Set Definition]\label{def:dim-aware_mem-presev_setDef}
+	Let $G \in \V^{n \cross n_g}$, $c \in \V^{n}$, $A \in \R^{n_c \cross n_g}$, $b \in \R^{n_c}$, and $\dSet \in \{0,1\}^{n_g}$.
+
+	A zonotope-based set $Z$ is defined as
+	\begin{equation}
+		\begin{aligned}
+			Z &= \{G,c,A,b,\dSet\} \\
+			&= \qty{c + G \xi,  \forall_{\xi \in \R^{n_g}} \norm{\xi}_\infty \leq 1 \land \norm{\dSet \odot \xi}_{1} = \norm{\dSet}_{1} \land A\xi = b}
+		\end{aligned}
+	\end{equation}
+
+	Let $\Dict_{Z} = \{\dimDict_{Z},\factorDict_{Z},\conDict_{Z}\}$ be the dictionaries for the dimensions, factors, and constraints respectively.
+	
+	$(Z,\Dict_{Z})$ is now considered to be a dimension-aware and memory-preserving set.\todo{should we do $(Z,\Dict_{Z})$ or $Z = \{G,c,A,b,\dSet,\Dict_{Z}\}$?}
+\end{definition}
+
+\textbf{The following are explicit definitions for the opperations but need not be fully written out (or in seperate definitions) for each to provide all the info} 
+
+
+\begin{definition}[Demension-aware and Memory-preserving Minkowski Sum]
+	Let $(X,\Dict_{X})$ and $(Y,\Dict_{Y})$ be demension aware and memory preserving sets.
+	The demension-aware and memory-preserving minkowski-sum \footnote{we could likely just call this intersection and define a specific algebra instead of doing the $\starOplus$ and fancy name} $(X,\Dict_{X}) \starOplus (Y,\Dict_{Y})$ results in the following:
+	\begin{equation}
+		(X,\Dict_{X}) \starOplus (Y,\Dict_{Y}) 
+	\end{equation}
+	\todo{how do we best notate this... this relates to the function combine(X,Y)}
+\end{definition}
+\todo{replace X and Y w/ X and Y for clarity???}
+
+
+\begin{definition}[Demension-aware and Memory-preserving Intersection]
+	Let $(X,\Dict_{X})$ and $(Y,\Dict_{Y})$ be demension aware and memory preserving sets.
+	The demension-aware and memory-preserving intersection \footnote{we could likely just call this intersection and define a specific algebra instead of doing the $\starCap$ and fancy name} $(X,\Dict_{X}) \starCap (Y,\Dict_{Y})$ results in the following:
+	\begin{equation}
+		(X,\Dict_{X}) \starCap_{R} (Y,\Dict_{Y}) = \qty{
+			\mqty[
+				G_{X}^{x,x} & G_{X}^{x,xy} & \vb{0}\\
+				\vb{0}		& G_{Y}^{y,xy} & G_{Y}^{y,y}\\
+				G_{X}^{xy,x} & G_{X}^{xy,xy} & \vb{0}
+			],
+			\mqty[
+				c_{X}^{x}\\
+				c_{Y}^{y}\\
+				c_{X}^{xy}
+			],
+			\mqty[
+				A_{X}^{x,x} 	& A_{X}^{x,xy} & \vb{0}\\
+				\vb{0}		& A_{XY}^{xy,xy}	& \vb{0}\\
+				\vb{0}		& A_{Y}^{y,xy} & A_{Y}^{y,y}\\
+				G_{X}^{xy,x}	& G_{X}^{xy,xy} - G_{Y}^{xy,xy} & -G_{Y}^{xy,y}
+			],
+			\mqty[
+				b_{X}^{x}\\
+				b_{XY}^{xy}\\
+				b_{Y}^{y}\\
+				c_{Y}^{xy} - c_{X}^{xy}
+			],
+			\mqty[
+				\dSet_{X}^{x}\\
+				\dSet_{XY}^{xy}\\
+				\dSet_{Y}^{y}
+			]
+		}
+	\end{equation}
+	\todo{how do we best notate this... this relates to the function merge(X,Y)... also, is there a generalized-intersection version? I'm not sure... outside of an affine transform going into or out of it...}
+\end{definition}
+
+\todo{finish definition of these sets}
+
+\textbf{
+	The union (and compliment) operations are super interesting and we can expand the hybrid-zonotope to this memory-preserving and dim-aware pretty easily... here's that union/compliment paper
+	\url{https://ieeexplore.ieee.org/document/9638970}
+}
+
+To achieve the 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
