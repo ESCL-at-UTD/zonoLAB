@@ -133,40 +133,6 @@ This document is a working document and isn't not fully fleshed out (or as forma
 	\todo{look at notation...}
 \end{definition}
 
-\endnote{
-	Previous from when I did Cart Prod first
-
-	A relation $\mathcal{R}$ between the two dimensionally-aware sets $(X,\Dict_{X}), (Y,\Dict_{Y}) \subseteq (V,\Dict_{V})$ is ultimately a subset of the standard Cartesian product of the two sets, i.e. $(X,\Dict_{X}) \mathcal{R} (Y,\Dict_{Y}) \subseteq (X,\Dict_{X}) \cross (Y,\Dict_{Y})$.
-	\todo{make this better/confirm... is it an algebra?}
-	For dimensional aware sets and associated relations/set-operations this is instead redefined under a dimensional-aware Cartesian product.
-
-	\begin{definition}[Dimensional Aware Cartesian Product]
-		A dimensionally-aware Cartesian product, $\starCross$, between the two dimensionally-aware sets $(X,\Dict_{X}), (Y,\Dict_{Y}) \subseteq (V,\Dict_{V})$ is defined differently depending on the keys in each associated dictionary:
-		\begin{enumerate}
-			\item For unique keys, 
-			% $\nexists_{j \in 1,\dots,n_b} \st \Key_{j} \in \Dict_{X}$,
-			% $\Key_{i} \notin \Dict_{Y}$ and $\Key_{j} \notin \Dict_{X}$, 
-			\todo{look at the best way to notate this... do we need to make $\Key$ within a set? does this make sense as is?}
-			$\Key$,
-			within each dictionary $\Dict_{X}$ and $\Dict_{Y}$, the associated sets, $X_{i}$ and $Y_{j}$ are kept and associated within $\Dict_{C}$ to the appropriate index in the new collection $C$.
-			\item For keys that are shared between the two dictionaries 
-		\end{enumerate}
-		(i.e) 
-		\begin{equation}
-			\begin{aligned}
-				(X,\Dict_{X}) \starCross (Y,\Dict_{Y}) &= (C, \Dict_{C})\\
-					&= ((X_{1}, \dots, X_{n_a}), \Dict_{X})
-						\starCross 
-						((Y_{1}, \dots, Y_{n_b}), \Dict_{Y})\\
-					&= ((\qty[X_{i}]_{\forall_{i\in I_{x}}}, \qty[Y_{j}]_{\forall j \in J_{y}}, \qty[X_{i} \cross Y_{j}]_{\forall i \in I_{xy}, j \in J_{xy}}), \Dict_{C})
-			\end{aligned}
-		\end{equation}
-		where $I_{x} = \{i \st \Key_{ai} \notin \Dict_{Y}\}$, $J_{y} = \{j \st \Key_{bi} \notin \Dict_{X}\}$, $I_{xy} = \{i \st \Key_{ai} \in \Dict_{Y}\}$, $J_{xy} = \{j \st \Key_{bj} \in \Dict_{X}\}$, and $\Dict_{C}$ is relates the keys in $\Dict_{X} \cup \Dict_{Y}$ to the appropriate sets in collection $C$.
-	\end{definition}
-
-	This same method of separating between unique and shared dimensions is used in all dimension-aware set operations where all unique sets are maintained and
-
-}
 
 \begin{remark}[Dimension-aware set operations]
 	Since set operations are in essence just relations, any set operations between two dimension-aware sets can be implemented as described with the appropriate relation applied upon the appropriate dimension.
@@ -178,9 +144,41 @@ This document is a working document and isn't not fully fleshed out (or as forma
 
 
 \subsection{Memory-based (``Lazy'')-set Definition}
+\footnote{The previous attempt at ``Lazy''-set memory-based operation is not as well-structured or as general as the dimension-aware version, thus I'm going to have to attempt it differently.}
 
-\todo{copy over notes form before or re-write the ideas from the SetDictionaryMethod notes from before}
+The premise of memory-preservation that this general-notation will be pursuing will consist of having origin sets who are placed through transformation and arbitrary relations (i.e. set-operations) that will be saved as constraints upon the yet to be evaluated preserved-memory set.
 
+Let $X_{1},\dots,X_{n_x} \subseteq \V_{X}$ and $Y_{1},\dots,Y_{n_y} \subset \V_{Y}$ be sets with associated dictionaries, $\Dict_{X} : \Key^{X}_{i} \to i$ and $\Dict_{Y} : \Key^{Y}_{j}$, associating the keys with the origin sets.
+
+Consider a generic affine transformation ($f(x) = Mx + b$) and a general transformation $g_{k}(x,y) : V_{X} \cross V_{Y} \to V_{g(x,y)}$.
+
+Additionally, suppose/assume that there are relations $\Rel$, (such as set operations) so that within $(X_{i}, Y_{j}, X_{i} \Rel Y_{j})$, $X_{i} \Rel Y_{j}$ can be defined with constraints dependent on $X_{i}$ and $Y_{j}$.
+
+\subsubsection{Affine transformation:}
+For memory-encoded sets $([X_{i}]_{i=1,\dots,n_x},\Dict_{X})$ being placed through the affine transformation $f$, the new sets can be transformed with no adjustment to the dictionary but the individual sets will now be endowed with an affine mapping.
+(i.e.)\[
+	([X_{i}]_{i=1,\dots,n_x},\Dict_{X}) 
+	\overset{f(x)}{\rightarrow} 
+	(f([X_{i}]_{i=1,\dots,n_x}),\Dict_{X})
+	= ([f(X_{i})]_{i=1,\dots,n_x},\Dict_{X})
+	= ([M X_{i} + b]_{i=1,\dots,n_x},\Dict_{X})
+\]
+Within our case of memory, the previous sets could also be maintained (although technically not necessary for this operation if not doing a successor set) resulting in the following:
+\[
+	([X_{i}]_{i=1,\dots,n_x},\Dict_{X}) 
+	\overset{f(x)}{\rightarrow} 
+	(([X_{i}]_{i=1,\dots,n_x}, [M X_{i} + b]_{i=1,\dots,n_x}),\Dict_{X}) 
+\]
+Note that the dictionary $\Dict_{X}$ continues to indicate that the $X_{i}$ sets are the same/related/from the same origin set.
+
+\subsubsection{General transformation}
+For memory-encoded sets $([X_{i}]_{i=1,\dots,m}, \Dict_{X})$ and $([Y_{j}]_{j=1,\dots,m}, \Dict_{Y})$ ($m < n_x,n_y$) being placed through the general transformation of $g_{k}(x,y)$ (of which $k$ is distinct for each pair of $i$ and $j$), the memory-preservation transformation (just a successor set???) results in \[
+	([X_{i}]_{i=1,\dots,m},[Y_{j}]_{j=1,\dots,m},[(X_{i}, Y_{j}) \overset{g_{k}(x,y)}{\to} g_k(X_{i},Y_{j})]_{\forall_{i=j=k=1,\dots,m}}, (\Dict_{X},\Dict_{Y}))
+\]
+Note again that the dictionary still exists and connects the origination sets to the transformed results
+
+
+\todo{Continue with this and implement the relations... that involves adding constraints that relate specific `'`dimensions'' to one another... need additional dictionary???}
 
 
 \section{Zonotope-based Set Implementation}
@@ -206,17 +204,6 @@ This restriction can either be ensured with distinct constraints of $\abs{\xi_{i
 		&= \qty{c + G \xi,  \forall_{\xi \in \R^{n_g}} \norm{\xi}_\infty \leq 1 \land \norm{\dSet \odot \xi}_{1} = \norm{\dSet}_{1} \land A\xi = b}
 \end{aligned}
 \]
-
-% \begin{definition}[Zonotope-based Set Definition]
-% 	Let $G \in \V^{n \cross n_g}$, $c \in \V^{n}$, $A \in \R^{n_c \cross n_g}$, $b \in \R^{n_c}$, and $\dSet \in \{0,1\}^{n_g}$.
-% 	A zonotope-based constrained set $Z$ is defined as
-% 	\begin{equation}
-% 		\begin{aligned}
-% 			Z &= \{G,c,A,b,\dSet\} \\
-% 			&= \qty{c + G \xi,  \forall_{\xi \in \R^{n_g}} \norm{\xi}_\infty \leq 1 \land \norm{\dSet \odot \xi}_{1} = \norm{\dSet}_{1} \land A\xi = b}
-% 		\end{aligned}
-% 	\end{equation}
-% \end{definition}
 
 \subsection{Dimension-awareness in Zonotope-based Sets}
 Given the structure of the affine and generator-based construction of a zonotope within an $n$-dimensional space, it makes sense to label each of the dimensions of the center and generator matrices instead of maintaining the ordered collection (family?) of vector-spaces for each set.
@@ -246,8 +233,7 @@ Since each of the keys has a one-to-one correspondence(bi-jective?), each dictio
 	
 	$(Z,\Dict_{Z})$ is now considered to be a dimension-aware and memory-preserving set.
 	
-	Alternatively, the dictionary can be encorporated into the structure itself as $Z = \{G,c,A,b,\dSet,\Dict\}$.
-	
+	% Alternatively, the dictionary can be encorporated into the structure itself as $Z = \{G,c,A,b,\dSet,\Dict\}$.
 	\todo{should we do $(Z,\Dict_{Z})$ or $Z = \{G,c,A,b,\dSet,\Dict_{Z}\}$?}
 \end{definition}
 
@@ -325,11 +311,10 @@ Since each of the keys has a one-to-one correspondence(bi-jective?), each dictio
 \todo{finish definition of these sets}
 
 \textbf{
-	The union (and compliment) operations are super interesting and we can expand the hybrid-zonotope to this memory-preserving and dim-aware pretty easily... here's that union/compliment paper
+	The union (and compliment) operations are super interesting and a memory-preserving and dim-aware implimentation from the hybrid-zonotope paper appears to be a natural extension... here's that hyb-zono union/compliment paper:
 	\url{https://ieeexplore.ieee.org/document/9638970}
 }
 
-To achieve the 
 
 
 
@@ -357,3 +342,57 @@ To achieve the
 
 
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% old stuff
+% \endnote{
+% 	Previous from when I did Cart Prod first
+
+% 	A relation $\mathcal{R}$ between the two dimensionally-aware sets $(X,\Dict_{X}), (Y,\Dict_{Y}) \subseteq (V,\Dict_{V})$ is ultimately a subset of the standard Cartesian product of the two sets, i.e. $(X,\Dict_{X}) \mathcal{R} (Y,\Dict_{Y}) \subseteq (X,\Dict_{X}) \cross (Y,\Dict_{Y})$.
+% 	\todo{make this better/confirm... is it an algebra?}
+% 	For dimensional aware sets and associated relations/set-operations this is instead redefined under a dimensional-aware Cartesian product.
+
+% 	\begin{definition}[Dimensional Aware Cartesian Product]
+% 		A dimensionally-aware Cartesian product, $\starCross$, between the two dimensionally-aware sets $(X,\Dict_{X}), (Y,\Dict_{Y}) \subseteq (V,\Dict_{V})$ is defined differently depending on the keys in each associated dictionary:
+% 		\begin{enumerate}
+% 			\item For unique keys, 
+% 			% $\nexists_{j \in 1,\dots,n_b} \st \Key_{j} \in \Dict_{X}$,
+% 			% $\Key_{i} \notin \Dict_{Y}$ and $\Key_{j} \notin \Dict_{X}$, 
+% 			\todo{look at the best way to notate this... do we need to make $\Key$ within a set? does this make sense as is?}
+% 			$\Key$,
+% 			within each dictionary $\Dict_{X}$ and $\Dict_{Y}$, the associated sets, $X_{i}$ and $Y_{j}$ are kept and associated within $\Dict_{C}$ to the appropriate index in the new collection $C$.
+% 			\item For keys that are shared between the two dictionaries 
+% 		\end{enumerate}
+% 		(i.e) 
+% 		\begin{equation}
+% 			\begin{aligned}
+% 				(X,\Dict_{X}) \starCross (Y,\Dict_{Y}) &= (C, \Dict_{C})\\
+% 					&= ((X_{1}, \dots, X_{n_a}), \Dict_{X})
+% 						\starCross 
+% 						((Y_{1}, \dots, Y_{n_b}), \Dict_{Y})\\
+% 					&= ((\qty[X_{i}]_{\forall_{i\in I_{x}}}, \qty[Y_{j}]_{\forall j \in J_{y}}, \qty[X_{i} \cross Y_{j}]_{\forall i \in I_{xy}, j \in J_{xy}}), \Dict_{C})
+% 			\end{aligned}
+% 		\end{equation}
+% 		where $I_{x} = \{i \st \Key_{ai} \notin \Dict_{Y}\}$, $J_{y} = \{j \st \Key_{bi} \notin \Dict_{X}\}$, $I_{xy} = \{i \st \Key_{ai} \in \Dict_{Y}\}$, $J_{xy} = \{j \st \Key_{bj} \in \Dict_{X}\}$, and $\Dict_{C}$ is relates the keys in $\Dict_{X} \cup \Dict_{Y}$ to the appropriate sets in collection $C$.
+% 	\end{definition}
+
+% 	This same method of separating between unique and shared dimensions is used in all dimension-aware set operations where all unique sets are maintained and
+
+% }
