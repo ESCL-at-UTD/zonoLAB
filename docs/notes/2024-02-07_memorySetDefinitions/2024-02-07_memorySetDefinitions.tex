@@ -244,7 +244,11 @@ Since each of the keys has a one-to-one correspondence(bi-jective?), each dictio
 
 	Let $\Dict_{Z} = \{\dimDict_{Z},\factorDict_{Z},\conDict_{Z}\}$ be the dictionaries for the dimensions, factors, and constraints respectively.
 	
-	$(Z,\Dict_{Z})$ is now considered to be a dimension-aware and memory-preserving set.\todo{should we do $(Z,\Dict_{Z})$ or $Z = \{G,c,A,b,\dSet,\Dict_{Z}\}$?}
+	$(Z,\Dict_{Z})$ is now considered to be a dimension-aware and memory-preserving set.
+	
+	Alternatively, the dictionary can be encorporated into the structure itself as $Z = \{G,c,A,b,\dSet,\Dict\}$.
+	
+	\todo{should we do $(Z,\Dict_{Z})$ or $Z = \{G,c,A,b,\dSet,\Dict_{Z}\}$?}
 \end{definition}
 
 \textbf{The following are explicit definitions for the opperations but need not be fully written out (or in seperate definitions) for each to provide all the info} 
@@ -264,9 +268,13 @@ Since each of the keys has a one-to-one correspondence(bi-jective?), each dictio
 \begin{definition}[Demension-aware and Memory-preserving Intersection]
 	Let $(X,\Dict_{X})$ and $(Y,\Dict_{Y})$ be demension aware and memory preserving sets.
 	The demension-aware and memory-preserving intersection \footnote{we could likely just call this intersection and define a specific algebra instead of doing the $\starCap$ and fancy name} $(X,\Dict_{X}) \starCap (Y,\Dict_{Y})$ results in the following:
-	\begin{equation}
-		(X,\Dict_{X}) \starCap_{R} (Y,\Dict_{Y}) = \qty{
-			\mqty[
+	\begin{multline}
+		(X,\Dict_{X}) \starCap (Y,\Dict_{Y}) = \\
+		\left(
+			\begin{multlined}
+			\left\{
+			\begin{multlined}
+				\mqty[
 				G_{X}^{x,x} & G_{X}^{x,xy} & \vb{0}\\
 				\vb{0}		& G_{Y}^{y,xy} & G_{Y}^{y,y}\\
 				G_{X}^{xy,x} & G_{X}^{xy,xy} & \vb{0}
@@ -275,7 +283,7 @@ Since each of the keys has a one-to-one correspondence(bi-jective?), each dictio
 				c_{X}^{x}\\
 				c_{Y}^{y}\\
 				c_{X}^{xy}
-			],
+			],%\\
 			\mqty[
 				A_{X}^{x,x} 	& A_{X}^{x,xy} & \vb{0}\\
 				\vb{0}		& A_{XY}^{xy,xy}	& \vb{0}\\
@@ -293,8 +301,24 @@ Since each of the keys has a one-to-one correspondence(bi-jective?), each dictio
 				\dSet_{XY}^{xy}\\
 				\dSet_{Y}^{y}
 			]
-		}
-	\end{equation}
+			\end{multlined}
+		\right\},\\
+		\Dict_{X\cap Y} = \left\{
+			\begin{aligned}
+				\dimDict_{X \cap Y} &= \qty{
+				\dimKey_{X}^{x}, \dimKey_{Y}^{y}, \dimKey_{XY}^{xy}
+			}\\
+			\factorDict_{X \cap Y} &= \qty{
+				\factorKey_{X}^{x},\factorKey_{XY}^{xy},\factorKey_{Y}^{y}
+			}\\
+			\conDict_{X \cap Y} &= \qty{
+				\conKey_{X}^{x},\conKey_{XY}^{xy},\conKey_{Y}^{y},\conKey_{X \cap Y}^{new}
+			}
+			\end{aligned}
+		\right\}
+		\end{multlined}
+		\right)
+	\end{multline}
 	\todo{how do we best notate this... this relates to the function merge(X,Y)... also, is there a generalized-intersection version? I'm not sure... outside of an affine transform going into or out of it...}
 \end{definition}
 
