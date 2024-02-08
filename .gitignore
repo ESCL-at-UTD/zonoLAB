@@ -10,3 +10,5 @@ test.m
 *.fdb_latexmk
 *.fls
 *.synctex.gz
+*.ent
+*.out
