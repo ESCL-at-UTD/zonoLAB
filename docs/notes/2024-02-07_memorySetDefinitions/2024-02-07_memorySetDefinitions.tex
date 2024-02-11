@@ -259,7 +259,7 @@ If all of the transformations are bijective, then the $\Dict_{g_k(X,Y)}$ could l
 	)
 \]
 
-\subsubsection{General Operation Implementations}
+\subsubsection{General Operation Implementations} \label{sec:gen_op_implimentation}
 Introduction of set operations to this structure becomes a bit more difficult.
 Tracking the origin of sets through transformations is simple enough, but retaining all the information may become more difficult under successive operations...
 
@@ -272,7 +272,7 @@ To only maintain the origin-set information, the ``lazy''-set approach of not ev
 
 \textbf{``Lazy''-set Successive Set Operations}
 \todo{using $\Rel$ as the operation symbol becouse idk what is better...}
-\begin{example}[relation between all odd-numbered sets]
+\begin{example}[relation between all odd-numbered sets] \label{ex:rel_odd_sets}
 	Let $([X_{i}]_{i=1,\dots,m}, \Dict_{X})$ be a set of memory-encoded sets.
 	
 	% Memory-preservation relation operation will maintain an origin memory-preserving approach...
@@ -346,11 +346,17 @@ In order to represent non-symetric convex polytopes, additional constraints can 
 \]
 Another extension involves the introduction of a restriction upon certain factors to become discrete factors (i.e. $\xi_{i} \in \{-1,1\}$).
 This ``hybrid-zonotope'' can be represented as two separate generator and constraint matrices (as is common in other literature)
-\footnote{I don't want to use that notation... it's too confusing to me when comparing to the full zonotope framework}
+\footnote{
+	I don't want to use that notation... 
+	it's more confusing to me when doing the full zonotope-based framework... 
+	plus it gets converted into this for the optimization problem anyway...
+}
 % ($G_c \in \V^{n\cross n_{g_c}$, $G_d \in \V^{n\corss n_{g_d}}}$) 
 or alternatively an additional constraint can be placed upon certain generators that requires them to be discrete.
 This can be easily described with an additional vector $\dSet \in \{0,1\}^{n_g}$, in which the boolean true $(\dSet_{i} = 1)$ indicates that the generator is discrete.
-This restriction can either be ensured with distinct constraints of $\abs{\xi_{i}} = 1 \forall_{i \st \dSet_{i} = 1}$ or through an element-wise 1-norm constraint of $\norm{\dSet \odot \xi}_{1} = \norm{\dSet}_{1}$. \[
+This restriction can either be ensured with distinct constraints of $\abs{\xi_{i}} = 1 \forall_{i \st \dSet_{i} = 1}$ or through an element-wise 1-norm constraint of $\norm{\dSet \odot \xi}_{1} = \norm{\dSet}_{1}$. 
+\todo{is this an okay marker? or is there a better approach for notation w/out doing sucky split matrix versions?}
+\[
 \begin{aligned}
 	Z &= \{G,c,A,b,\dSet\} \\
 		&= \qty{c + G \xi,  \forall_{\xi \in \R^{n_g}} \norm{\xi}_\infty \leq 1 \land \norm{\dSet \odot \xi}_{1} = \norm{\dSet}_{1} \land A\xi = b}
@@ -400,11 +406,18 @@ Since each of the keys has a one-to-one correspondence\footnote{(bijective?)}, e
 	Inherently this does not eliminate the information being stored but encodes it further into the underlying structure of the set requiring more complicated dictionary management.
 \end{remark}
 
+
+\todo{
+	Would a better definition of dictionaries and the convertion from general to zonotope (like origin vector spaces to individual dims labels or the origin sets generator/constraints vs set-operation generators/constraints?) be useful? (well potentially, but is it simple or complicated to generalize?)
+	Is this related to how tags may work/apply?
+}
+
+
 \textbf{The following are explicit definitions for the opperations but need not be fully written out (or in seperate definitions) for each to provide all the info} 
 
 \begin{definition}[Demension-aware and Memory-preserving Minkowski Sum]
-	Let $(X,\Dict_{X})$ and $(Y,\Dict_{Y})$ be demension aware and memory preserving sets.
-	The demension-aware and memory-preserving minkowski-sum \footnote{we could likely just call this intersection and define a specific algebra instead of doing the $\starOplus$ and fancy name} $(X,\Dict_{X}) \starOplus (Y,\Dict_{Y})$ results in the following:
+	Let $(X,\Dict_{X})$ and $(Y,\Dict_{Y})$ be demension aware and memory-encoded sets.
+	The dimension-aware and memory-preserving minkowski-sum \footnote{we could likely just call this intersection and define a specific algebra instead of doing the $\starOplus$ and fancy name} $(X,\Dict_{X}) \starOplus (Y,\Dict_{Y})$ results in the following:
 	\begin{equation}\begin{multlined}
 		(X,\Dict_{X}) \starOplus (Y,\Dict_{Y})  = \\
 		\left(
@@ -459,8 +472,8 @@ Since each of the keys has a one-to-one correspondence\footnote{(bijective?)}, e
 
 
 \begin{definition}[Demension-aware and Memory-preserving Intersection]
-	Let $(X,\Dict_{X})$ and $(Y,\Dict_{Y})$ be demension aware and memory preserving sets.
-	The demension-aware and memory-preserving intersection \footnote{we could likely just call this intersection and define a specific algebra instead of doing the $\starCap$ and fancy name} $(X,\Dict_{X}) \starCap (Y,\Dict_{Y})$ results in the following:
+	Let $(X,\Dict_{X})$ and $(Y,\Dict_{Y})$ be demension-aware and memory-encoded sets.
+	The dimension-aware and memory-preserving intersection \footnote{we could likely just call this intersection and define a specific algebra instead of doing the $\starCap$ and fancy name} $(X,\Dict_{X}) \starCap (Y,\Dict_{Y})$ results in the following:
 	\begin{multline}
 		(X,\Dict_{X}) \starCap (Y,\Dict_{Y}) = \\
 		\left(
@@ -526,21 +539,37 @@ Since each of the keys has a one-to-one correspondence\footnote{(bijective?)}, e
 
 
 
+\begin{definition}[Dimension-aware and Memory-preserving Affine Transformation]
+	Let $(X,\Dict_{X})$ be a dimension-aware and memory-encoded zonotope-based set.
+	For any standard affine transformation, $f(x) = M X + b$, memory will be easily preserved.
+	Which the affine transformation is also endowed with specifications of appropriate input and output dimensions, $\dimDict_{f(x)} : \dimKey^{X}_{i} \to \dimKey^{f(X)}_{j}$, then a memory-preservation transformation can easily occur.
+
+	\todo{Put the definition here}
+
+\end{definition}
 
 
+\begin{definition}[Dimension-aware and memory-preserving transformations]
+	Let $(X,\Dict_{X})$ and $(Y,\Dict_{Y})$ be dimension-aware and memory-encoded zonotope-based sets.
+	For a \todo{convex?... do we limit X,Y to convex too? (eliminates hybzono...)} function $g : \V_{X} \cross \V_{Y} \to \V_{g(X,Y)}$, 
+\end{definition}
+
+\begin{definition}[Zonotope-based set transformation mapping]
+	(definition of essentially the open-loop state-update equation... but a generic mapping)
+\end{definition}
 
 
+\subsection{Application to reachability}
 
+\begin{definition}[Dimension-aware and Memory-preserving Successor Set Definition]
+	Look at the hybrid-zonotope paper for the specifics of the reachability example... 
+	eq 5/ \& 6 could become much simpler using the dimensional-awareness definition... 
+	\url{https://arxiv.org/pdf/2304.06827.pdf}
 
-
-
-
-
-
-
-
-
-
+	The memory components are what I'm currently finding tricky and how it'll propagate through the successor-set mapping... 
+	is it just like \autoref{sec:gen_op_implimentation} and successive constraints being added like in \autoref{ex:rel_odd_sets}?
+	Or is it completely different if we restrict the transformation into a zonotope-based dim-aware set?
+\end{definition}
 
 
 
