@@ -154,28 +154,89 @@ Consider a generic affine transformation ($f(x) = Mx + b$) and a general transfo
 
 Additionally, suppose/assume that there are relations $\Rel$, (such as set operations) so that within $(X_{i}, Y_{j}, X_{i} \Rel Y_{j})$, $X_{i} \Rel Y_{j}$ can be defined with constraints dependent on $X_{i}$ and $Y_{j}$.
 
-\subsubsection{Affine transformation:}
+\subsubsection{Simple (Affine) transformation:}
 For memory-encoded sets $([X_{i}]_{i=1,\dots,n_x},\Dict_{X})$ being placed through the affine transformation $f$, the new sets can be transformed with no adjustment to the dictionary but the individual sets will now be endowed with an affine mapping.
 (i.e.)\[
 	([X_{i}]_{i=1,\dots,n_x},\Dict_{X}) 
 	\overset{f(x)}{\rightarrow} 
-	(f([X_{i}]_{i=1,\dots,n_x}),\Dict_{X})
-	= ([f(X_{i})]_{i=1,\dots,n_x},\Dict_{X})
-	= ([M X_{i} + b]_{i=1,\dots,n_x},\Dict_{X})
+	(f([X_{i}]_{i=1,\dots,n_x}),\Dict_{f(X)})
+	= ([f(X_{i})]_{i=1,\dots,n_x},\Dict_{f(X)})
+	= ([M X_{i} + b]_{i=1,\dots,n_x},\Dict_{f(X)})
 \]
-Within our case of memory, the previous sets could also be maintained (although technically not necessary for this operation if not doing a successor set) resulting in the following:
+In this instance it is possible for $\Dict_{f(X)} = \Dict_{X}$, or at least the simple transformation ensures that the dictionary would have a one-to-one correspondence with the new dictionary.
+
+In a more general sense, the origin sets could also be retained in a new structure that would directly relate the origin sets with the new set:
+% \[
+% 	([X_{i}]_{i=1,\dots,n_x},\Dict_{X}) 
+% 	\overset{f(x)}{\rightarrow} 
+% 	(([X_{i}]_{i=1,\dots,n_x}, [M X_{i} + b]_{i=1,\dots,n_x}),\Dict_{X}) 
+% \]
 \[
-	([X_{i}]_{i=1,\dots,n_x},\Dict_{X}) 
+	\qty(\mqty[[X_{i}]_{i=1,\dots,n_x}], \Dict_{X})
 	\overset{f(x)}{\rightarrow} 
-	(([X_{i}]_{i=1,\dots,n_x}, [M X_{i} + b]_{i=1,\dots,n_x}),\Dict_{X}) 
+	\qty(\mqty[
+		[X_{i}]_{i=1,\dots,n_x}\\
+		[M X_{i} + b]_{i=1,\dots,n_x}], 
+	\mqty[\Dict_{X}\\ \Dict_{f(x)}]
+	% \Dict_{f(X)}
+		)
 \]
-Note that the dictionary $\Dict_{X}$ continues to indicate that the $X_{i}$ sets are the same/related/from the same origin set.
+Note that the dictionary $\Dict_{f(X)}$ continues to indicate that the $X_{i}$ sets in the transformed sets are the same/related/from to the origin set in the same structure.
+
+\footnote{
+	The way this dictionary points and relates the origin-sets to within the other sets is not well-defined...
+	within a zonotope this can just be related to the factors as the collumns, but I'm not sure how this is explicitly described within a generic structure outside of this being a thing
+}
 
 \subsubsection{General transformation}
-For memory-encoded sets $([X_{i}]_{i=1,\dots,m}, \Dict_{X})$ and $([Y_{j}]_{j=1,\dots,m}, \Dict_{Y})$ ($m < n_x,n_y$) being placed through the general transformation of $g_{k}(x,y)$ (of which $k$ is distinct for each pair of $i$ and $j$), the memory-preservation transformation (just a successor set???) results in \[
-	([X_{i}]_{i=1,\dots,m},[Y_{j}]_{j=1,\dots,m},[(X_{i}, Y_{j}) \overset{g_{k}(x,y)}{\to} g_k(X_{i},Y_{j})]_{\forall_{i=j=k=1,\dots,m}}, (\Dict_{X},\Dict_{Y}))
+For memory-encoded sets $([X_{i}]_{i=1,\dots,m}, \Dict_{X})$ and $([Y_{j}]_{j=1,\dots,m}, \Dict_{Y})$ ($m < n_x,n_y$) being placed through the general transformation of $g_{k}(x,y)$ (of which $k$ is distinct for each pair of $i$ and $j$), the memory-preservation transformation \footnote{successor-set structure?} results in:
+\[
+	\qty(
+		\mqty[
+			[X_{i}]_{i=1,\dots,m}\\
+			[Y_{j}]_{j=1,\dots,m}
+		],
+		\mqty[\Dict_{X}\\ \Dict_{Y}]
+	)
+	\overset{g_k(x,y)}{\to}
+	\qty(
+		\mqty[[g_k(X_{i},Y_{j})]_{\forall_{i=j=k=1,\dots,m}}],
+		\Dict_{g_k(X,Y)}
+	)
 \]
-Note again that the dictionary still exists and connects the origination sets to the transformed results
+Unlike the simple transformations, the directly inverse of the operation and recreation of the origin sets from the transformed sets cannot be guaranteed in general.
+If all of the transformations are bijective, then the $\Dict_{g_k(X,Y)}$ could likely contain all the information needed to recreate the origin sets, but still the structure maintaining the previous sets may be beneficial until a specific projection is needed:
+\[
+	\qty(
+		\mqty[
+			[X_{i}]_{i=1,\dots,m}\\
+			[Y_{j}]_{j=1,\dots,m}
+		],
+		\mqty[\Dict_{X}\\ \Dict_{Y}]
+	)
+	\overset{g_k(x,y)}{\to}
+	\qty(
+		\mqty[
+			[X_{i}]_{i=1,\dots,m}\\
+			[Y_{j}]_{j=1,\dots,m}\\
+			[g_k(X_{i},Y_{j})]_{\forall_{i=j=k=1,\dots,m}}
+		],
+		\mqty[
+			\Dict_{X}\\ 
+			\Dict_{Y}\\ 
+			\Dict_{g_k(X,Y)}
+		]
+	)
+\]
+
+\subsubsection{General Relation Implementations}
+Introduction of relations (prominently set-operations) to this structure becomes a bit more difficult.
+Tracking the origin of sets through transformations is simple enough but depending on the relations themselves, to retain all the information may be simple for a single operations, but the successive operations is likely more difficult...
+
+
+
+
+
 
 
 \todo{Continue with this and implement the relations... that involves adding constraints that relate specific `'`dimensions'' to one another... need additional dictionary???}
