@@ -55,14 +55,14 @@ tic
 [NN1,Y] = reluNN(X,Ws,bs,a);
 toc
 tic
-[NN2,Y2] = reluNN_memZono(X,Ws,bs,a);
+[NN2,Y2] = reluNN_memZono_unified(X,Ws,bs,a);
 toc
 
 NN = NN2;
 
 % Plot Hybrid Zonotope
 subplot(1,4,4)
-figure
+% figure
 plot(NN,'r',1);
 grid on;
 title('Hybrid Zonotope')
