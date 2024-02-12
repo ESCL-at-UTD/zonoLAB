@@ -218,7 +218,8 @@ Note that the dictionary $\Dict_{f(X)}$ continues to indicate that the $X_{i}$ s
 }
 
 \subsubsection{General transformation}
-\todo{this is only pair-wise... would general transformation on only one set make mores sense?}
+\todo{this is only pair-wise... would general transformation on only one set make mores sense?...}
+\todo{eliminate the extra sets... not needed... the general transformation can be just be done on two sets...}
 For memory-encoded sets $([X_{i}]_{i=1,\dots,m}, \Dict_{X})$ and $([Y_{j}]_{j=1,\dots,m}, \Dict_{Y})$ ($m < n_x,n_y$) being placed through the general transformation of $g_{k}(x,y)$ (of which $k$ is distinct for each pair of $i$ and $j$), the memory-preservation transformation \footnote{successor-set structure?} results in:
 \[
 	\qty(
@@ -235,7 +236,7 @@ For memory-encoded sets $([X_{i}]_{i=1,\dots,m}, \Dict_{X})$ and $([Y_{j}]_{j=1,
 	)
 \]
 Unlike the simple transformations, the directly inverse of the operation and recreation of the origin sets from the transformed sets cannot be guaranteed in general.
-If all of the transformations are bijective, then the $\Dict_{g_k(X,Y)}$ could likely contain all the information needed to recreate the origin sets, but still the structure maintaining the previous sets may be beneficial until a specific projection is needed:
+If all of the transformations are bijective, then the $\Dict_{g_k(X,Y)}$ could likely contain all the information needed to recreate the origin sets, but still the structure maintaining the previous sets may be beneficial to describe the complete relationship until a specific projection is needed:
 \[
 	\qty(
 		\mqty[
@@ -249,7 +250,7 @@ If all of the transformations are bijective, then the $\Dict_{g_k(X,Y)}$ could l
 		\mqty[
 			[X_{i}]_{i=1,\dots,m}\\
 			[Y_{j}]_{j=1,\dots,m}\\
-			[g_k(X_{i},Y_{j})]_{\forall_{i=j=k=1,\dots,m}}
+			[g_k(X_{i},Y_{j})]_{i=j=k=1,\dots,m}
 		],
 		\mqty[
 			\Dict_{X}\\ 
@@ -258,20 +259,33 @@ If all of the transformations are bijective, then the $\Dict_{g_k(X,Y)}$ could l
 		]
 	)
 \]
+\begin{remark}[Usage of structure for input-output mapping]
+	The structure defined above maintains the relationship between input and output for the generic transformation $g_k(X,Y)$, and thus the set can be described as a memory-encoded transformation $(\Phi(X,Y),\Dict_{\Phi})$:
+	\[
+		\Phi(X,Y) = \qty{
+			\mqty[[x_{i}]_{i=1,\dots,m}\\ 
+			[y_{i}]_{j=1,\dots,m}\\ 
+			[g_{k}(x_{i},y_{j})]_{i=j=k=1,\dots,m}
+			] \st 
+			\mqty{
+				[x_{i} \in X_{i}]_{i=1,\dots,m}\\ 
+				[y_{j} \in Y_{j}]_{j=1,\dots,m}
+			}
+		}
+	\]
+	where $\Dict_{\Phi}$ provides appropriate labeling.
+\end{remark}
 
 \subsubsection{General Operation Implementations} \label{sec:gen_op_implimentation}
 Introduction of set operations to this structure becomes a bit more difficult.
 Tracking the origin of sets through transformations is simple enough, but retaining all the information may become more difficult under successive operations...
 
-
 To only maintain the origin-set information, the ``lazy''-set approach of not evaluating until the end may retain all the information desired:
 % \begin{definition}[``Lazy''-set Successive Set Relationships]
 % 	Let $([X_{i}]_{i=1,\dots,m}, \Dict_{X})$ be a set of memory-encoded sets.
 % \end{definition}
-
-
-\textbf{``Lazy''-set Successive Set Operations}
-\todo{using $\Rel$ as the operation symbol becouse idk what is better...}
+% \textbf{``Lazy''-set Successive Set Operations}
+\todo{using $\Rel$ as the operation symbol because idk what is better...}
 \begin{example}[relation between all odd-numbered sets] \label{ex:rel_odd_sets}
 	Let $([X_{i}]_{i=1,\dots,m}, \Dict_{X})$ be a set of memory-encoded sets.
 	
@@ -322,11 +336,11 @@ To only maintain the origin-set information, the ``lazy''-set approach of not ev
 		)
 	\]
 	In this case the set-operation constraints would rely on the dictionaries to create said constraints.
+
 	Note: this is how this information is encoded within the zonotope-based sets but I'm not sure if this is inherently the best way to represent this information in this generic set-based representation.
 \end{example}
 
-
-
+\subsection{Dimensional-awareness and memory-preservation}
 
 
 
