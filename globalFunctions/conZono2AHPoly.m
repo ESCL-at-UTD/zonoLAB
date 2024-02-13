@@ -21,12 +21,12 @@ if Z.nC == 0
 else
     T = null(Z.A,'r');  % Computes the right null space of A.
     s = pinv(Z.A)*Z.b;
-    P = Polyhedron('H',[T ones(size(s,1),1)-s; -T ones(size(s,1),1)+s]); % Inequality constraints on \xi variables.
-    P = minHRep(P); % Removes redundant halfspaces
+    % P = Polyhedron('H',[T ones(size(s,1),1)-s; -T ones(size(s,1),1)+s]); % Inequality constraints on \xi variables.
+    % P = minHRep(P); % Removes redundant halfspaces
     G = Z.G*T;
     c = Z.c+Z.G*s;    
-    H = P.H(:,1:end-1);
-    k = P.H(:,end);
+    H = [T ; -T];
+    k = [ones(size(s,1),1)-s ; ones(size(s,1),1)+s];
 end
 
 end

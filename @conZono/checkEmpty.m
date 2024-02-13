@@ -22,6 +22,7 @@ end
 % Check for constraint matrices
 % Have to create an instance of A and b in the function if it does not exist
 % If input is a regular zonotope, set constraints to zero
+
 if isempty(obj.A)
     obj.A = 0;
 end
