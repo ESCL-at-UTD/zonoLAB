@@ -351,6 +351,13 @@ classdef memZono
         obj = merge(obj1,obj2,sharedDimLabels); % Intersection
         obj = combine(obj1,obj2); % Minkowski Sum
 
+
+        % Additional Methods
+        function out = linMap(in,M,outDims)
+            if ~iscell(outDims); outDims = memZono.genKeys(outDims,1:size(M,1)); end
+            out = in.transform([],M,[],outDims);
+        end
+
         %% Ploting
         plot(obj,dims,varargin);
 
