@@ -23,11 +23,23 @@ function B = subsref(A, S)
             c_ = A.c(i,:);
             A_ = A.A(k,j);
             b_ = A.b(k,:);
-            vset_ = A.vset(j);
+            vset_ = A.vset(1,k);
 
-            keys_.dims = A.dimKeys(i);
-            keys_.factors = A.factorKeys(j);
-            keys_.cons = A.conKeys(k);
+            if ischar(i)
+                keys_.dims = A.dimKeys;
+            else
+                keys_.dims = A.dimKeys(i);
+            end
+            if ischar(j)
+                keys_.factors = A.factorKeys;
+            else
+                keys_.factors = A.factorKeys(j);
+            end
+            if ischar(k)
+                keys_.cons = A.conKeys;
+            else
+                keys_.cons = A.conKeys(k);
+            end
 
             B = memZono(G_,c_,A_,b_,vset_,keys_);
     end

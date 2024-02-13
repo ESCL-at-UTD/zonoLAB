@@ -1,62 +1,67 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %   Class:
 %       memZono
-%       Memory-based Zonotope
+%       Dimension-aware and memory-encoded Zonotope
+%       Z = {c + G \xi | ||\xi||_inf <= 1, A \xi = b, 
+%               \xi_\in \{0,1\} \forall_{i \notin vset}}
+%       TODO: finalize definition @jruths - what else do we want for this
 %   Syntax:
 %       TODO: add
 %   Inputs:
-%       TODO: add
+%       z - zono object in base zonotope form
+%       keys - a struct specifying the underying keys or a string to generate keys from
+%       G - n x nG matrix to define zonotope in R^n with nG generators
+%       c - n x 1 vector to define center
+%       A - nC x nG matrix to define nC equality constraints (A \xi = b)
+%       b - nC x 1 vector to define nC equality constraints (A \xi = b)
+%       vSet - nG x 1 logical vector defining if continous or discrete
 %   Outputs:
-%       TODO: add
+%       Z - memZono object
 %   Notes:
 %       This class is built upon the functions written for the individual 
-%       zonoLAB classes but adds memory functionality and associated set 
-%       operations.
+%       zonoLAB classes but adds dimensional awareness and memory-encoding/ 
+%       preservation within the set operations.
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 classdef memZono
 
     %% Data
-    properties (Hidden)
-        G_
-        c_
-        A_ = []
-        b_ = []
-        vset
-        % tags struct = struct( ...
-        %     'factors',struct([]),...
-        %     'dims',struct([]),...
-        %     'cons',struct([]))
-    end
-
-    properties (Dependent,Hidden)
-        G
-        A
+    properties (Hidden) % Underlying data structure
+        G_      % Generator matrix
+        c_      % Center
+        A_ = [] % Constraint matrix
+        b_ = [] % Constraint vector
+        vset    % vSet defining if generators are continous or discrete
     end
 
     properties (Dependent)
-        c
-        b
-        % G
-        Gc
-        Gb
-        % A
-        Ac
-        Ab
+        c       % Center (n x 1)
+        b       % Constraint vector (nC x 1)
+        % G       % Generator matrix (n x nG)
+        Gc      % Continuous generator matrix (n x nGc)
+        Gb      % Binary generator matrix (n x nGb)
+        % A       % Constraint matrix (nC x nG)
+        Ac      % Continuous constraint matrix (nC x nGc)
+        Ab      % Binary constraint matrix (nC x nGb)
+    end
+
+    properties (Dependent,Hidden) %(hidden do to hyb-zono precidence)
+        G       % Generator matrix (n x nG)
+        A       % Constraint matrix (nC x nG)
+    end
+
+    % Dimensions
+    properties (Dependent) % These properties get automatically updated when used
+        n       % Dimension
+        nG      % Number of generators
+        nGc     % Number of continuous generators
+        nGb     % Number of binary generators
+        nC      % Number of constraints
     end
 
     % I/O zono
     properties (Dependent, Hidden)
-        Z
-        baseClass
-    end
-
-    % Dimensions
-    properties (Dependent)
-        n
-        nG
-        nGc
-        nGb
-        nC
+        Z           % Export to a base-zonotope class
+        baseClass   % Equivalent base-zonotope class
     end
 
     % Labeling
@@ -66,8 +71,7 @@ classdef memZono
             'dims',[],...
             'cons',[])
     end
-
-    properties (Dependent) % currently not hidden and simplified to just keys for now
+    properties (Dependent)
         factorKeys
         dimKeys
         conKeys
@@ -80,27 +84,27 @@ classdef memZono
                 if isa(varargin{1},'memZono') % <--- must have labels
                     obj = varargin{1};
                 else
-                    error('Needs to be labeld in some way')
+                    error('A memZono must be created with labels.')
                 end
             elseif nargin == 2 % <--- base object and labels
                 obj.Z = varargin{1};
                 obj.keys = varargin{2};
-            elseif nargin == 6 % <--- direct definition
+            elseif nargin == 6 % <--- direct definition (primarily internal use)
                 obj.G_ = varargin{1};
                 obj.c_ = varargin{2};
                 obj.A_ = varargin{3};
                 obj.b_ = varargin{4};
-                obj.vset = varargin{5};
+                obj.vset = logical(varargin{5});
                 obj.keys = varargin{6};
-            elseif nargin == 3 % <-- zono-based constructor
-                obj.Z = zono(varargin{1:2});
-                obj.keys = varargin{3};
-            elseif nargin == 5 % <--- conzono-based constructor
-                obj.Z = conZono(varargin{1:4});
-                obj.keys = varargin{5};
-            elseif nargin == 7 % <--- hybZono-based constructor
-                obj.Z = hybZono(varargin{1:6});
-                obj.keys = varargin{7};
+            % elseif nargin == 3 % <-- zono-based constructor
+            %     obj.Z = zono(varargin{1:2});
+            %     obj.keys = varargin{3};
+            % elseif nargin == 5 % <--- conzono-based constructor
+            %     obj.Z = conZono(varargin{1:4});
+            %     obj.keys = varargin{5};
+            % elseif nargin == 7 % <--- hybZono-based constructor
+            %     obj.Z = hybZono(varargin{1:6});
+            %     obj.keys = varargin{7};
             else
                 error('non-simple constructor not specified')
             end
@@ -111,7 +115,10 @@ classdef memZono
     methods
         % Matrices
         % Get Matrices
-        function out = get.G(obj); out = obj.G_; end
+        function out = get.G(obj) 
+            if isempty(obj.G_); obj.G_ = zeros(obj.n,0); end
+            out = obj.G_; 
+        end
         function out = get.c(obj); out = obj.c_; end
         function out = get.A(obj)
             if isempty(obj.A_); obj.A_ = zeros(0,obj.nG); end
@@ -138,7 +145,7 @@ classdef memZono
         function obj = set.Ab(obj,in); obj.A_(:,~obj.vset) = in; end
 
         % Dimensions
-        function n = get.n(obj); n = size(obj.G,1); end
+        function n = get.n(obj); n = size(obj.c,1); end
         function nG = get.nG(obj); nG = size(obj.G,2); end
         function nC = get.nC(obj); nC = size(obj.A,1); end
         % hybZono dims
@@ -228,7 +235,26 @@ classdef memZono
             catch; warning('con key set issue');
             end
         end
-           
+        function out = keysStartsWith(obj,pattern)
+            out.factorKeys = {};
+            out.dimKeys = {};
+            out.conKeys = {};
+            for i=1:length(obj.factorKeys)
+                if startsWith(obj.factorKeys{i},pattern)
+                    out.factorKeys = [out.factorKeys,obj.factorKeys{i}];
+                end
+            end
+            for i=1:length(obj.dimKeys)
+                if startsWith(obj.dimKeys{i},pattern)
+                    out.dimKeys = [out.dimKeys,obj.dimKeys{i}];
+                end
+            end
+            for i=1:length(obj.conKeys)
+                if startsWith(obj.conKeys{i},pattern)
+                    out.conKeys = [out.conKeys,obj.conKeys{i}];
+                end
+            end
+        end
     end
 
     %% Keys Stuff
@@ -291,6 +317,11 @@ classdef memZono
             end
         end
 
+        function [out] = genKeys(prefix,nums)
+            labeler = @(letter,num)sprintf('%s_%i',letter,num);
+            out = arrayfun(@(num){labeler(prefix,num)},nums);
+        end
+
     end
         
 
@@ -316,43 +347,53 @@ classdef memZono
     %% General Methods
     methods
         %% Set Operations
-        obj = minSum(obj1,obj2);
-        obj = linMap(obj,M);
-        obj = cartProd(obj1,obj2);
-        obj = generalizedIntersection(obj1,obj2,R,conKeyPrefix);
-        obj = labeledIntersection(obj1,obj2,dims,conKeyPrefix);
+        obj = transform(obj1,obj2,M,inDims,outDims); % Affine Mapping w/ dims
+        obj = merge(obj1,obj2,sharedDimLabels); % Intersection
+        obj = combine(obj1,obj2); % Minkowski Sum
+
+
+        % Additional Methods
+        function out = linMap(in,M,outDims)
+            if ~iscell(outDims); outDims = memZono.genKeys(outDims,1:size(M,1)); end
+            out = in.transform([],M,[],outDims);
+        end
 
         %% Ploting
         plot(obj,dims,varargin);
 
         %% Overloading
-        function obj = plus(in1,in2)
-            % if class(in1) ~= 'memZono'
-            obj = minSum(in1,in2);
-            % % TODO: add if unlabeled
+        function out = plus(in1,in2)
+            out = in1.combine(in2);
         end
-        function obj = mtimes(in1,in2)
-            % TODO: assuming forward... include other as well
-            if class(in2) == 'memZono'
-                obj = in2.linMap(in1);
+        function out = mtimes(in1,in2)
+            if isa(in2,'memZono')
+                out = in2.transform([],in1); %<== flip the syntax order
             else
-                error('not coded')
+                error('mtimes only overloaded for direction')
             end
         end
-        function obj = and(obj1,obj2)
-            obj = labeledIntersection(obj1,obj2); %<-- intersects shared dims
+        function out = and(obj1,obj2)
+            out = merge(obj1,obj2);
         end
 
-        % function obj = or(obj1,obj2)
-        %     error('Union Not Coded')
-        %     % obj = union(obj1,obj2);
-        % end
+        function obj = or(obj1,obj2)
+            error('Union not yet implimented')
+            % obj = union(obj1,obj2);
+        end
                 
-        % Extended CartProd
+        % Extended intersection
         function obj = vertcat(varargin)
             obj = varargin{1};
-            for i = 2:nargin %<========= not really efficient
-                obj = cartProd(obj,varargin{i});
+            for i = 2:nargin %<========= not efficient
+                obj = merge(obj,varargin{i});
+            end
+        end
+
+        % Extended minkowsi sum
+        function obj = horzcat(varargin)
+            obj = varargin{1};
+            for i = 2:nargin
+                obj = combine(obj,varargin{i});
             end
         end
 
@@ -360,14 +401,17 @@ classdef memZono
         B = subsref(A,S);
         % A = subsasgn(A,S,B); %<---- not completed
         
-        function out = projection(in,dims)
-            % if ~ismember(dims,in.dimKeys)
-            %     dims = in.dimKeys(startsWith(in.dimKeys,dims));
-            % end
-            [~,idx] = ismember(dims,in.dimKeys);
-            keys_ = in.keys;
+
+        % Projection is prodomenently defined for internal use
+        function out = projection(obj,dims) 
+            if ~iscell(dims) % if not already in cell form
+                if strcmp(dims,'all'), dims = obj.dimKeys; end
+                % TODO: include a `starts with' functionality?
+            end
+            [~,idx] = ismember(dims,obj.dimKeys);
+            keys_ = obj.keys;
             keys_.dims = dims;
-            out = memZono(in.G(idx,:),in.c(idx,:),in.A,in.b,in.vset,keys_);
+            out = memZono(obj.G(idx,:),obj.c(idx,:),obj.A,obj.b,obj.vset,keys_);
         end
 
     end

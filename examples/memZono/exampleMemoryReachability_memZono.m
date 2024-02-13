@@ -21,22 +21,42 @@ U_nom = zono(1.5,0);
 X_{1} = memZono(X_0,'x_1');
 X_all = X_{1};
 
-% Time-evolution
-for k = 1:N-1
-    % Current Input
-    U_{k} = memZono(U_nom,sprintf('u_%d',k));
-
-    % Step Update
-    X_{k+1} = A*X_{k} + B*U_{k};
-    X_{k+1}.dimKeys = sprintf('x_%d',k+1);
-
-    % Save Data
-    X_all = [X_all; U_{k}; X_{k+1}]; %<---- vertcat() = cartProd()
-end
-
-%% Intersection
+% Terminal Set
 X_F = memZono(X_F,sprintf('x_%d',N));
-X_inter = X_all & X_F; % <--- intersect common dimensions
+
+switch 'affine&intersect' %'withOverload' 'affine&intersect'
+    % case 'withOverload'
+    %     % Time-evolution
+    %     for k = 1:N-1
+    %         % Current Input
+    %         U_{k} = memZono(U_nom,sprintf('u_%d',k));
+
+    %         % Step Update
+    %         X_{k+1} = A*X_{k} + U_{k}.affine([],B,{},sprintf('x_%d',k));
+    %         X_{k+1}.dimKeys = sprintf('x_%d',k+1);
+
+    %         % Save Data
+    %         % X_all = [X_all; U_{k}; X_{k+1}]; %<---- vertcat() = intersect()
+    %         X_all = X_all & U_{k} & X_{k+1}; %<--- w/ and()
+
+    %     end
+    %     X_inter = X_all & X_F; % <--- intersect common dimensions
+    case 'affine&intersect'
+        % Time-evolution
+        for k = 1:N-1
+            % Current Input
+            U_{k} = memZono(U_nom,sprintf('u_%d',k));
+
+            % Step Update
+            newDims = {sprintf('x_%d_1',k+1),sprintf('x_%d_2',k+1)};
+            X_{k+1} = X_{k}.transform(U_{k}.transform([],B,{},newDims),A,{},newDims);
+
+            % Save Data
+            X_all = X_all.merge(U_{k});
+            X_all = X_all.merge(X_{k+1});
+        end
+        X_inter = X_all.merge(X_F,'terminal_cons'); % <--- intersect common dimensions
+end
 
 %% Plotting
 fig = figure;
@@ -47,7 +67,7 @@ hold on;
 plot(X_F, 'all', 'g', 1);
 drawnow;
 for k = 1:N
-    plot(X_inter, sprintf('x_%d',k), selectColor(k), 0.6);
+    plot(X_inter, {sprintf('x_%d_1',k),sprintf('x_%d_2',k)}, selectColor(k), 0.6);
     plot(X_{k}, 'all', selectColor(k), 0.2);
     drawnow;
 end
