@@ -23,11 +23,7 @@ function B = subsref(A, S)
             c_ = A.c(i,:);
             A_ = A.A(k,j);
             b_ = A.b(k,:);
-            if ischar(j) % when j==':'. Needed because v(:) reshapes v into a column matrix (intended matlab functionality)
-                vset_ = A.vset;
-            else
-                vset_ = A.vset(j);
-            end
+            vset_ = A.vset(1,k);
 
             if ischar(i)
                 keys_.dims = A.dimKeys;

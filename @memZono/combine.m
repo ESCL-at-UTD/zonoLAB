@@ -1,7 +1,6 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %   Method:
-%       A dimension-aware and memory-enabled generalization of the hybrid 
-%       zonotope Minkowski Sum operation.
+%       A dimension-aware and memory-preserving minkowski sum of memZono objects
 %   Syntax:
 %       [Z] = combine(X,Y)
 %   Inputs:
@@ -11,9 +10,9 @@
 %       Z - memZono in R^p, where n,m < p <= n+m
 %           shared dimensions are summed, unshared dimensions are kept
 %   Notes:
-%       The intended functionality when there are no shared dimensions is
-%       that the resulting memZono stacks the two input memZonos (aligning
-%       factors).
+%       Shared dimensions undergo a minkowski sum operation while 
+%       all other dimensions are kept. 
+%       Factors are aligned to preserve memory.
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function obj = combine(obj1,obj2)
 
