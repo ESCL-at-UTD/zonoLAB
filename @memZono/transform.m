@@ -1,7 +1,7 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %   Method:
-%       A dimension-aware and memory-enabled generalization of the hybrid 
-%       zonotope intersection operation.
+%       A dimension-aware and memory-preserving transformation with dimensional 
+%       specification options.
 %   Syntax:
 %       out = transform(X,[],M)       <= out = M*X
 %       out = transform(X,b,[])       <= out = X + b
@@ -17,7 +17,7 @@
 %       outDims - a cell array of relabeled dimensions after transformation (length m)
 %                   can be empty if matrix is square or a scalar
 %   Outputs:
-%       Z - memZono in R^p, where n,m < p <= n+m
+%       Z - memZono in R^m
 %           Affine transformation M*X+b is applied to the inDims dimensions
 %           If Y memZono is specified, then combine(M*X,Y) is returned
 %   Notes:
@@ -34,10 +34,13 @@ function obj = transform(obj1,obj2,M, inDims, outDims)
     
     %% Input Conditioning
 
-    % if not inDims are specified, then the operation is applied to the entire zono object.
+    % if not inDims are specified, then the operation is applied to the entire memZono object.
     if isempty(inDims)
         inDims = obj1.dimKeys;
-    % TODO - need to check that if inDims is specified, inDims are all valid labels?
+    else
+        if ~all(ismember(inDims,obj1.dimKeys)) % checks that if inDims is specified, inDims are all valid labels
+            error('inDims specified not all within obj1')
+        end
     end
 
     % outDims must be given unless:
@@ -55,6 +58,7 @@ function obj = transform(obj1,obj2,M, inDims, outDims)
             outDims = inDims;
         end
     % TODO - need to check that if outDims is specified, outDims are all valid labels?
+    % (to: @jruths) - this check is dependent on the size of M thus I believe check is done already in other checks (from: @jonaswagner2826)
     end
 
     % inDims should match the input dimension of the linear map M, if it exists

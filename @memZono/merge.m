@@ -1,7 +1,6 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %   Method:
-%       A dimension-aware and memory-enabled generalization of the hybrid 
-%       zonotope intersection operation.
+%       A dimension-aware and memory-enabled intersection of memZono objects
 %   Syntax:
 %       [Z] = merge(X,Y,sharedDimLabels)
 %   Inputs:
@@ -13,13 +12,12 @@
 %                                    constraint key labels
 %   Outputs:
 %       Z - memZono in R^p, where n,m < p <= n+m
-%           Shared dimensions are intersected - these intersections result
-%           in new constraints (labels for these are provided by 
-%           sharedDimLabels). The unshared dimensions are kept.
+%           Shared dimensions are intersected, unshared dimensions kept
 %   Notes:
-%       The intended functionality when there are no shared dimensions is
-%       that the resulting memZono stacks the two input memZonos (aligning
-%       factors).
+%       Shared dimensions undergo an intersection and unshared dimensions 
+%       are maintained. Intersections will result in additional constraints 
+%       provided and labeled acording to sharedDimLabels.
+%       Factors are aligned to preserve memory.
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function obj = merge(obj1,obj2,sharedDimLabels)
     arguments
@@ -75,14 +73,14 @@ function obj = merge(obj1,obj2,sharedDimLabels)
 
     %% Shared Dimensions
     if ~isempty(ds)
-        % Intersection terms
+        % Intersection matrix definition
         R = zeros(length(ds),obj1.n);
         for k = 1:length(ds)
             j = idxds1(k); 
             R(k,j) = 1; 
         end
         
-        % Matrices
+        % Interesecting Matrices
         G_ = [G_;
             obj1.G(idxds1,idxk1), obj1.G(idxds1,idxks1), zeros(length(ds),length(k2));
         ];
@@ -97,6 +95,9 @@ function obj = merge(obj1,obj2,sharedDimLabels)
         ];
 
         % Labels
+        keys_.dims = [keys_.dims, ds];
+
+        % Constraint Labels
         if ~isa(sharedDimLabels,'cell')
             if ~(isstring(sharedDimLabels)||ischar(sharedDimLabels))
                 error('Intersection operation will add additional constraints but labels for new constraints are not given.'); 
@@ -108,8 +109,14 @@ function obj = merge(obj1,obj2,sharedDimLabels)
             end
         elseif length(sharedDimLabels) ~= length(ds)
             error('Intersection operation will add additional constraints but labels for new constraints are not given (or not enough given).');
+        else
+            cds = sharedDimLabels;
         end
-        keys_.dims = [keys_.dims, ds];
+        if ~isempty([obj1.conKeys,obj2.conKeys])
+            if any(ismember(cds,[obj1.conKeys,obj2.conKeys]))
+                error('Intersection labels already exists... provide new names')
+            end
+        end
         keys_.cons = [keys_.cons, cds];
     end
 
