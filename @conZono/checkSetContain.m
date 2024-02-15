@@ -20,29 +20,10 @@ if length(varargin) > 0
     verbose = true;
 end
 
-%Convert ConZonos to AH Polytopes
-[X_AH.G, X_AH.c, X_AH.H, X_AH.k] = conZono2AHPoly(X);
-[Y_AH.G, Y_AH.c, Y_AH.H, Y_AH.k] = conZono2AHPoly(Y);
-
-n_x = size(X_AH.G, 2);
-n_y = size(Y_AH.G, 2);
-n_hx = size(X_AH.H, 1);
-n_hy = size(Y_AH.H, 1);
-
-% Create optimization variables
+%create problem to pass to enforceSetContain
 prob = optimproblem;
-gamma = optimvar('gamma', n_y, n_x);
-beta = optimvar('beta', n_y);
-lambda = optimvar('lambda', n_hy, n_hx);
-l = optimvar('l', n_hy, n_hx);
-
 prob.Objective = 0; %Feasibility
-prob.Constraints.gamma = X_AH.G == Y_AH.G*gamma;
-prob.Constraints.beta = Y_AH.c - X_AH.c == Y_AH.G*beta;
-prob.Constraints.lambda_abs_1 = l >= lambda;
-prob.Constraints.lambda_abs_2 = l >= -lambda;
-prob.Constraints.lambda1 = l*X_AH.H == Y_AH.H*gamma;
-prob.Constraints.lambda2 = l*X_AH.k <= Y_AH.k + Y_AH.H*beta;
+prob = enforceSetContain(X,Y,prob);
 
 options = optimoptions('linprog','Display','off');
 [sol, fval, exitflag] = solve(prob, 'Options',options);
