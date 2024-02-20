@@ -20,7 +20,7 @@ function [prob] = enforceSetContain(X,Y,prob,varargin)
 
 %check for user input of suffix variable, otherwise 1
 if length(varargin) > 0
-    suffix = varargin;
+    suffix = string(varargin);
 else
     suffix = '1';
 end
