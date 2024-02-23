@@ -104,8 +104,8 @@ function out = affineMap(in,b,M,inDims,outDims)
             M*in.G(M_idx,:)
         ];
         c_ = [
-            in.c(pass_idx);
-            M*in.c(M_idx) + b
+            in.c(pass_idx,:);
+            M*in.c(M_idx,:) + b
         ];
         % only need to update the dimKeys - reordered and the mapped ones are relabeled
         keys_ = in.keys;

@@ -10,7 +10,9 @@ function plot(obj,dims,varargin)
         varargin
     end
     
-    if isempty(dims), dims = obj.dimKeys; end
+    if isempty(dims), dims = obj.dimKeys;
+    elseif isnumeric(dims), dims = obj.dimKeys(dims);
+    end
 
     Z_ = obj.projection(dims).Z;
     if Z_.n > 3, error('specify dims... too many to plot'); end

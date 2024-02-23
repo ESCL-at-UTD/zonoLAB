@@ -33,16 +33,16 @@ function obj = combine(obj1,obj2)
         zeros(length(d2),length(k1)), obj2.G(idxd2,idxks2), obj2.G(idxd2,idxk2)
         ];
     c_ = [
-        obj1.c(idxd1);
-        obj2.c(idxd2)
+        obj1.c(idxd1,:);
+        obj2.c(idxd2,:)
         ];
     A_ = [
         obj1.A(idxc1,idxk1), obj1.A(idxc1,idxks1), zeros(length(c1),length(k2));
         zeros(length(c2),length(k1)), obj2.A(idxc2,idxks2), obj2.A(idxc2,idxk2);
         ];
     b_ = [
-        obj1.b(idxc1);
-        obj2.b(idxc2);
+        obj1.b(idxc1,:);
+        obj2.b(idxc2,:);
         ];
 
     if obj1.vset(idxks1) ~= obj2.vset(idxks2)

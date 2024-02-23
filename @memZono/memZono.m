@@ -109,10 +109,16 @@ classdef memZono
                 error('non-simple constructor not specified')
             end
         end
-    end
+
+        % Copy constructor (allows relabeling dimension)
+        function out = copy(obj,varargin)
+            out = obj;
+            if nargin >1
+                out.dimKeys = varargin{1};
+            end
+        end
 
     %% Get/Set Functions
-    methods
         % Matrices
         % Get Matrices
         function out = get.G(obj) 
@@ -179,8 +185,7 @@ classdef memZono
 
         function obj = set.Z(obj,in)
             switch class(in)
-                case 'double'
-                    obj.G_ = zeros(size(in,1),0);
+                case {'double','sym','optim.problemdef.OptimizationVariable'}
                     obj.c_ = in;
                     obj.vset = [];
                 case 'zono'
@@ -351,12 +356,20 @@ classdef memZono
         obj = merge(obj1,obj2,sharedDimLabels); % Intersection
         obj = combine(obj1,obj2); % Minkowski Sum
 
-
         % Additional Methods
         function out = linMap(in,M,outDims)
             if ~iscell(outDims); outDims = memZono.genKeys(outDims,1:size(M,1)); end
             out = in.transform([],M,[],outDims);
         end
+        % function out = directSum(varargin)
+        %     % Sum without dimensional awareness
+        %     out = varargin{1};
+        %     for i = 2:nargin
+        %         if varargin{i}.n ~= out.n; error('Input dimensions not compatible'); end
+        %         varargin{i}.dimKeys = out.dimKeys;
+        %         out = out.combine(varargin{i});
+        %     end
+        % end
 
         %% Ploting
         plot(obj,dims,varargin);
