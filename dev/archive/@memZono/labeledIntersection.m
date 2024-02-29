@@ -1,8 +1,9 @@
-function obj = labeledIntersection(obj1,obj2,dims)
+function obj = labeledIntersection(obj1,obj2,dims,conKeyPrefix)
     arguments
         obj1 memZono
         obj2 memZono
-        dims = [];
+        dims = {};
+        conKeyPrefix = 'intersect';
     end
 
     % Select Dims if not defined....
@@ -20,8 +21,10 @@ function obj = labeledIntersection(obj1,obj2,dims)
     % Generate R
     R = zeros(length(dims),obj1.n);
     for k = 1:length(dims)
-        i = idxd2(k); j = idxd1(k); R(i,j) = 1;
+        % i = idxd2(k); j = idxd1(k); R(i,j) = 1;
+        j = idxd1(k); R(k,j) = 1; %<=== k corisponds to the dimensions of dims in that line of R
     end
 
-    obj = generalizedIntersection(obj1,obj2.projection(dims),R);
+    % Perform Intersection
+    obj = generalizedIntersection(obj1,obj2.projection(dims),R,conKeyPrefix);
 end

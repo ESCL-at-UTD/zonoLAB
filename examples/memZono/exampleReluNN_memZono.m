@@ -7,7 +7,7 @@
 % Parameters
 % Load parameters from mat file
 % This neural network approximates the function f = cos(X1)+sin(X2) over the domain [-5,5]x[-5,5]
-load("relu_sin_cos_2_20_10_10_1.mat");
+load("../Neural_Networks/relu_sin_cos_2_20_10_10_1.mat");
 
 % Plotting function over the trained dataset
 figure('Position',[0,0,1500,300])
@@ -52,7 +52,7 @@ X = hybZono(Gx, [], cx, [], [], []);
 % Construct the output zonotope Z and the lifted input-output mapping XZ
 fprintf('Zonotope model: ')
 tic
-[NN,Y] = reluNN(X,Ws,bs,a);
+[NN,Y] = reluNN_memZono(X,Ws,bs,a);
 toc
 
 % Plot Hybrid Zonotope
