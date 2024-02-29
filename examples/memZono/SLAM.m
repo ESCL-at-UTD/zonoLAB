@@ -76,7 +76,7 @@ for k = 1:T     % loop over every time step
             L{k,i} = RH + r_m{k,i};                     % set of landmark i from measurement at time-step k
             L{k,i} = memZono(L{k,i},['L_',num2str(k-1),'_',num2str(i)]);    % label factors appropriately
             L{k,i}.dimKeys = sprintf('x_%ie',k-1);                          % to ensure proper minkowski sum
-            L{k,i} = plus(X_nom{k},L{k,i});                                 % add state uncertainty without constraints
+            L{k,i} = combine(X_nom{k},L{k,i});                              % add state uncertainty without constraints
             L{k,i}.dimKeys = sprintf('L_%ie',i);                            % label dimensions properly
             % add new landmark to zono by cartprod or generalized intersection
             X{k} = X{k}.merge(L{k,i},sprintf('L%i_k%i',i,k));

@@ -12,11 +12,11 @@ Nx = size(A,1);
 Nu = size(B,2);
 
 % Define Dangerous State Region
-uBound = [15 10];
-lBound = [-15 0];
 d = [-0.1 -1];
 b = -5;
-D_HRep = Polyhedron('H', [d, b], 'lb', lBound, 'ub', uBound);
+x = [-15,15];
+y = (b - d(1).*x)/d(2);
+D = vPoly2Zono([x x ;y,10,10]);
 
 % Define Safe State Region
 S.G = [0 -200; 30 20];
@@ -40,14 +40,8 @@ U_d = zono(U_d.G*phi, U_d.c);
 O1 = [-8.044 -7.6812 -7.1369 -6.5564 -5.8308 -5.0507 -5.1233 -5.7764 -6.4839 -7.4453];
 O2 = [3.4254 4.3869 4.4594 4.2962 4.0785 3.8608 3.6431 3.3710 3.3165 3.2440];
 
-
-
 %% Operational Set O
-O_HRep = Polyhedron('V', [O1' O2']);
-H_O = O_HRep.H(:,1:end-1);
-k_O = O_HRep.H(:,end);
-
-O = hPoly2conZono([H_O, k_O]);
+O = vPoly2Zono([O1;O2]);
 
 %% Reachability Set R_N
 N = 10;
@@ -105,7 +99,8 @@ end
 
 %Plot
 figure();
-plot(D_HRep,'color','r','alpha', 0.1, 'LineStyle', 'none')
+%plot(D_HRep,'color','r','alpha', 0.1, 'LineStyle', 'none')
+plot(D,'r',0.1);
 plot(S, 'g', 0.1);
 plot(R_D,'k',0.4);
 hold on;

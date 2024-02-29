@@ -18,7 +18,7 @@
 %       Assumes all activation functions are ReLU. Assumes the input to
 %       each activation function is within the interval [-a,a].
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-function varargout = reluNN_memZono_unified(X,Ws,bs,a)
+function varargout = reluNN_memZono(X,Ws,bs,a)
 
 nOutputs = nargout;
 if (nOutputs == 1) || (nOutputs >= 3) 
