@@ -69,5 +69,6 @@ classdef zono < abstractZono
         [v,f] = plotZono1D(obj);    % Plot in 1 dimension
         [v,f] = plotZono2D(obj);    % Plot in 2 dimensions
         [v,f] = plotZono3D(obj);    % Plot in 3 dimensions
+        [out] = checkSetContain(obj,X,varargin);
     end
 end
