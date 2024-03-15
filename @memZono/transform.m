@@ -62,12 +62,12 @@ function obj = transform(obj1,obj2,M, inDims, outDims)
     end
 
     % inDims should match the input dimension of the linear map M, if it exists
-    if ~isempty(M) && length(inDims) ~= size(M,2)
+    if ~isempty(M) && ~isscalar(M) && length(inDims) ~= size(M,2)
         error('The number of inDims labels must match the number of columns of the matrix multiplication.')
     end
 
     % outDims should match the output dimension of the linear map M, if it exists
-    if ~isempty(M) && length(outDims) ~= size(M,1)
+    if ~isempty(M) && ~isscalar(M) && length(outDims) ~= size(M,1)
         error('The number of outDims labels must match the number of rows of the matrix multiplication.')
     end
 
