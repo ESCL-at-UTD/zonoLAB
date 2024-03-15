@@ -14,7 +14,7 @@ function B = subsref(A, S)
                     error('indexing not specificed')
             end
 
-       
+            % TODO: Need error handling here if key doesn't exist
             i = getKeyIndices(i,A.dimKeys);
             j = getKeyIndices(j,A.factorKeys);
             k = getKeyIndices(k,A.conKeys);
