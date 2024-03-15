@@ -99,26 +99,13 @@ for i = 1:maxIter
     vertA = foundVerts(vertOrder(indx),:);
     vertB = foundVerts(vertOrder(indx+1),:);
     vertDiff = vertA - vertB;
-    dir = -[-vertDiff(2) vertDiff(1)];
-    isNewdir = min(sum(abs(normalize(dir,'norm')-searchedDirs),2))>=1e-6;   % Tolerance
-    if isNewdir
-        searchedDirs = [searchedDirs;normalize(dir,'norm')];                % Growing list
-        [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
-        extreme = [obj.G*x + obj.c]';
-        vertDiffs = extreme - centerVert;
-        vertAngle = atan2(vertDiffs(:,2),vertDiffs(:,1));
-        newVertDir = vertAngle-referenceAngle;
-        newVertDir(newVertDir<-pi) = newVertDir(newVertDir<-pi) + 2*pi;
-        newVertDir(newVertDir>pi) = newVertDir(newVertDir>pi) - 2*pi;
-        orderDirs = foundVertDirs(vertOrder);
-        isNew = min(abs(newVertDir-orderDirs))>=1e-6;                   % Tolerance
-    else
-        isNew = 0;
-    end
+    dir = normalize(-[-vertDiff(2) vertDiff(1)],'norm');
+    [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
+    extreme = [obj.G*x + obj.c]';
+    isNew = min(dir*extreme'-dir*foundVerts(vertOrder(indx:indx+1),:)' > 10^-6) == 1; % Tolerance
     if isNew
         nVerts = nVerts + 1;
         foundVerts(nVerts,:) = extreme;
-        foundVertDirs(nVerts) = newVertDir;
         if treeStruct(vertOrder(indx),3) == 0
             treeStruct(vertOrder(indx),3) = nVerts;
             treeStruct(nVerts,:) = [vertOrder(indx) 0 0];
@@ -135,6 +122,47 @@ for i = 1:maxIter
         end
     end
 end
+
+% for i = 1:maxIter
+%     vertA = foundVerts(vertOrder(indx),:);
+%     vertB = foundVerts(vertOrder(indx+1),:);
+%     vertDiff = vertA - vertB;
+%     dir = -[-vertDiff(2) vertDiff(1)];
+%     isNewdir = min(sum(abs(normalize(dir,'norm')-searchedDirs),2))>=1e-6;   % Tolerance
+%     if isNewdir
+%         searchedDirs = [searchedDirs;normalize(dir,'norm')];                % Growing list
+%         [x,~,~] = solveLP(normalize(dir,'norm')*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
+%         extreme = [obj.G*x + obj.c]';
+%         vertDiffs = extreme - centerVert;
+%         vertAngle = atan2(vertDiffs(:,2),vertDiffs(:,1));
+%         newVertDir = vertAngle-referenceAngle;
+%         newVertDir(newVertDir<-pi) = newVertDir(newVertDir<-pi) + 2*pi;
+%         newVertDir(newVertDir>pi) = newVertDir(newVertDir>pi) - 2*pi;
+%         orderDirs = foundVertDirs(vertOrder);
+%         isNew = min(abs(newVertDir-orderDirs))>=1e-6;                   % Tolerance
+%     else
+%         isNew = 0;
+%     end
+%     if isNew
+%         nVerts = nVerts + 1;
+%         foundVerts(nVerts,:) = extreme;
+%         foundVertDirs(nVerts) = newVertDir;
+%         if treeStruct(vertOrder(indx),3) == 0
+%             treeStruct(vertOrder(indx),3) = nVerts;
+%             treeStruct(nVerts,:) = [vertOrder(indx) 0 0];
+%         else
+%             treeStruct(vertOrder(indx+1),2) = nVerts;
+%             treeStruct(nVerts,:) = [vertOrder(indx+1) 0 0];
+%         end
+%         [vertOrder,~] = listInOrder(treeStruct,1,zeros(nVerts,1),1);
+%     else
+%         if vertOrder(indx+1) == 2
+%             break
+%         else
+%             indx = indx + 1;
+%         end
+%     end
+% end
 
 nVerts = nVerts - 1; % Added to remove extra vertex
 v = foundVerts(vertOrder,:);
