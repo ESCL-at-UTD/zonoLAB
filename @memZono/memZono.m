@@ -96,15 +96,6 @@ classdef memZono
                 obj.b_ = varargin{4};
                 obj.vset = logical(varargin{5});
                 obj.keys = varargin{6};
-            % elseif nargin == 3 % <-- zono-based constructor
-            %     obj.Z = zono(varargin{1:2});
-            %     obj.keys = varargin{3};
-            % elseif nargin == 5 % <--- conzono-based constructor
-            %     obj.Z = conZono(varargin{1:4});
-            %     obj.keys = varargin{5};
-            % elseif nargin == 7 % <--- hybZono-based constructor
-            %     obj.Z = hybZono(varargin{1:6});
-            %     obj.keys = varargin{7};
             else
                 error('non-simple constructor not specified')
             end
@@ -171,6 +162,7 @@ classdef memZono
             end
         end
 
+        % Output appropriate base zonotope
         function Z = get.Z(obj)
             switch obj.baseClass
                 case 'zono'
@@ -183,6 +175,7 @@ classdef memZono
             end
         end
 
+        % Setter function for underlying zonotope data
         function obj = set.Z(obj,in)
             switch class(in)
                 case {'double','sym','optim.problemdef.OptimizationVariable'}
@@ -211,11 +204,13 @@ classdef memZono
     
     %% Labeling
     methods
+        % Key Getter Functions
         function out = get.keys(obj); out = obj.keys; end
         function out = get.factorKeys(obj); out = obj.keys.factors; end
         function out = get.dimKeys(obj); out = obj.keys.dims; end
         function out = get.conKeys(obj); out = obj.keys.cons; end
 
+        % Key Setter Functions
         function obj = set.keys(obj,in)
             if isstruct(in) %<-- add better checks?
                 obj.keys = in;
@@ -240,6 +235,8 @@ classdef memZono
             catch; warning('con key set issue');
             end
         end
+
+        % Create keys from a patern
         function out = keysStartsWith(obj,pattern)
             out.factorKeys = {};
             out.dimKeys = {};
@@ -298,8 +295,7 @@ classdef memZono
         function [idxk1,idxks1,idxks2,idxk2] = getKeyIndices(in1,in2)
             [k1,ks,k2] = memZono.getUniqueKeys(in1,in2);
 
-            % [~,idxk1] = ismember(k1,in1);
-            % [~,idxk2] = ismember(k2,in2);
+            % Find Indices of individual keys
             idxk1 = zeros(1,length(k1));
             idxk2 = zeros(1,length(k2));
             for k = 1:length(k1)
@@ -308,11 +304,12 @@ classdef memZono
             for k = 1:length(k2)
                 idxk2(k) = find(strcmp(in2,k2{k}));
             end
+
+
+            % Find indices of shared keys
             if isempty(ks)
                 idxks1 = []; idxks2 = [];
             else
-                % [~,idxks1] = ismember(ks,in1);
-                % [~,idxks2] = ismember(ks,in2);
                 idxks1 = zeros(1,length(ks));
                 idxks2 = zeros(1,length(ks));
                 for k = 1:length(ks)
@@ -328,25 +325,6 @@ classdef memZono
         end
 
     end
-        
-
-        %% Tags
-
-        % function out = get.factorTags(obj); out = obj.tags.factors; end
-        % function out = get.dimTags(obj); out = obj.tags.dims; end
-        % function out = get.conTags(obj); out = obj.tags.cons; end
-
-
-        % function obj = set.factorTags(obj,in)
-        %     if isstruct(in)
-        %         obj.tags.factors = in;
-        %     else isalpha_num(in)
-        %         if length(in) == obj.nG
-        %             obj.tags.factors.keys = in;
-        %         else
-        %             obj.tags
-        %     end
-        % end
 
 
     %% General Methods
@@ -361,15 +339,6 @@ classdef memZono
             if ~iscell(outDims); outDims = memZono.genKeys(outDims,1:size(M,1)); end
             out = in.transform([],M,[],outDims);
         end
-        % function out = directSum(varargin)
-        %     % Sum without dimensional awareness
-        %     out = varargin{1};
-        %     for i = 2:nargin
-        %         if varargin{i}.n ~= out.n; error('Input dimensions not compatible'); end
-        %         varargin{i}.dimKeys = out.dimKeys;
-        %         out = out.combine(varargin{i});
-        %     end
-        % end
 
         %% Ploting
         plot(obj,dims,varargin);
@@ -415,7 +384,7 @@ classdef memZono
         % A = subsasgn(A,S,B); %<---- not completed
         
 
-        % Projection is prodomenently defined for internal use
+        % Projection is prodomenently defined for internal use - Use subsref (indexing) instead
         function out = projection(obj,dims) 
             if ~iscell(dims) % if not already in cell form
                 if strcmp(dims,'all'), dims = obj.dimKeys; end
