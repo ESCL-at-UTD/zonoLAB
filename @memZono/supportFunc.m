@@ -32,19 +32,18 @@ function [s,x] = supportFunc(obj,dims,d)
         [s,x] = projection(obj,dims).Z.supportFunc(d);
     else
         if issym(obj)
-            
+            error('Sym version not implimented')            
         else %<=== assume optimvar
             [s,x] = supportFunOptimvar(projection(obj,dims),d);
         end
     end
-
 end
 
 
 function [s,x] = supportFunOptimvar(obj,d)
     switch obj.baseClass
         case 'zono'
-            xi = fcn2optimexpr(@(G,d) sign(d'*G)', obj.G,d);
+            xi = fcn2optimexpr(@(G,d) sign(d'*G)', obj.G, d);
             x = obj.c + obj.G*xi;
             s = d'*x;
 
@@ -52,7 +51,7 @@ function [s,x] = supportFunOptimvar(obj,d)
             ub = ones(obj.nG,1); lb = -ub;
             xi = fcn2optimexpr(@(G,A,b) ...
                 linprog(-(d'*G)',[],[],A,b,lb,ub),...
-                obj.G,obj.A,obj.b);
+                obj.G, obj.A, obj.b);
             x = obj.c + obj.G*xi;
             s = d'*x;
 

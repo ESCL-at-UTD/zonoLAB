@@ -80,8 +80,10 @@ h_X_all_k = @(k,C) h_var_k(xLabel(k),C');
 
 % Support Functions based on propogation independently
 h_X_k = @(k,C) X_0.supportFunc('x_0',(C*A^k)');
+h_U_k = @(k,C) U_0.supportFunc('u_0',(C*A^(k-1)*B)');
 
-h_X_k(1,C)
+h_X_k(3,C)
+h_U_k(5,C)
 
 
 
