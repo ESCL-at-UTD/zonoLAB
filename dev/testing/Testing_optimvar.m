@@ -44,8 +44,8 @@ and(X_{end},Y2,R);
 % union(X_{1},X_{2})
 
 % pontigan difference <=== not efficent/doesn't scale... apears to work
-pontryDiff(X_{1},X_{2});
-pontryDiff(X,X_inter);
+% pontryDiff(X_{1},X_{2});
+% pontryDiff(X,X_inter);
 
 % boundaryBox <== doesn't work (calls sparse in function)
 % boundingBox(X)

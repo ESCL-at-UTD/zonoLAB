@@ -150,6 +150,27 @@ classdef memZono
         function nGb = get.nGb(obj); nGb = sum(~obj.vset); end
         
         % In/Out with base Zonotope
+
+
+        % test if special
+        function out = issym(obj)
+            % tests if any are symbolic
+            if any([issym(obj.G),issym(obj.c),issym(obj.A),issym(obj.b)])
+                out = true;
+            else
+                out = false;
+            end
+        end
+        function out = isnumeric(obj)
+            % tests if all are numeric
+            if all([isnumeric(obj.G), isnumeric(obj.c), ...
+                    isnumeric(obj.A), isnumeric(obj.b)])
+                out = true;
+            else
+                out = false;
+            end
+        end
+
         function out = get.baseClass(obj)
             if all(obj.vset)
                 if isempty(obj.A_)
@@ -196,7 +217,13 @@ classdef memZono
                     obj.c_ = in.c;
                     obj.A_ = [in.Ac,in.Ab];
                     obj.b_ = in.b;
-                    obj.vset = [true(1,in.nGc),false(1,in.nGb)];
+                    obj.vset = [true(1,in.nGc),false(1,in.nGb)];    
+                case 'memZono'
+                    obj.G_ = in.G;
+                    obj.c_ = in.c;
+                    obj.A_ = in.A;
+                    obj.b_ = in.b;
+                    obj.vset = in.vset;              
             end
         end
 
@@ -326,7 +353,6 @@ classdef memZono
 
     end
 
-
     %% General Methods
     methods
         %% Set Operations
@@ -339,7 +365,7 @@ classdef memZono
             if ~iscell(outDims); outDims = memZono.genKeys(outDims,1:size(M,1)); end
             out = in.transform([],M,[],outDims);
         end
-
+        
         %% Ploting
         plot(obj,dims,varargin);
 

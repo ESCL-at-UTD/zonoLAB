@@ -63,7 +63,7 @@ function obj = combine(obj1,obj2)
             obj1.G(idxds1,idxk1), obj1.G(idxds1,idxks1)+obj2.G(idxds2,idxks2), obj2.G(idxds2,idxk2);
         ];
         c_ = [c_;
-            obj1.c(idxds1)+obj2.c(idxds2);
+            obj1.c(idxds1,:)+obj2.c(idxds2,:);
         ];
         % Constraints do not change with Minkowski Sum
 
@@ -81,7 +81,7 @@ function obj = combine(obj1,obj2)
             zeros(length(cs),length(k1)), obj1.A(idxcs1,idxks1), zeros(length(cs),length(k2))
         ];
         b_ = [b_;
-            obj1.b(idxcs1)
+            obj1.b(idxcs1,:)
         ];
 
         % Labeling
