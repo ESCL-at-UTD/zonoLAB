@@ -155,7 +155,8 @@ classdef memZono
         % test if special
         function out = issym(obj)
             % tests if any are symbolic
-            if any([issym(obj.G),issym(obj.c),issym(obj.A),issym(obj.b)])
+            if any([isa(obj.G,'sym'),isa(obj.c,'sym'),...
+                    isa(obj.A,'sym'),isa(obj.b,'sym')])
                 out = true;
             else
                 out = false;
@@ -301,7 +302,7 @@ classdef memZono
                     out{i} = sprintf('%s_%d',in{1},i);
                 end
             elseif length(in) ~= n
-                warning('keys not assigned correctly/wrong size');
+                error('keys not assigned correctly/wrong size');
             else
                 error('keys broken');
             end

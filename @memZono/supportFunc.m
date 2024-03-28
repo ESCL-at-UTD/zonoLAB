@@ -29,7 +29,7 @@ function [s,x] = supportFunc(obj,dims,d)
         [s,x] = projection(obj,dims).Z.supportFunc(d);
     else
         if issym(obj)
-            error('not implimented for sym yet')
+            
         else %<=== assume optimvar
             [s,x] = supportFunOptimvar(projection(obj,dims),d);
         end
