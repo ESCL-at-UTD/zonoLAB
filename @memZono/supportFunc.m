@@ -24,8 +24,11 @@ function [s,x] = supportFunc(obj,dims,d)
     if isempty(d)
         d = ones(length(dims),1);
     end
+    if ~iscell(dims)
+        dims = obj.keysStartsWith(dims).dimKeys;
+    end
 
-    if isnumeric(obj)
+    if all([isnumeric(obj),isnumeric(d)],"all")
         [s,x] = projection(obj,dims).Z.supportFunc(d);
     else
         if issym(obj)
@@ -41,7 +44,7 @@ end
 function [s,x] = supportFunOptimvar(obj,d)
     switch obj.baseClass
         case 'zono'
-            xi = fcn2optimexpr(@(G) sign(d'*G)', obj.G);
+            xi = fcn2optimexpr(@(G,d) sign(d'*G)', obj.G,d);
             x = obj.c + obj.G*xi;
             s = d'*x;
 
