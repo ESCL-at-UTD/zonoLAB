@@ -202,7 +202,7 @@ classdef memZono
             switch class(in)
                 case {'double','sym','optim.problemdef.OptimizationVariable'}
                     obj.c_ = in;
-                    obj.vset = [];
+                    obj.vset = true(1,0);
                 case 'zono'
                     obj.G_ = in.G;
                     obj.c_ = in.c;
