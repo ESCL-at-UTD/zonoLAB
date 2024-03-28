@@ -26,15 +26,35 @@ function [s,x] = supportFunc(obj,dims,d)
     end
 
     if isnumeric(obj)
-        [s,x] = obj(dims).Z.supportFunc(d);
+        [s,x] = projection(obj,dims).Z.supportFunc(d);
     else
-        [s,x] = supportFunSpecial(obj(dims),d);
+        if issym(obj)
+            error('not implimented for sym yet')
+        else %<=== assume optimvar
+            [s,x] = supportFunOptimvar(projection(obj,dims),d);
+        end
     end
 
 end
 
 
-function [s,x] = supportFunSpecial(obj,d)
-    
+function [s,x] = supportFunOptimvar(obj,d)
+    switch obj.baseClass
+        case 'zono'
+            xi = fcn2optimexpr(@(G) sign(d'*G)', obj.G);
+            x = obj.c + obj.G*xi;
+            s = d'*x;
 
+        case 'conZono'
+            ub = ones(obj.nG,1); lb = -ub;
+            xi = fcn2optimexpr(@(G,A,b) ...
+                linprog(-(d'*G)',[],[],A,b,lb,ub),...
+                obj.G,obj.A,obj.b);
+            x = obj.c + obj.G*xi;
+            s = d'*x;
+
+        case 'hybZono'
+            error('supportFun not currently implimented for optimvar')
+        
+    end
 end

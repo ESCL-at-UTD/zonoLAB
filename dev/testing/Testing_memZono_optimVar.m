@@ -1,7 +1,7 @@
 % Testing Optimization in memZono
 clear
 
-n = 2; ng = 2; nc = 1;
+n = 2; ng = 2; nc = 0;
 X_G = optimvar('X_g_',[n ng]);
 X_c = optimvar('x_c_',[n 1]);
 if nc>0
@@ -28,4 +28,7 @@ X_all = vertcat(X_{:});
 X_end = X_all(X_all.keysStartsWith(xLabel(N)).dimKeys)
 
 %% Support Function
+X_all.supportFunc({'x_1_1'})
+
+
 
