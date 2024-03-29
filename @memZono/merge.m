@@ -48,16 +48,16 @@ function obj = merge(obj1,obj2,sharedDimLabels)
         zeros(length(d2),length(k1)), obj2.G(idxd2,idxks2), obj2.G(idxd2,idxk2)
         ];
     c_ = [
-        obj1.c(idxd1);
-        obj2.c(idxd2)
+        obj1.c(idxd1,:);
+        obj2.c(idxd2,:)
         ];
     A_ = [
         obj1.A(idxc1,idxk1), obj1.A(idxc1,idxks1), zeros(length(c1),length(k2));
         zeros(length(c2),length(k1)), obj2.A(idxc2,idxks2), obj2.A(idxc2,idxk2);
         ];
     b_ = [
-        obj1.b(idxc1);
-        obj2.b(idxc2);
+        obj1.b(idxc1,:);
+        obj2.b(idxc2,:);
         ];
 
     % hybrid Zono
@@ -85,13 +85,13 @@ function obj = merge(obj1,obj2,sharedDimLabels)
             obj1.G(idxds1,idxk1), obj1.G(idxds1,idxks1), zeros(length(ds),length(k2));
         ];
         c_ = [c_;
-            obj1.c(idxds1);
+            obj1.c(idxds1,:);
         ];
         A_ = [A_; 
             R*obj1.G(:,idxk1), R*obj1.G(:,idxks1)-obj2.G(idxds2,idxks2), -obj2.G(idxds2,idxk2) 
         ];
         b_ = [b_;
-            obj2.c(idxds2) - R*obj1.c;
+            obj2.c(idxds2,:) - R*obj1.c;
         ];
 
         % Labels
@@ -122,14 +122,16 @@ function obj = merge(obj1,obj2,sharedDimLabels)
 
     %% Shared Constraints
     if ~isempty(cs)
-        if all(obj1.A(idxcs1,idxks1) ~= obj2.A(idxcs2,idxks2),'all') || all(obj1.b(idxcs1) ~= obj2.b(idxcs2),'all')
-            error('Shared Constraints are not identical')
+        if all([isnumeric(obj1.A),isnumeric(obj2.A),isnumeric(obj1.b),isnumeric(obj2.b)])
+            if all(obj1.A(idxcs1,idxks1) ~= obj2.A(idxcs2,idxks2),'all') || all(obj1.b(idxcs1) ~= obj2.b(idxcs2),'all')
+                    error('Shared Constraints are not identical')
+            end
         end
         A_ = [A_;
             zeros(length(cs),length(k1)), obj1.A(idxcs1,idxks1), zeros(length(cs),length(k2))
         ];
         b_ = [b_;
-            obj1.b(idxcs1)
+            obj1.b(idxcs1,:)
         ];
         % Labeling
         keys_.cons = [keys_.cons,cs];

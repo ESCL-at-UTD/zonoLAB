@@ -23,7 +23,7 @@ function B = subsref(A, S)
             c_ = A.c(i,:);
             A_ = A.A(k,j);
             b_ = A.b(k,:);
-            vset_ = A.vset(1,k);
+            vset_ = A.vset(:,k);
 
             if ischar(i)
                 keys_.dims = A.dimKeys;
