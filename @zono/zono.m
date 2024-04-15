@@ -70,5 +70,9 @@ classdef zono < abstractZono
         [v,f] = plotZono2D(obj);    % Plot in 2 dimensions
         [v,f] = plotZono3D(obj);    % Plot in 3 dimensions
         [out] = checkSetContain(obj,X,varargin);
+        %out = nCross(H);
+        %out = removeColumns(M, List);
+        [C,d] = zono2HPoly(obj);
+        [F_approx, s, alpha] = outerMinRPI(A, W, epsilon, max_iter, varargin)
     end
 end
