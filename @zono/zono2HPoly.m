@@ -14,7 +14,7 @@
 %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-function [C, d] = zono2HPoly(obj)
+function [C, d] = zono2HPoly(obj, varargin)
     if class(obj) ~= 'zono'
         error('Function zono2HPoly only supports input objects of class zono.');
     end
@@ -31,13 +31,37 @@ function [C, d] = zono2HPoly(obj)
     d_plus = NaN(nH, 1);
     d_minus = NaN(nH, 1);
     
-    for i = 1:nH
-        G_removed = removeColumns(G,Remove_Column_List(i,:));
-        nX = nCross(G_removed);
-        C_plus(i,:) = nX' / norm(nX,2);
-        Delta_d_i = sum( abs(C_plus(i,:)*G ) );
-        d_plus(i) = C_plus(i,:)*c + Delta_d_i;
-        d_minus(i) = -C_plus(i,:)*c + Delta_d_i;
+    parallel = false;
+    if ~isempty(varargin)
+        parallel = true;
+    end
+    
+    if parallel
+        if nH <= 1000000
+            disp('Parallel computation in zono2HPoly is only recommended for high values of nG Choose (n-1).');
+            disp('Avoiding parallel computation may be faster for your computation.');
+        end
+        parfor i = 1:nH
+            G_removed = removeColumns(G,Remove_Column_List(i,:));
+            nX = nCross(G_removed);
+            C_plus(i,:) = nX' / norm(nX,2);
+            Delta_d_i = sum( abs(C_plus(i,:)*G ) );
+            d_plus(i) = C_plus(i,:)*c + Delta_d_i;
+            d_minus(i) = -C_plus(i,:)*c + Delta_d_i;
+        end
+    else
+        if nH > 1000000
+            disp('zono2HPoly has been called for a high value of nG Choose (n-1).');
+            disp('Consider using the parallel option for faster computation time.');
+        end
+        for i = 1:nH
+            G_removed = removeColumns(G,Remove_Column_List(i,:));
+            nX = nCross(G_removed);
+            C_plus(i,:) = nX' / norm(nX,2);
+            Delta_d_i = sum( abs(C_plus(i,:)*G ) );
+            d_plus(i) = C_plus(i,:)*c + Delta_d_i;
+            d_minus(i) = -C_plus(i,:)*c + Delta_d_i;
+        end
     end
     
     C = [C_plus; -C_plus];

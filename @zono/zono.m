@@ -72,7 +72,7 @@ classdef zono < abstractZono
         [out] = checkSetContain(obj,X,varargin);
         %out = nCross(H);
         %out = removeColumns(M, List);
-        [C,d] = zono2HPoly(obj);
+        [C, d] = zono2HPoly(obj, varargin);
         [F_approx, s, alpha] = outerMinRPI(A, W, epsilon, max_iter, varargin)
     end
 end
