@@ -33,8 +33,8 @@ function [F_approx] = outerMinRPI_oneStep(A, W, s, options)
     % sizes
     n = size(A,1);
     if W.n ~= n; error('Input set should be same size as update matrix'); end
-    ng = n*(s+1);
     nw = W.nG;
+    ng = nw*(s+1);
 
     % Template Generator Set
     for i = 1:s+1
@@ -51,93 +51,32 @@ function [F_approx] = outerMinRPI_oneStep(A, W, s, options)
     Gamma_2 = optimvar('gamma_2',ng,nw);
     beta = optimvar('beta',ng);
 
+    % Setup Optimization Problem
     prob = optimproblem;
-    prob.Objective = max(phi);%<== inf norm since $phi_{i} > 0 \forall_{i}$
-
     prob.Constraints.gamma_1 = A*G*Phi == G*Gamma_1;
     prob.Constraints.gamma_2 = W.G == G*Gamma_2;
     prob.Constraints.beta = (eye(n) - A)*W.c - c == G*beta;
 
-    Gamma = horzcat(Gamma_1,Gamma_2);
-
+    
     % abs() linear constraints
     g = optimvar('g',ng,(ng+nw));
-    b = optimvar('b',n_g);
-
+    b = optimvar('b',ng);
+    Gamma = horzcat(Gamma_1,Gamma_2);
     prob.Constraints.g = vertcat(g,g) >= vertcat(Gamma,-Gamma);
     prob.Constraints.b = vertcat(b,b) >= vertcat(beta,-beta);
-    prob.Constraints.sum = g*ones(ng+nw,1) + b <= Phi*ones(ng);
+    prob.Constraints.sum = horzcat(g,b)*ones(ng+nw+1,1)<= Phi*ones(ng,1);
 
+    
+    % objective version
+    phi_max = optimvar('phi_max',1);
+    prob.Constraints.phi_max = phi <= phi_max*ones(ng,1);
+    prob.Objective = phi_max;%<== inf norm since $phi_{i} > 0 \forall_{i}$
+
+    % Solve for result
     sol = solve(prob);
 
     F_approx = zono(G*diag(sol.phi),sol.c);
 
-
-
-
-    
-    % Input Error Checking
-
-    %d = abs(eig(A));
-    %for i = 1:length(d)
-    %    if d > 1
-    %        error('Input A must be a discrete-time stable (Schur) matrix.')
-    %    end
-    %end
-
-    % %Check if W is a zonotope
-    % if class(W) ~= 'zono'
-    %     error('Input set W must be a zonotope object.');
-    % end
-
-    % %Check if epsilon is a scalar
-    % if (~isscalar(epsilon))
-    %     error('Input epsilon must be a scalar.')
-    % end
-
-    % verbose = false;
-    % if ~isempty(varargin)
-    %     verbose = true;
-    % end
-
-    % %RPI Algorithm Start
-    % s = 0;
-    % [H, f] = zono2HPoly(W);
-    % nH = size(H,1);
-    % Fs = W;
-    
-    % for i = 1:max_iter
-    %     s = s + 1;
-    %     AsW = (A^s)*W;
-    %     alpha_o = NaN(nH, 1);
-        
-    %     % Find alpha
-    %     for j = 1:nH
-    %         alpha_o(j) = supportFunc(AsW, H(j,:)')/f(j);
-    %     end
-    %     alpha = max(alpha_o);
-        
-    %     % Find M(s)
-    %     Box = boundingBox(Fs);
-    %     M_s = max(max(Box.G));
-        
-    %     % Check if alpha <= epsilon / (epsilon + M(s))
-    %     if alpha <= (epsilon / (epsilon + M_s))
-    %         break;
-    %     else
-    %         Fs = Fs + ((A^s)*W);
-    %     end
-    % end
-    % if i >= max_iter
-    %     disp('outerMinRPI could not converge to a minRPI approximation in the specified number of iterations.');
-    % end
-    
-    % if i < max_iter && verbose
-    %     str = 'minRPI approximation had successfully converged. s = %d, alpha = %f\n';
-    %     fprintf(str,s,alpha);
-    % end
-    
-    % F_approx = (1/(1-alpha))*Fs;
 end
 
 
