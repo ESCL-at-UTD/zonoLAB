@@ -42,12 +42,10 @@ switch class(obj)
         c = obj.c;
         A = obj.A;
         b = obj.b;
-        for i = 1:nH
-            d_max = f(i)-H(i,:)*R*c + sum(abs(H(i,:)*R*G)); % Computes the distance of the hyperplane from the farthest vertex of the zonotope
-            A = [A zeros(size(A,1),1); H(i,:)*R*G d_max/2];
-            b = [b; f(i)-H(i,:)*R*c - d_max/2];
-            G = [G zeros(obj.n,1)];
-        end
+        d_max = f-H*R*c + sum(abs(H*R*G),2); % Computes the distance of the hyperplane from the farthest vertex of the zonotope
+        A = [A zeros(size(A,1),nH); H*R*G diag(d_max)/2];
+        b = [b; f-H*R*c - d_max/2];
+        G = [G zeros(obj.n,nH)];
         out = conZono(G,c,A,b);
     case 'hybZono'
         Gc = obj.Gc;
@@ -56,13 +54,11 @@ switch class(obj)
         Ac = obj.Ac;
         Ab = obj.Ab;
         b = obj.b;
-        for i = 1:nH
-            d_max = f(i)-H(i,:)*R*c + sum(abs(H(i,:)*R*[Gc Gb])); % Computes the distance of the hyperplane from the farthest vertex of the zonotope
-            Ac = [Ac zeros(size(Ac,1),1); H(i,:)*R*Gc d_max/2];
-            Ab = [Ab; H(i,:)*R*Gb];
-            b = [b; f(i)-H(i,:)*R*c - d_max/2];
-            Gc = [Gc zeros(obj.n,1)];
-        end
+        d_max = f-H*R*c + sum(abs(H*R*[Gc Gb]),2); % Computes the distance of the hyperplane from the farthest vertex of the zonotope
+        Ac = [Ac zeros(size(Ac,1),nH); H*R*Gc diag(d_max)/2];
+        Ab = [Ab; H*R*Gb];
+        b = [b; f-H*R*c - d_max/2];
+        Gc = [Gc zeros(obj.n,nH)];
         out = hybZono(Gc,Gb,c,Ac,Ab,b);
 end
 
