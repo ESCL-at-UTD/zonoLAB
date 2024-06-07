@@ -258,7 +258,7 @@ if ~isempty(indsRed)
 	end
 	
 	% solve equality constraints for this variable
-	Ej1c = zeros(Zh.nGc,Zh.nG);
+	Ej1c = zeros(Zh.nGc,Zh.nC);
 	Ej1c(j,rowInd) = 1;
 	delG = Zh.Gc*Ej1c/Zh.Ac(rowInd,j);
 	delA = Zh.Ac*Ej1c/Zh.Ac(rowInd,j);
