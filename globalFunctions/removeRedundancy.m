@@ -163,7 +163,7 @@ if stop
 end
 
 %% check for linearly dependent rows in the equality constraints
-
+if Zh.nC
 % use QR instead of rref
 Atemp = [ Zh.Ac Zh.Ab Zh.b ];
 
@@ -205,6 +205,7 @@ if r < Zh.nC
 		stop = 1;
 	end
 
+end
 end
 stop = is_empty(Zh);
 if stop

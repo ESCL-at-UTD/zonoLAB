@@ -48,9 +48,9 @@ if ~isempty(Zh.Ab)
 	Zh.Ab(:,colZeroB) = [];
 end
 
-% if we don't have binary generators anymore reset binTree
-if ~Zh.nGb
-	Zh.binTree = [];
-end
+% % if we don't have binary generators anymore reset binTree
+% if ~Zh.nGb
+% 	Zh.binTree = [];
+% end
 
 end
