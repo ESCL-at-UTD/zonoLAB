@@ -7,7 +7,7 @@
 %   Inputs:
 %       X - zonotopic set in R^n (hybZono, conZono, or zono object)
 %       d - n x 1 real vector defining direction
-%           (N x n) can also be passed in to return multiple results at once
+%           (N x n) or {N x (n x 1)} can also be passed in to return multiple results at once
 %   Outputs:
 %       s - scalar such that s = max(d'*x), where x \in X
 %       x - n x 1 vector such that x = argmax(d'*x), where x \in X
@@ -22,14 +22,16 @@ function [s,x] = supportFunc(obj,d)
         x = x_star(obj,d);
         s = d'*x;
     else
-        for i = 1:size(d,1)
-            x(i,:) = x_star(obj,d(i,:)');
-            s(i,:) = d(i,:)*x(i,:)';
-        end
+        if ~isa(d,'cell'); d_ = num2cell(d',1); else; d_ = d; end
+        x_ = cellfun(@(d) x_star(obj,d),d_,"UniformOutput",false);
+        s = cellfun(@(d,x) d'*x, d_,x_)';
+        if ~isa(d,'cell'); x = horzcat(x_{:})'; else; x = x_; end
+        % for i = 1:size(d,1)
+        %     x(i,:) = x_star(obj,d(i,:)');
+        %     s(i,:) = d(i,:)*x(i,:)';
+        % end
     end
-
 end
-
 
 function x = x_star(obj,d)
     % x_star : computes/solves for the associated x \in X that satisfies max(d'*x)
