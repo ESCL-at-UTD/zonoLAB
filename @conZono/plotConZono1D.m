@@ -22,16 +22,39 @@ beq = [obj.b];
 lb = -ones(obj.nG,1);
 ub =  ones(obj.nG,1);
 
-dir = 1; % Find upper bound
-[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
-extreme = [obj.G*x + obj.c]';
-v(1,:) = [extreme 0];
+try
+    dir = 1; % Find upper bound
+    %[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
+    x = findVertex(dir,obj.G,Aeq,beq,lb,ub,optSolver);
+    extreme = [obj.G*x + obj.c]';
+    v(1,:) = [extreme 0];
 
-dir = -1; % Find lower bound
-[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
-extreme = [obj.G*x + obj.c]';
-v(2,:) = [extreme 0];
+    dir = -1; % Find lower bound
+    %[x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
+    x = findVertex(dir,obj.G,Aeq,beq,lb,ub,optSolver);
+    extreme = [obj.G*x + obj.c]';
+    v(2,:) = [extreme 0];
 
-f = [1 2];
+    f = [1 2];
+catch E
+    if strcmp(E.identifier, 'PlotError:VertexNotFound')
+        if checkEmpty(conZono(obj.G,obj.c,Aeq,beq))
+            warning('zonoLAB:EmptyZonotope','Constrained zonotope is empty and cannot be plotted.')
+            v = []; f = [];
+            return
+        end
+        rethrow(E);
+    else
+        rethrow(E);
+    end
+end
 
+end
+
+% Local functions
+function [x] = findVertex(dir,G,Aeq,beq,lb,ub,optSolver)
+    [x,~,~] = solveLP(dir*G,[],[],Aeq,beq,lb,ub,optSolver);
+    if isnan(x)
+        error('PlotError:VertexNotFound','Could not find a solution for a vertex while plotting')
+    end
 end

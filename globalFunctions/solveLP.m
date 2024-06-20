@@ -48,9 +48,15 @@ switch optSolver.lpSolver
         params.Threads = 1;
         params.outputflag = 0;
         result = gurobi(model,params);
-        x = result.x;
-        fVal = result.objval;
         exitFlag = result.status;
+        x = NaN;
+        fVal = NaN;
+        if strcmp(exitFlag,'OPTIMAL')
+            x = result.x;
+            fVal = result.objval;
+        else
+            warning('Linear program did not find an optimal solution.');
+        end
     otherwise
         error('Only linprog (default) and gurobi are options for solving LPs.')
 end
