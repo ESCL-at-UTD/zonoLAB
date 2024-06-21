@@ -44,7 +44,7 @@ plot(Zh,'b',0.1)                % Plots hybrid zonotope in transparent blue
 <img src="https://github.com/ESCL-at-UTD/zonoLAB/blob/main/dev/figures/GetStartedHybZono.png" width="400">
 
 
-To learn more about generating hybrid zonotopes, plotting, and set-based operations, please visit the zonoLAB [Wiki](https://github.com/ESCL-at-UTD/zonoLAB/wiki) for more detailed tutorial, function list, and examples.
+To learn more about generating hybrid zonotopes, plotting, and set-based operations, please visit the Wiki [Tutorial](https://github.com/ESCL-at-UTD/zonoLAB/wiki/Tutorial), [Functions](https://github.com/ESCL-at-UTD/zonoLAB/wiki/Functions), and [Examples](https://github.com/ESCL-at-UTD/zonoLAB/wiki/Examples) pages.
 
 # License
 
