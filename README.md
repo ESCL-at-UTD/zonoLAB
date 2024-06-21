@@ -1,8 +1,4 @@
-See the zonoLAB [Wiki](https://github.com/ESCL-at-UTD/zonoLAB/wiki) for an overview of the toolbox.
-
 # **Welcome to zonoLAB!** 
-
-***
 
 # Introduction
 
@@ -32,17 +28,6 @@ The zonoLab toolbox does not require installation beyond [adding the folder and 
 
 The following code can be used to create and plot your first hybrid zonotope. 
 
-<table>
-  <thead>
-    <tr>
-      <th width="500px"> MATLAB code </th>
-      <th width="500px"> Resulting plot of hybrid zonotope </th>
-    </tr>
-  </thead>
-  <tbody>
-  <tr width="600px">
-      <td>
-
 ```matlab
 Gc = [3 -3 1; 2 1 -2];          % Continuous generator matrix
 Gb = [6 -6 2; 4 2 -4];          % Binary generator matrix
@@ -55,17 +40,11 @@ Zh = hybZono(Gc,Gb,c,Ac,Ab,b);  % Creates a hybrid zonotope
 figure;
 plot(Zh,'b',0.1)                % Plots hybrid zonotope in transparent blue
 ```
-</td>
-<td>
 
-![hybrid zonotope](https://github.com/ESCL-at-UTD/zonoLAB/blob/main/dev/figures/GetStartedHybZono.png)
+<img src="https://github.com/ESCL-at-UTD/zonoLAB/blob/main/dev/figures/GetStartedHybZono.png" width="400">
 
-</td>
-</tr>
-  </tbody>
-</table>
 
-To learn more about generating hybrid zonotopes, plotting, and set-based operations, please visit the [Tutorial](https://github.com/ESCL-at-UTD/zonoLAB/wiki/Tutorial) page.
+To learn more about generating hybrid zonotopes, plotting, and set-based operations, please visit the zonoLAB [Wiki](https://github.com/ESCL-at-UTD/zonoLAB/wiki) for more detailed tutorial, function list, and examples.
 
 # License
 
