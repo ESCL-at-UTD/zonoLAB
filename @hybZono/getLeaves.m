@@ -27,7 +27,7 @@ if isempty(obj.b)
 end
 
 % Continue if set has equality constraints
-if isempty(optSolver)
+if nargin < 2 || isempty(optSolver)
     optSolver = solverOptions;
 end
 
