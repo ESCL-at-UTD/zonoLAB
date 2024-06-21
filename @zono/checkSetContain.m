@@ -12,8 +12,8 @@
 %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-function [out] = checkSetContain(obj, X, varargin)
-Y = obj;
+function [out] = checkSetContain(obj, Y, varargin)
+X = obj;
 
 verbose = false;
 if length(varargin) > 0
