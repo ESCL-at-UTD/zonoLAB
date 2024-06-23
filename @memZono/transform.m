@@ -36,6 +36,7 @@ function obj = transform(obj1,obj2,M, inDims, outDims)
 
     % if not inDims are specified, then the operation is applied to the entire memZono object.
     if isempty(inDims)
+        warning('lack of inDims specification can cause issues with dimension ordering');
         inDims = obj1.dimKeys;
     else
         if ~all(ismember(inDims,obj1.dimKeys)) % checks that if inDims is specified, inDims are all valid labels

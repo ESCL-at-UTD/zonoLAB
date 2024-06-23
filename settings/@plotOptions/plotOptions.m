@@ -26,6 +26,7 @@ classdef plotOptions
         MarkerEdgeColor     = 'auto'
         MarkerFaceColor     = 'none'
         MarkerSize          = 6
+        DisplayName         = ''
         % Other options
         Display             = 'on' % Options: 'on', 'off', 'individual' 
         SolverOpts          = solverOptions;
@@ -44,7 +45,7 @@ classdef plotOptions
         % Store all options in a structure for calling patch
         function P = plotOptionsStruct(opts)
             propNames = properties(opts);
-            for i = 1:10 % Only use first 10 properties (patch options)
+            for i = 1:11 % Only use first 11 properties (patch options)
                 name = propNames(i);
                 P.(name{1}) = opts.(name{1});
             end

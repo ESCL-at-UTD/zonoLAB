@@ -1,7 +1,8 @@
-function B = subsref(A, S)
+function varargout = subsref(obj, S)
+    % Overload of varargout: https://www.mathworks.com/help/matlab/matlab_oop/code-patterns-for-subsref-and-subsasgn-methods.html
     switch S(1).type
         case {'.','{}'}
-            B = builtin('subsref', A, S);
+            [varargout{1:nargout}] = builtin('subsref', obj, S);
         case '()'
             switch numel(S(1).subs)
                 case 1
@@ -15,36 +16,35 @@ function B = subsref(A, S)
             end
 
             % TODO: Need error handling here if key doesn't exist
-            i = getKeyIndices(i,A.dimKeys);
-            j = getKeyIndices(j,A.factorKeys);
-            k = getKeyIndices(k,A.conKeys);
+            i = getKeyIndices(i,obj.dimKeys);
+            j = getKeyIndices(j,obj.factorKeys);
+            k = getKeyIndices(k,obj.conKeys);
 
-            G_ = A.G(i,j);
-            c_ = A.c(i,:);
-            A_ = A.A(k,j);
-            b_ = A.b(k,:);
-            vset_ = A.vset(:,k);
+            G_ = obj.G(i,j);
+            c_ = obj.c(i,:);
+            A_ = obj.A(k,j);
+            b_ = obj.b(k,:);
+            vset_ = obj.vset(:,k);
 
             if ischar(i)
-                keys_.dims = A.dimKeys;
+                keys_.dims = obj.dimKeys;
             else
-                keys_.dims = A.dimKeys(i);
+                keys_.dims = obj.dimKeys(i);
             end
             if ischar(j)
-                keys_.factors = A.factorKeys;
+                keys_.factors = obj.factorKeys;
             else
-                keys_.factors = A.factorKeys(j);
+                keys_.factors = obj.factorKeys(j);
             end
             if ischar(k)
-                keys_.cons = A.conKeys;
+                keys_.cons = obj.conKeys;
             else
-                keys_.cons = A.conKeys(k);
+                keys_.cons = obj.conKeys(k);
             end
 
-            B = memZono(G_,c_,A_,b_,vset_,keys_);
+            varargout{1} = memZono(G_,c_,A_,b_,vset_,keys_);
     end
 end
-
 
 
 function idx = getKeyIndices(in,keys)
