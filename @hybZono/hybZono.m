@@ -94,7 +94,7 @@ classdef hybZono < abstractZono
                         if size(varargin{1},2) == 1
                             obj = hPoly2hybZono(varargin{1});
                         else
-                            obj = VPoly2hybZono(varargin{1});
+                            obj = vPoly2hybZono(varargin{1});
                         end
                 end
             else

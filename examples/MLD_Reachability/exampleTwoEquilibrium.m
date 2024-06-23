@@ -103,9 +103,9 @@ plot(Z0,colors(1,:),1) % Plot initial condition set
 
 % Compute and plot reachable sets
 Z = Z0;
-for i = 1:N
+for i = 1:N+1
     Z = [zeros(2) eye(2)]*and(Phi,Z,[eye(2) zeros(2)]);
-    plot(Z,colors(i+1,:),1) % Plot reachable set
+    plot(Z,colors(i,:),1) % Plot reachable set
 end
 
 legend(p,{'Guard'},'interpreter','latex')

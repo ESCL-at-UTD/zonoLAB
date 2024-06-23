@@ -27,9 +27,15 @@ for i = 1:n
     dir(i) = 1;
     % Find upper bounds
     [x,~,~] = solveLP(dir,H,f,[],[],-realmax*ones(n,1),realmax*ones(n,1),[]);
+    if isnan(x)
+        error('H-rep is infeasible.')
+    end
     upperBounds(i) = x(i);
     % Find lower bounds
     [x,~,~] = solveLP(-dir,H,f,[],[],-realmax*ones(n,1),realmax*ones(n,1),[]);
+    if isnan(x)
+        error('H-rep is infeasible.')
+    end
     lowerBounds(i) = x(i);
 end
 
