@@ -169,17 +169,13 @@ classdef memZono
 
         % Additional Propterties
         function out = dimMin(obj,dims)
-            [~,x] = supportFunc(obj,dims,-eye(obj.n));
-            out = diag(x);
+            out = projection(obj,dims).Z.lb;
         end
         function out = dimMax(obj,dims)
-            [~,x] = supportFunc(obj,dims,eye(obj.n));
-            out = diag(x);
+            out = projection(obj,dims).Z.ub;
         end
-        function [lb,ub] = dimBounds(obj,dims)
-            % lb = dimMax(obj,dims);
-            % ub = dimMin(obj,dims);
-            [lb,ub] = bounds(projection(obj,dims).Z);
+        function out = dimBounds(obj,dims)
+            out = projection(obj,dims).Z.bounds;
         end
     end
 
@@ -219,6 +215,7 @@ classdef memZono
 
         % Output appropriate base zonotope
         function Z = get.Z(obj)
+            % warning('Ensure that your output dimensions line up correctly')
             switch obj.baseClass
                 case 'zono'
                     Z = zono(obj.G,obj.c);
