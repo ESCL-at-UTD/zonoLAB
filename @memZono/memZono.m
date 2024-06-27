@@ -109,6 +109,20 @@ classdef memZono
             end
         end
 
+        % Relabel all keys by adding a suffix
+        function out = relabel(obj,s)
+            for i = 1: length(obj.factorKeys)
+                   obj.factorKeys{i} = append(obj.factorKeys{i}, s);
+            end
+            for i = 1: length(obj.dimKeys)
+                   obj.dimKeys{i} = append(obj.dimKeys{i}, s);
+            end
+            for i = 1: length(obj.conKeys)
+                   obj.conKeys{i} = append(obj.conKeys{i}, s);
+            end
+            out = obj;
+        end
+
     %% Get/Set Functions
         % Matrices
         % Get Matrices
