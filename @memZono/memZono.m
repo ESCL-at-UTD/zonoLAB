@@ -100,18 +100,6 @@ classdef memZono
                 error('non-simple constructor not specified')
             end
         end
-
-        % Copy constructor (allows relabeling dimension)
-        function out = copy(obj,varargin)
-            out = obj;
-            if nargin == 2
-                warning('relabeling dimensions without specifying order (should be depreciated)')
-                out.dimKeys = varargin{1};
-            elseif nargin == 3
-                out = obj.projection(varargin{1});
-                out.dimKeys = varargin{2};
-            end
-        end
     end
     methods (Static)
         % Costruction based on name of base objects
@@ -295,25 +283,42 @@ classdef memZono
         end
 
         % Create keys from a patern
+        function out = cellStartsWith(in,pattern)
+            idx = cellfun(@(lbl) startsWith(lbl,pattern),in);
+            out = in(idx);
+            % out = in();
+        end
+        % function out = factorKeyStartsWith(obj,pattern)
+        %     out = cellStartsWith(obj.factorKeys,pattern);
+        % end
+        % function out = dimKeyStartsWith(obj,pattern)
+        %     out = cellStartsWith(obj.dimKeys,pattern);
+        % end
+        % function out = conKeysStartsWith(obj,pattern)
+        %     out = cellStartsWith(obj.conKeys,pattern);
+        % end
         function out = keysStartsWith(obj,pattern)
-            out.factorKeys = {};
-            out.dimKeys = {};
-            out.conKeys = {};
-            for i=1:length(obj.factorKeys)
-                if startsWith(obj.factorKeys{i},pattern)
-                    out.factorKeys = [out.factorKeys,obj.factorKeys{i}];
-                end
-            end
-            for i=1:length(obj.dimKeys)
-                if startsWith(obj.dimKeys{i},pattern)
-                    out.dimKeys = [out.dimKeys,obj.dimKeys{i}];
-                end
-            end
-            for i=1:length(obj.conKeys)
-                if startsWith(obj.conKeys{i},pattern)
-                    out.conKeys = [out.conKeys,obj.conKeys{i}];
-                end
-            end
+            out.factorKeys = cellStartsWith(obj.factorKeys,pattern);
+            out.dimKey = cellStartsWith(obj.dimKeys,pattern);
+            out.conKeys = cellStartsWith(obj.conKeys,pattern);
+            % out.factorKeys = {};
+            % out.dimKeys = {};
+            % out.conKeys = {};
+            % for i=1:length(obj.factorKeys)
+            %     if startsWith(obj.factorKeys{i},pattern)
+            %         out.factorKeys = [out.factorKeys,obj.factorKeys{i}];
+            %     end
+            % end
+            % for i=1:length(obj.dimKeys)
+            %     if startsWith(obj.dimKeys{i},pattern)
+            %         out.dimKeys = [out.dimKeys,obj.dimKeys{i}];
+            %     end
+            % end
+            % for i=1:length(obj.conKeys)
+            %     if startsWith(obj.conKeys{i},pattern)
+            %         out.conKeys = [out.conKeys,obj.conKeys{i}];
+            %     end
+            % end
         end
     end
 
@@ -392,18 +397,33 @@ classdef memZono
         obj = combine(obj1,obj2); % Minkowski Sum
 
         % Additional Methods
-        function out = linMap(in,M,varargin)
-            if isscalar(varargin)
-                inDims = in.dimKeys;
-                outDims = varargin{1}; 
-                warning('lack of inDims specification can cause issues with dimension ordering'); 
-            else
-                inDims = varargin{1};
-                outDims = varargin{2};
-            end
+        function out = linMap(in,M,inDims,outDims)
+            % if isscalar(varargin)
+            %     inDims = in.dimKeys;
+            %     outDims = varargin{1}; 
+            %     warning('lack of inDims specification can cause issues with dimension ordering'); 
+            % else
+            %     inDims = varargin{1};
+            %     outDims = varargin{2};
+            % end
             if ~iscell(inDims); inDims = memZono.genKeys(inDims,1:size(M,1)); end
             if ~iscell(outDims); outDims = memZono.genKeys(outDims,1:size(M,1)); end
             out = in.transform([],M,inDims,outDims);
+        end
+
+        % Copy constructor (allows relabeling dimension)
+        function out = copy(obj,inDims,outDims)
+            if ~iscell(inDims); inDims = obj.keysStartsWith(inDims).dimKeys; end
+            if ~iscell(outDims); outDims = memZono.genKeys(outDims,numel(outDims)); end
+            out = obj.projection(inDims);
+            out.dimKeys = outDims;
+            % if nargin == 2
+            %     warning('relabeling dimensions without specifying order (should be depreciated)')
+            %     out.dimKeys = varargin{1};
+            % elseif nargin == 3
+            %     out = obj.projection(varargin{1});
+            %     out.dimKeys = varargin{2};
+            % end
         end
         
         %% Ploting

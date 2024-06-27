@@ -54,10 +54,13 @@ function idx = getKeyIndices(in,keys)
         if iscell(in)
             [~,idx] = ismember(in,keys);
         else
-            if ~strcmp(in,':')
-                [~,idx] = ismember(in,keys);
-            else
+            if strcmp(in,':')
                 idx = ':';
+            else
+                [~,idx] = ismember(in,keys);
+                if idx == 0 
+                    idx = find(cellfun(@(lbl) startsWith(lbl,in), keys)); 
+                end
             end
         end
     end
