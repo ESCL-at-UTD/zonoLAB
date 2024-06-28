@@ -115,20 +115,6 @@ classdef memZono
 
     %% Parameter Set/Read
     methods
-        % Relabel all keys by adding a suffix
-        function out = relabel(obj,s)
-            for i = 1: length(obj.factorKeys)
-                   obj.factorKeys{i} = append(obj.factorKeys{i}, s);
-            end
-            for i = 1: length(obj.dimKeys)
-                   obj.dimKeys{i} = append(obj.dimKeys{i}, s);
-            end
-            for i = 1: length(obj.conKeys)
-                   obj.conKeys{i} = append(obj.conKeys{i}, s);
-            end
-            out = obj;
-        end
-
         % Matrices
         % Get Matrices
         function out = get.G(obj) 
@@ -297,11 +283,11 @@ classdef memZono
         end
 
         % Create keys from a patern
-        function out = cellStartsWith(in,pattern)
-            idx = cellfun(@(lbl) startsWith(lbl,pattern),in);
-            out = in(idx);
-            % out = in();
-        end
+        % function out = cellStartsWith(in,pattern)
+        %     idx = cellfun(@(lbl) startsWith(lbl,pattern),in);
+        %     out = in(idx);
+        %     % out = in();
+        % end
         % function out = factorKeyStartsWith(obj,pattern)
         %     out = cellStartsWith(obj.factorKeys,pattern);
         % end
@@ -312,27 +298,41 @@ classdef memZono
         %     out = cellStartsWith(obj.conKeys,pattern);
         % end
         function out = keysStartsWith(obj,pattern)
-            out.factorKeys = cellStartsWith(obj.factorKeys,pattern);
-            out.dimKey = cellStartsWith(obj.dimKeys,pattern);
-            out.conKeys = cellStartsWith(obj.conKeys,pattern);
-            % out.factorKeys = {};
-            % out.dimKeys = {};
-            % out.conKeys = {};
-            % for i=1:length(obj.factorKeys)
-            %     if startsWith(obj.factorKeys{i},pattern)
-            %         out.factorKeys = [out.factorKeys,obj.factorKeys{i}];
-            %     end
-            % end
-            % for i=1:length(obj.dimKeys)
-            %     if startsWith(obj.dimKeys{i},pattern)
-            %         out.dimKeys = [out.dimKeys,obj.dimKeys{i}];
-            %     end
-            % end
-            % for i=1:length(obj.conKeys)
-            %     if startsWith(obj.conKeys{i},pattern)
-            %         out.conKeys = [out.conKeys,obj.conKeys{i}];
-            %     end
-            % end
+            % out.factorKeys = cellStartsWith(obj.factorKeys,pattern);
+            % out.dimKey = cellStartsWith(obj.dimKeys,pattern);
+            % out.conKeys = cellStartsWith(obj.conKeys,pattern);
+            out.factorKeys = {};
+            out.dimKeys = {};
+            out.conKeys = {};
+            for i=1:length(obj.factorKeys)
+                if startsWith(obj.factorKeys{i},pattern)
+                    out.factorKeys = [out.factorKeys,obj.factorKeys{i}];
+                end
+            end
+            for i=1:length(obj.dimKeys)
+                if startsWith(obj.dimKeys{i},pattern)
+                    out.dimKeys = [out.dimKeys,obj.dimKeys{i}];
+                end
+            end
+            for i=1:length(obj.conKeys)
+                if startsWith(obj.conKeys{i},pattern)
+                    out.conKeys = [out.conKeys,obj.conKeys{i}];
+                end
+            end
+        end
+
+        % Relabel all keys by adding a suffix
+        function out = relabel(obj,s)
+            for i = 1: length(obj.factorKeys)
+                   obj.factorKeys{i} = append(obj.factorKeys{i}, s);
+            end
+            for i = 1: length(obj.dimKeys)
+                   obj.dimKeys{i} = append(obj.dimKeys{i}, s);
+            end
+            for i = 1: length(obj.conKeys)
+                   obj.conKeys{i} = append(obj.conKeys{i}, s);
+            end
+            out = obj;
         end
     end
 
@@ -422,7 +422,7 @@ classdef memZono
             % end
             if ~iscell(inDims); inDims = memZono.genKeys(inDims,1:size(M,1)); end
             if ~iscell(outDims); outDims = memZono.genKeys(outDims,1:size(M,1)); end
-            out = in.transform([],M,inDims,outDims);
+            out = in.transform([],M,inDims,outDims).projection(outDims);
         end
 
         % Copy constructor (allows relabeling dimension)
