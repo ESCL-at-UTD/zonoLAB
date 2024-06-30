@@ -112,8 +112,10 @@ function out = affineMap(in,b,M,inDims,outDims,options)
         if ~options.retainExtraDims; passDims = []; pass_idx = []; end
         % if retainInDims is true then the unspecified inDims
         if options.retainInDims
-            passDims = [passDims, setDiff(inDims, outDims, "stable")];
-            [pass_idx,~,~,~] = memZono.getKeyIndices(passDims,in.dimKeys);
+            retainDims = setdiff(inDims, outDims, "stable");
+            [~,~,retain_idx,~]=  memZono.getKeyIndices(retainDims,in.dimKeys);
+            passDims = [passDims, retainDims];
+            pass_idx = [pass_idx, retain_idx];
         end
 
         G_ = [ 
