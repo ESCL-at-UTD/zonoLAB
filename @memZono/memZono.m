@@ -422,7 +422,7 @@ classdef memZono
             % end
             if ~iscell(inDims); inDims = memZono.genKeys(inDims,1:size(M,1)); end
             if ~iscell(outDims); outDims = memZono.genKeys(outDims,1:size(M,1)); end
-            out = in.transform([],M,inDims,outDims).projection(outDims);
+            out = in.transform([],M,inDims,outDims,retainExtraDims=false);%.projection(outDims);
         end
 
         % Copy constructor (allows relabeling dimension)
@@ -485,7 +485,7 @@ classdef memZono
         
 
         % Projection is defined for internal use - subsref (indexing) is simpilar syntax
-        function out = projection(obj,dims) 
+        function out = projection(obj,dims)
             if ~iscell(dims) % if not already in cell form
                 if strcmp(dims,'all')
                     dims = obj.dimKeys; 
