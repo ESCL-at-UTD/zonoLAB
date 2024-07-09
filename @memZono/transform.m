@@ -16,6 +16,9 @@
 %                   if empty, then all dimensions are transformed
 %       outDims - a cell array of relabeled dimensions after transformation (length m)
 %                   can be empty if matrix is square or a scalar
+%       options - Named values to specify additional options
+%                 options.retainExtraDims (default = true)  - output includes dims not specified within inDims
+%                 options.retainInDims (default = false)  - output includes inDims that are not also specified as outDims
 %   Outputs:
 %       Z - memZono in R^m
 %           Affine transformation M*X+b is applied to the inDims dimensions
@@ -23,19 +26,26 @@
 %   Notes:
 %       
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-function obj = transform(obj1,obj2,M, inDims, outDims)
+function obj = transform(obj1,obj2,M, inDims, outDims, options)
     arguments
         obj1
         obj2
         M = [];
         inDims = {};
         outDims = {};
+        options.retainExtraDims = true;
+        options.retainInDims = false;
     end
     
     %% Input Conditioning
 
     % if not inDims are specified, then the operation is applied to the entire memZono object.
     if isempty(inDims)
+        if ~isempty(M)
+            if ~isscalar(M)
+                error('lack of inDims specification can cause issues with dimension ordering');
+            end
+        end
         inDims = obj1.dimKeys;
     else
         if ~all(ismember(inDims,obj1.dimKeys)) % checks that if inDims is specified, inDims are all valid labels
@@ -46,7 +56,7 @@ function obj = transform(obj1,obj2,M, inDims, outDims)
     % outDims must be given unless:
     %   (1) No multiplication --> M is empty
     %   (2) Multiplying, but by a scalar --> M is scalar
-    %   (3) Multiplying, but by a square matrix --> M is square
+    %   (3) Multiplying, but by a square matrix --> M is square <== we should require this
     if isempty(outDims) 
         if ~isempty(M) 
             if isscalar(M) || size(M,1)==size(M,2) % Case 2 or 3
@@ -73,14 +83,14 @@ function obj = transform(obj1,obj2,M, inDims, outDims)
 
     %% Operation Logic
     if isa(obj2,'memZono') % <-- thus minkowski sum
-        obj = combine(affineMap(obj1,[],M,inDims,outDims),obj2); % <-- M Z \oplus Y
+        obj = combine(affineMap(obj1,[],M,inDims,outDims,options),obj2); % <-- M Z \oplus Y
     else % <-- thus a vector sum
-        obj = affineMap(obj1,obj2,M,inDims,outDims); % <-- M Z + b
+        obj = affineMap(obj1,obj2,M,inDims,outDims,options); % <-- M Z + b
     end
 end
 
 % Affine Operation - a linear mapping by M and adding a vector b
-function out = affineMap(in,b,M,inDims,outDims)
+function out = affineMap(in,b,M,inDims,outDims,options)
     if isempty(M) && isempty(b)
         out = in;
     elseif isempty(M) % M is empty and the dimensions don't change, so b should match the dimension of the zono already
@@ -98,6 +108,15 @@ function out = affineMap(in,b,M,inDims,outDims)
         [~,~,passDims] = memZono.getUniqueKeys(inDims,in.dimKeys);
         % pass_idx are the indices of the passDims keys
         [~,~,~,pass_idx] = memZono.getKeyIndices(inDims,in.dimKeys);
+        % if retainExtraDims is false then the pass_idx is eleminated
+        if ~options.retainExtraDims; passDims = []; pass_idx = []; end
+        % if retainInDims is true then the unspecified inDims
+        if options.retainInDims
+            retainDims = setdiff(inDims, outDims, "stable");
+            [~,~,retain_idx,~]=  memZono.getKeyIndices(retainDims,in.dimKeys);
+            passDims = [passDims, retainDims];
+            pass_idx = [pass_idx, retain_idx];
+        end
 
         G_ = [ 
             in.G(pass_idx,:); 

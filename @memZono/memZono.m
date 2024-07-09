@@ -77,7 +77,7 @@ classdef memZono
         conKeys
     end
 
-    %% Constructor
+    %% Constructors
     methods
         function obj = memZono(varargin)
             if nargin == 1
@@ -100,30 +100,21 @@ classdef memZono
                 error('non-simple constructor not specified')
             end
         end
-
-        % Copy constructor (allows relabeling dimension)
-        function out = copy(obj,varargin)
-            out = obj;
-            if nargin >1
-                out.dimKeys = varargin{1};
+    end
+    methods (Static)
+        % Costruction based on name of base objects
+        function obj = varNameConstructor(varargin)
+            for i = 1:nargin
+                varName = inputname(i);
+                obj_{i} = memZono(varargin{i},varName);
             end
+            obj = vertcat(obj_{:});
         end
 
-        % Relabel all keys by adding a suffix
-        function out = relabel(obj,s)
-            for i = 1: length(obj.factorKeys)
-                   obj.factorKeys{i} = append(obj.factorKeys{i}, s);
-            end
-            for i = 1: length(obj.dimKeys)
-                   obj.dimKeys{i} = append(obj.dimKeys{i}, s);
-            end
-            for i = 1: length(obj.conKeys)
-                   obj.conKeys{i} = append(obj.conKeys{i}, s);
-            end
-            out = obj;
-        end
+    end
 
-    %% Get/Set Functions
+    %% Parameter Set/Read
+    methods
         % Matrices
         % Get Matrices
         function out = get.G(obj) 
@@ -162,10 +153,22 @@ classdef memZono
         % hybZono dims
         function nGc = get.nGc(obj); nGc = sum(obj.vset); end
         function nGb = get.nGb(obj); nGb = sum(~obj.vset); end
-        
-        % In/Out with base Zonotope
 
 
+        % Additional Propterties
+        function out = dimMin(obj,dims)
+            out = projection(obj,dims).Z.lb;
+        end
+        function out = dimMax(obj,dims)
+            out = projection(obj,dims).Z.ub;
+        end
+        function out = dimBounds(obj,dims)
+            out = projection(obj,dims).Z.bounds;
+        end
+    end
+
+    %% In/Out with base Zonotope
+    methods
         % test if special
         function out = issym(obj)
             % tests if any are symbolic
@@ -200,6 +203,7 @@ classdef memZono
 
         % Output appropriate base zonotope
         function Z = get.Z(obj)
+            % warning('Ensure that your output dimensions line up correctly')
             switch obj.baseClass
                 case 'zono'
                     Z = zono(obj.G,obj.c);
@@ -279,7 +283,24 @@ classdef memZono
         end
 
         % Create keys from a patern
+        % function out = cellStartsWith(in,pattern)
+        %     idx = cellfun(@(lbl) startsWith(lbl,pattern),in);
+        %     out = in(idx);
+        %     % out = in();
+        % end
+        % function out = factorKeyStartsWith(obj,pattern)
+        %     out = cellStartsWith(obj.factorKeys,pattern);
+        % end
+        % function out = dimKeyStartsWith(obj,pattern)
+        %     out = cellStartsWith(obj.dimKeys,pattern);
+        % end
+        % function out = conKeysStartsWith(obj,pattern)
+        %     out = cellStartsWith(obj.conKeys,pattern);
+        % end
         function out = keysStartsWith(obj,pattern)
+            % out.factorKeys = cellStartsWith(obj.factorKeys,pattern);
+            % out.dimKey = cellStartsWith(obj.dimKeys,pattern);
+            % out.conKeys = cellStartsWith(obj.conKeys,pattern);
             out.factorKeys = {};
             out.dimKeys = {};
             out.conKeys = {};
@@ -298,6 +319,20 @@ classdef memZono
                     out.conKeys = [out.conKeys,obj.conKeys{i}];
                 end
             end
+        end
+
+        % Relabel all keys by adding a suffix
+        function out = relabel(obj,s)
+            for i = 1: length(obj.factorKeys)
+                   obj.factorKeys{i} = append(obj.factorKeys{i}, s);
+            end
+            for i = 1: length(obj.dimKeys)
+                   obj.dimKeys{i} = append(obj.dimKeys{i}, s);
+            end
+            for i = 1: length(obj.conKeys)
+                   obj.conKeys{i} = append(obj.conKeys{i}, s);
+            end
+            out = obj;
         end
     end
 
@@ -376,9 +411,33 @@ classdef memZono
         obj = combine(obj1,obj2); % Minkowski Sum
 
         % Additional Methods
-        function out = linMap(in,M,outDims)
+        function out = linMap(in,M,inDims,outDims)
+            % if isscalar(varargin)
+            %     inDims = in.dimKeys;
+            %     outDims = varargin{1}; 
+            %     warning('lack of inDims specification can cause issues with dimension ordering'); 
+            % else
+            %     inDims = varargin{1};
+            %     outDims = varargin{2};
+            % end
+            if ~iscell(inDims); inDims = memZono.genKeys(inDims,1:size(M,1)); end
             if ~iscell(outDims); outDims = memZono.genKeys(outDims,1:size(M,1)); end
-            out = in.transform([],M,[],outDims);
+            out = in.transform([],M,inDims,outDims,retainExtraDims=false);%.projection(outDims);
+        end
+
+        % Copy constructor (allows relabeling dimension)
+        function out = copy(obj,inDims,outDims)
+            if ~iscell(inDims); inDims = obj.keysStartsWith(inDims).dimKeys; end
+            if ~iscell(outDims); outDims = memZono.genKeys(outDims,numel(outDims)); end
+            out = obj.projection(inDims);
+            out.dimKeys = outDims;
+            % if nargin == 2
+            %     warning('relabeling dimensions without specifying order (should be depreciated)')
+            %     out.dimKeys = varargin{1};
+            % elseif nargin == 3
+            %     out = obj.projection(varargin{1});
+            %     out.dimKeys = varargin{2};
+            % end
         end
         
         %% Ploting
@@ -415,7 +474,7 @@ classdef memZono
         % Extended minkowsi sum
         function obj = horzcat(varargin)
             obj = varargin{1};
-            for i = 2:nargin
+            for i = 2:nargin %<========= not efficient
                 obj = combine(obj,varargin{i});
             end
         end
@@ -425,11 +484,14 @@ classdef memZono
         % A = subsasgn(A,S,B); %<---- not completed
         
 
-        % Projection is prodomenently defined for internal use - Use subsref (indexing) instead
-        function out = projection(obj,dims) 
+        % Projection is defined for internal use - subsref (indexing) is simpilar syntax
+        function out = projection(obj,dims)
             if ~iscell(dims) % if not already in cell form
-                if strcmp(dims,'all'), dims = obj.dimKeys; end
-                % TODO: include a `starts with' functionality?
+                if strcmp(dims,'all')
+                    dims = obj.dimKeys; 
+                else
+                    dims = obj.keysStartsWith(dims).dimKeys;
+                end
             end
             [~,idx] = ismember(dims,obj.dimKeys);
             keys_ = obj.keys;
