@@ -1,8 +1,9 @@
-function obj = generalizedIntersection(obj1,obj2,R)
+function obj = generalizedIntersection(obj1,obj2,R,consKeyPrefix)
     arguments
         obj1 memZono
         obj2 memZono
         R = [];
+        consKeyPrefix = 'intersect';
     end
 
     if isempty(R); R = eye(obj2.n,obj1.n); end
@@ -11,9 +12,7 @@ function obj = generalizedIntersection(obj1,obj2,R)
     % shared factors
     [k1,ks,k2] = memZono.getUniqueKeys(obj1.factorKeys,obj2.factorKeys);
     [idxk1,idxks1,idxks2,idxk2] = memZono.getKeyIndices(obj1.factorKeys,obj2.factorKeys);
-    
-    
-    
+        
     % TODO?????? add shared dims/cons?
     % % shared dims
     % if isempty(obj1.dimKeys); obj1.dimKeys = 'd1'; end
@@ -50,7 +49,7 @@ function obj = generalizedIntersection(obj1,obj2,R)
     % Constraints
     cons_new{size(R,1)} = [];
     for i = 1:size(R,1)
-        cons_new{i} = sprintf('intersect_%d',i);
+        cons_new{i} = sprintf('%s_%d',consKeyPrefix,i);
     end
     keys_.cons = [obj1.conKeys,obj2.conKeys,cons_new];
 

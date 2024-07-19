@@ -1,4 +1,14 @@
 *.asv
 *.log
+.vscode/
 
 test.m
+
+
+
+*.aux
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.ent
+*.out

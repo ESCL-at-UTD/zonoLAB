@@ -6,7 +6,7 @@
 %   x1[k+1] = x1[k] + dt*x2[k]
 %   x2[k+1] = x2[k] + dt*(10*sin(x1[k]) + u[k])
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-
+tAll = tic;
 %% Parameters
 dt = 0.1;   % Time step size
 n = 2;      % Number of states
@@ -157,13 +157,14 @@ ZeroEye = [zeros(2) eye(2)];
 EyeZero = [eye(2) zeros(2)];
 for i = 1:n_Sim
     Xreach{i+1} = ZeroEye*and(Phi_CL,Xreach{i},EyeZero);
-    leaves = getLeaves(Xreach{i+1},solverOptions);
-    nLeaves = size(leaves,2);
-    complexity(i+1,:) = [Xreach{i+1}.nGc Xreach{i+1}.nGb Xreach{i+1}.nC nLeaves 0];
+%     leaves = getLeaves(Xreach{i+1},solverOptions);
+%     nLeaves = size(leaves,2);
+%     complexity(i+1,:) = [Xreach{i+1}.nGc Xreach{i+1}.nGb Xreach{i+1}.nC nLeaves 0];
     i
 end
 
 %% Plot Reachable Sets
+tPlot = tic;
 n_plot =n_Sim;
 % Colors for sets
 blu = [0 0 1]; % Blue
@@ -201,8 +202,9 @@ ylim([-7 7])
 grid on
 fontsize = 24;
 set(gca,'FontSize',fontsize,'fontname','times new roman')
-
-exportgraphics(gcf,'nonlin_CL_reach.pdf','ContentType','vector')
+toc(tPlot)
+toc(tAll)
+% exportgraphics(gcf,'nonlin_CL_reach.pdf','ContentType','vector')
 
 %% Local Functions
 function [out] = coupleStates(in,e)

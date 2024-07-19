@@ -52,4 +52,31 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         [out1, out2] = matchSetType(obj1,obj2) % Output sets as the same class (zono, conZono, or hybZono)
 
     end
+
+
+
+    %% Hidden/Dependent Parameters
+    properties (Hidden,Dependent)
+        ub
+        lb
+        bounds
+    end
+    % Getter/Setter
+    methods
+        function out = get.bounds(obj)
+            bb = obj.boundingBox;
+            ub = bb.c + sum(abs(bb.G),2);
+            lb = bb.c - sum(abs(bb.G),2);
+            out = [lb,ub];
+        end
+        function out = get.ub(obj)
+            bb = obj.boundingBox;
+            out = bb.c + sum(abs(bb.G),2);
+        end
+        function out = get.lb(obj)
+            bb = obj.boundingBox;
+            out = bb.c - sum(abs(bb.G),2);
+        end
+    end
+
 end

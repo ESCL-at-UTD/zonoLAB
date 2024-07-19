@@ -1,7 +1,7 @@
-function obj = linMap(M,obj)
+function obj = linMap(obj,M)
     arguments
-        M double
         obj memZono
+        M
     end
 
     obj.G = M*obj.G;
