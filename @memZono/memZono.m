@@ -398,7 +398,14 @@ classdef memZono
 
         function [out] = genKeys(prefix,nums)
             labeler = @(letter,num)sprintf('%s_%i',letter,num);
-            out = arrayfun(@(num){labeler(prefix,num)},nums);
+            if ~iscell(prefix)
+                out = arrayfun(@(num){labeler(prefix,num)},nums);
+            else
+                out = {};
+                for i = 1:numel(prefix)
+                    out = [out,arrayfun(@(num){labeler(prefix{i},num)},nums)];
+                end
+            end
         end
 
     end
