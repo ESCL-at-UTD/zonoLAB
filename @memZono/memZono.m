@@ -162,8 +162,8 @@ classdef memZono
         function out = dimMax(obj,dims)
             out = projection(obj,dims).Z.ub;
         end
-        function out = dimBounds(obj,dims)
-            out = projection(obj,dims).Z.bounds;
+        function [lb,ub] = dimBounds(obj,dims)
+            [lb,ub] = projection(obj,dims).Z.bounds;
         end
     end
 
