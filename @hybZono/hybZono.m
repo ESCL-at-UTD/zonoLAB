@@ -140,5 +140,12 @@ classdef hybZono < abstractZono
         [v,f] = plotHybZono3D(obj,optSolver);   % Plot in 3 dimensions
         [leaves] = getLeaves(obj,optSolver)     % Identify non-empty combinations of binary factors
         
+         % Export each leaf as a cell array of conZonos 
+        function out = hyb2leafArray(obj)
+            leaves = obj.getLeaves();
+            for leaf = 1: length(leaves)
+                out{leaf,1} = conZono(obj.Gc,obj.c+obj.Gb*leaves(:,leaf),obj.Ac,obj.b-obj.Ab*leaves(:,leaf));
+            end
+        end
     end
 end
