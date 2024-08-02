@@ -20,7 +20,7 @@
 %   NOT IN ZONOLAB (YET)
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-function Zh = removeRedundancy7(Zh)
+function Zh = removeRedundancy(Zh)
 %Zh = getDimensions(Zh);
 
 % if there are no constraints, we don't have anything to do
