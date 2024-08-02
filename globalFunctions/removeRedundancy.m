@@ -16,6 +16,8 @@
 %					equality constraints removed
 %	
 %	Trevor Bird - bird6@purdue.edu - Purdue 2022
+%
+%   NOT IN ZONOLAB (YET)
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 function Zh = removeRedundancy7(Zh)

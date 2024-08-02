@@ -18,6 +18,8 @@
 %		boxBin : binary factors for the values obtained in box
 %	
 %	Trevor Bird - bird6@purdue.edu - Purdue 2022
+%
+%   NOT IN ZONOLAB (YET)
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 function [ Zh , box , boxInt ] = rescaleCont(Zh,solverTol,zeroTol)

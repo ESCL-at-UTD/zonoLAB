@@ -13,6 +13,8 @@
 % 		B : bool where 0-> if there exists some z in Zh, 1-> otherwise
 % 
 %	Trevor Bird - bird6@purdue.edu - Purdue 2021
+%
+%   NOT IN ZONOLAB (YET)
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 function B = is_empty(Zh)
