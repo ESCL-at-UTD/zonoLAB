@@ -106,8 +106,10 @@ if RT <= Zh.nGb
 
 end
 
-
-stop = isempty(getLeaves(Zh,[]));
+Zh = Zh.simplifySetType;
+if ~isa(Zh, 'hybZono') || isempty(getLeaves(Zh,[]))
+    return
+end
 
 %% %--% rescale the continuous generators %--%
 
