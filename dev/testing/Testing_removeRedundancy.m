@@ -11,14 +11,15 @@ attempts = nan(num_trials, 1);
 Z = repmat({nan}, num_trials, 1);
 Z_rr = Z;
 for i = 1:num_trials
-    Z{i} = randomSet(randi(2^32), 'hybZono', 5, randi(10), randi(10), randi(10));
+    Z{i} = randomSet(randi(2^32), 'hybZono', 4, randi(100), randi(10), randi(10));
     attempts(i) = 1;
     while is_empty(Z{i})
-        Z{i} = randomSet(randi(2^32), 'hybZono', 5, randi(10), randi(10), randi(10));
+        Z{i} = randomSet(randi(2^32), 'hybZono', 4, randi(100), randi(10), randi(10));
         attempts(i) = attempts(i)+1;
     end
     Z_rr{i} = removeRedundancy(Z{i});
     M = eye(3, Z{i}.n);
+    disp(i)
     
     if flag_plots & any(i==which_to_plot)
         figure
@@ -39,6 +40,8 @@ for i = 1:num_trials
 end
 
 table(data(:,1), data(:,2), data(:,3), 'VariableNames', {'i', 'nC (orig)', 'nC (red)'})
+
+return
 %%
 
 clc, close all, clear all
