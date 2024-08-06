@@ -18,10 +18,13 @@
 %	Trevor Bird - bird6@purdue.edu - Purdue 2022
 %
 %   NOT IN ZONOLAB (YET)
+% Jonah's notes: I replaced lots of "empty checks" in Trevor/Jake's
+% original script with calls to "getLeaves", although that adds quite a bit
+% of computation time. This function still has lots of optimization
+% possible.
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 function Zh = removeRedundancy(Zh)
-%Zh = getDimensions(Zh);
 
 % if there are no constraints, we don't have anything to do
 if Zh.nC == 0
@@ -36,7 +39,11 @@ solverTol = norm([Zh.Ac Zh.Ab Zh.b],inf)*(1e-6);
 % remove zeros
 Zh = removeZeros(Zh,zeroTol);
 
-stop = isempty(getLeaves(Zh,[]));
+% check if we're done
+Zh = Zh.simplifySetType;
+if ~isa(Zh, 'hybZono') || isempty(getLeaves(Zh,[]))
+    return
+end
 
 %% %--% precondition the constraints %--% 
 % This seems to mess things up for some reason.. better to use QR to find dependent equations
@@ -106,6 +113,7 @@ if RT <= Zh.nGb
 
 end
 
+% check if we're done
 Zh = Zh.simplifySetType;
 if ~isa(Zh, 'hybZono') || isempty(getLeaves(Zh,[]))
     return
@@ -115,8 +123,7 @@ end
 
 [ Zh , box , boxInt ] = rescaleCont(Zh,solverTol);
 
-
-stop = isempty(getLeaves(Zh,[]));
+%stop = isempty(getLeaves(Zh,[]));
 
 %--% if there were constants.. remove the zeros resulting from rescaling  %--%
 rowZero = find(all(abs([ Zh.Ac Zh.Ab Zh.b ])<=zeroTol,2));
@@ -152,7 +159,11 @@ inds = 1:Zh.nGc;
 indsRed = inds(LHS&RHS);
 
 
-stop = isempty(getLeaves(Zh,[]));
+% check if we're done
+Zh = Zh.simplifySetType;
+if ~isa(Zh, 'hybZono') || isempty(getLeaves(Zh,[]))
+    return
+end
 
 %% check for linearly dependent rows in the equality constraints
 if Zh.nC
@@ -194,16 +205,18 @@ if r < Zh.nC
 	ngNew = Zh.nGb+Zh.nGc;
 	
 	if ncOld > ncNew || ngOld > ngNew
-		stop = 1;
+		error('This was previously marked by Trevor/Jake as a "stop" condition.')
+        stop = 1;
 	end
 
 end
 end
-stop = isempty(getLeaves(Zh, []));
-if stop
-	stop = 1;
-end
 
+% check if we're done
+Zh = Zh.simplifySetType;
+if ~isa(Zh, 'hybZono') || isempty(getLeaves(Zh,[]))
+    return
+end
 %% remove redundant equality constraints based on activation
 
 % this totally happens in the MPC problems some times
@@ -304,7 +317,11 @@ if numel(indsRed) == 1
 	return
 end
 
-stop = isempty(getLeaves(Zh,[]));
+% check if we're done
+Zh = Zh.simplifySetType;
+if ~isa(Zh, 'hybZono') || isempty(getLeaves(Zh,[]))
+    return
+end
 
 %% loop through and find bounds to determine remaining redundant inf norm constraints
 
@@ -462,7 +479,11 @@ end
 % remove any left over zeros..
 Zh = removeZeros(Zh,zeroTol);
 
-stop = isempty(getLeaves(Zh,[]));
+% check if we're done
+Zh = Zh.simplifySetType;
+if ~isa(Zh, 'hybZono') || isempty(getLeaves(Zh,[]))
+    return
+end
 
 %% check for linearly dependent rows in the eequality constraints
 
