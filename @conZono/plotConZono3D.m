@@ -105,12 +105,20 @@ try
         v = foundVerts;
         f = [1 2];
         return
+    else % found examples where the above search finds only vertices in a single plane even though the object is 3D
+        indx = find(isNewVert,1);
+        dir = cross(foundVerts(2,:)-foundVerts(1,:),extreme(indx,:)-foundVerts(1,:));
+        [x,~,~] = solveLP(dir*obj.G,[],[],Aeq,beq,lb,ub,optSolver);
+        extreme(5,:) = [obj.G*x + obj.c]';
+        isNewVert(5) = sum(abs(nullDirs*(extreme(5,:)-foundVerts(1,:))'))>=1e-6;           % Tolerance
     end
 
     % Continue if set is not a line segment in 3D
-    indxPairs = [1 2; 1 3; 1 4; 2 3; 2 4; 3 4];
-    coPlanar = zeros(6,1);
-    for i = 1:6
+    % indxPairs = [1 2; 1 3; 1 4; 2 3; 2 4; 3 4];
+    % coPlanar = zeros(6,1);
+    indxPairs = [1 2; 1 3; 1 4; 1 5; 2 3; 2 4; 2 5; 3 4; 3 5; 4 5];
+    coPlanar = zeros(size(indxPairs,1),1);
+    for i = 1:size(indxPairs,1)
         coPlanar(i) = abs(det([foundVerts(2,:)-foundVerts(1,:);extreme(indxPairs(i,1),:)-foundVerts(1,:);extreme(indxPairs(i,2),:)-foundVerts(1,:)])) <= 1e-6;
     end
     if min(coPlanar) == 1 % A planar set in 3D
