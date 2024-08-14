@@ -10,7 +10,8 @@
 %   Outputs:
 %       Z - zonotopic set in R^n (conZono object)
 %   Notes:
-%       Requires the MPT toolbox to calculate hull of hybZono(s)
+%       As currently written, can only perform convex hull of HZ in 1, 2,
+%       or 3 dimensions (as it relies on the plotting function)
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function out = convexHull(obj1,varargin)
 
@@ -63,7 +64,6 @@ end
 
 function out = INTERNAL_fcn_hybZono_hull(Z)
     [v,~] = plot(Z, plotOptions('Display','off'));
-    P = Polyhedron(v);
-    P.minHRep;
-    out = hPoly2conZono([P.H]);
+    v_conv = v(convhull(v),:);
+    out = vPoly2Zono(v_conv');
 end
