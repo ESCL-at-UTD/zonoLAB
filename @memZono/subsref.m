@@ -24,7 +24,7 @@ function varargout = subsref(obj, S)
             c_ = obj.c(i,:);
             A_ = obj.A(k,j);
             b_ = obj.b(k,:);
-            vset_ = obj.vset(:,k);
+            vset_ = obj.vset(1,j);
 
             if ischar(i)
                 keys_.dims = obj.dimKeys;

@@ -81,6 +81,16 @@ function obj = transform(obj1,obj2,M, inDims, outDims, options)
         error('The number of outDims labels must match the number of rows of the matrix multiplication.')
     end
 
+    % if there is no matrix multiplication, then the length of inDims and outDims must be the same
+    if isempty(M) && length(inDims) ~= length(outDims)
+        error('With no matrix multiplication, the number of inDims and outDims must match.')
+    end
+
+    % if a vector sum is done, the length of the vector should match the number of outDims
+    if ~isempty(obj2) && ~isa(obj2,'memZono') && length(outDims) ~= size(obj2,1)
+        error('The number of outDims must match the length of the vector being added.')
+    end
+
     %% Operation Logic
     if isa(obj2,'memZono') % <-- thus minkowski sum
         obj = combine(affineMap(obj1,[],M,inDims,outDims,options),obj2); % <-- M Z \oplus Y
@@ -91,46 +101,43 @@ end
 
 % Affine Operation - a linear mapping by M and adding a vector b
 function out = affineMap(in,b,M,inDims,outDims,options)
-    if isempty(M) && isempty(b)
-        out = in;
-    elseif isempty(M) % M is empty and the dimensions don't change, so b should match the dimension of the zono already
-        out = memZono(in.G, in.c + b, in.A, in.b, in.vset, in.keys);
-    else
-        if isempty(b)
-            b = zeros(length(outDims),1);
-        end
-        
-        % select the dimensions to be mapped by grabbing indices
-        % use ismember so that the order of inDims is preserved to match M and b
-        [~,M_idx] = ismember(inDims,in.dimKeys);
-
-        % passDims will be the dimensions (keys) that are not going to be mapped
-        [~,~,passDims] = memZono.getUniqueKeys(inDims,in.dimKeys);
-        % pass_idx are the indices of the passDims keys
-        [~,~,~,pass_idx] = memZono.getKeyIndices(inDims,in.dimKeys);
-        % if retainExtraDims is false then the pass_idx is eleminated
-        if ~options.retainExtraDims; passDims = []; pass_idx = []; end
-        % if retainInDims is true then the unspecified inDims
-        if options.retainInDims
-            retainDims = setdiff(inDims, outDims, "stable");
-            [~,~,retain_idx,~]=  memZono.getKeyIndices(retainDims,in.dimKeys);
-            passDims = [passDims, retainDims];
-            pass_idx = [pass_idx, retain_idx];
-        end
-
-        G_ = [ 
-            in.G(pass_idx,:); 
-            M*in.G(M_idx,:)
-        ];
-        c_ = [
-            in.c(pass_idx,:);
-            M*in.c(M_idx,:) + b
-        ];
-        % only need to update the dimKeys - reordered and the mapped ones are relabeled
-        keys_ = in.keys;
-        keys_.dims = [passDims,outDims];
-        
-        % constraints, constraint keys, factor keys, and vset do not change
-        out = memZono(G_, c_, in.A, in.b, in.vset, keys_);
+    if isempty(M) % when M is empty, inDims and outDims are equal length
+        M = eye(length(inDims));
     end
+    if isempty(b)
+        b = zeros(length(outDims),1);
+    end
+    
+    % select the dimensions to be mapped by grabbing indices
+    % use ismember so that the order of inDims is preserved to match M and b
+    [~,M_idx] = ismember(inDims,in.dimKeys);
+
+    % passDims will be the dimensions (keys) that are not going to be mapped
+    [~,~,passDims] = memZono.getUniqueKeys(inDims,in.dimKeys);
+    % pass_idx are the indices of the passDims keys
+    [~,~,~,pass_idx] = memZono.getKeyIndices(inDims,in.dimKeys);
+    % if retainExtraDims is false then the pass_idx is eleminated
+    if ~options.retainExtraDims; passDims = []; pass_idx = []; end
+    % if retainInDims is true then the unspecified inDims
+    if options.retainInDims
+        retainDims = setdiff(inDims, outDims, "stable");
+        [~,~,retain_idx,~]=  memZono.getKeyIndices(retainDims,in.dimKeys);
+        passDims = [passDims, retainDims];
+        pass_idx = [pass_idx, retain_idx];
+    end
+
+    G_ = [ 
+        in.G(pass_idx,:); 
+        M*in.G(M_idx,:)
+    ];
+    c_ = [
+        in.c(pass_idx,:);
+        M*in.c(M_idx,:) + b
+    ];
+    % only need to update the dimKeys - reordered and the mapped ones are relabeled
+    keys_ = in.keys;
+    keys_.dims = [passDims,outDims];
+    
+    % constraints, constraint keys, factor keys, and vset do not change
+    out = memZono(G_, c_, in.A, in.b, in.vset, keys_);
 end
