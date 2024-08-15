@@ -36,18 +36,18 @@ classdef memZono
     properties (Dependent)
         c       % Center (n x 1)
         b       % Constraint vector (nC x 1)
-        % G       % Generator matrix (n x nG)
+        G       % Generator matrix (n x nG)
         Gc      % Continuous generator matrix (n x nGc)
         Gb      % Binary generator matrix (n x nGb)
-        % A       % Constraint matrix (nC x nG)
+        A       % Constraint matrix (nC x nG)
         Ac      % Continuous constraint matrix (nC x nGc)
         Ab      % Binary constraint matrix (nC x nGb)
     end
 
-    properties (Dependent,Hidden) %(hidden do to hyb-zono precidence)
-        G       % Generator matrix (n x nG)
-        A       % Constraint matrix (nC x nG)
-    end
+    % properties (Dependent,Hidden) %(hidden do to hyb-zono precidence)
+    %     G       % Generator matrix (n x nG)
+    %     A       % Constraint matrix (nC x nG)
+    % end
 
     % Dimensions
     properties (Dependent) % These properties get automatically updated when used
@@ -427,8 +427,14 @@ classdef memZono
             %     inDims = varargin{1};
             %     outDims = varargin{2};
             % end
-            if ~iscell(inDims); inDims = memZono.genKeys(inDims,1:size(M,1)); end
-            if ~iscell(outDims); outDims = memZono.genKeys(outDims,1:size(M,1)); end
+            if ~iscell(inDims)
+                if size(M,2) == 1; inDims = {inDims}; 
+                else; inDims = memZono.genKeys(inDims,1:size(M,2)); end
+            end
+            if ~iscell(outDims)
+                if size(M,1) == 1; outDims = {outDims}; 
+                else;  outDims = memZono.genKeys(outDims,1:size(M,1)); end
+            end
             out = in.transform([],M,inDims,outDims,retainExtraDims=false);%.projection(outDims);
         end
 

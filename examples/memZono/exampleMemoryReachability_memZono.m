@@ -20,7 +20,8 @@ U_nom = zono(1.5,0);
 
 %% Reachability Calculation
 % Initial Conditions
-X_{1} = memZono(X_0,'x_1');
+newDims = 'x_1';
+X_{1} = memZono(X_0,newDims);
 X_all = X_{1};
 
 % Terminal Set
@@ -31,11 +32,13 @@ switch 'withOverload' %'withOverload' 'transform&merge' 'fullStack'
         % Time-evolution
         for k = 1:N-1
             % Current Input
-            U_{k} = memZono(U_nom,sprintf('u_%d',k));
+            uDims = sprintf('u_%d',k);
+            U_{k} = memZono(U_nom,uDims);
 
             % Step Update
+            oldDims = newDims;
             newDims = sprintf('x_%d',k+1);
-            X_{k+1} = X_{k}.linMap(A,newDims) + U_{k}.linMap(B,newDims);
+            X_{k+1} = X_{k}.linMap(A,oldDims,newDims) + U_{k}.linMap(B,uDims,newDims);
 
             % Save Data
             X_all = [
