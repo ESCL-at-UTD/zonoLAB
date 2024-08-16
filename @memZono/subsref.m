@@ -1,5 +1,10 @@
 function varargout = subsref(obj, S)
     % Overload of varargout: https://www.mathworks.com/help/matlab/matlab_oop/code-patterns-for-subsref-and-subsasgn-methods.html
+    if length(S) > 1
+        if S(1).type == '()'
+            [varargout{1:nargout}] = subsref(subsref(obj,S(1)),S(2:end));
+        end
+    end
     switch S(1).type
         case {'.','{}'}
             [varargout{1:nargout}] = builtin('subsref', obj, S);
