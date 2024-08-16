@@ -66,4 +66,28 @@ function out = INTERNAL_fcn_hybZono_hull(Z)
     [v,~] = plot(Z, plotOptions('Display','off'));
     v_conv = v(convhull(v),:);
     out = vPoly2Zono(v_conv');
+
+    % leaves = getLeaves(Z, solverOptions);
+    % if isempty(leaves)
+    %     warning('zonoLAB:EmptyZonotope','Hybrid zonotope is empty and cannot be plotted.')
+    %     out = conZono([],[],[],[]);
+    %     return
+    % end
+    % nLeaves = size(leaves,2);
+    % out = conZono(Z.Gc, Z.c + Z.Gb*leaves(:,1), Z.Ac, Z.b - Z.Ab*leaves(:,1));
+    % ax = gca;
+    % plot(out, 'm',1);
+    % if nLeaves > 1
+    %     for i = 2:nLeaves
+    %         Zi = conZono(Z.Gc, Z.c + Z.Gb*leaves(:,i), Z.Ac, Z.b - Z.Ab*leaves(:,i));
+    %         if i>2
+    %             ax.Children(2).delete
+    %         end
+    %         plot(Zi, 'g', 1);
+    %         out = convexHull(out, Zi)
+    %         ax.Children(2).delete
+    %         plot(out, 'm', 0.4);
+    %     end
+    % end
+
 end
