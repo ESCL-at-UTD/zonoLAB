@@ -45,19 +45,9 @@ if ~isa(Zh, 'hybZono') || isempty(getLeaves(Zh,[]))
     return
 end
 
-%% %--% precondition the constraints %--% 
-% This seems to mess things up for some reason.. better to use QR to find dependent equations
 
-% % use rref with full pivoting and normalized by rows inf norm
-% Zh = rrefCondition(Zh,zeroTol);
+%% Remove redundant binary factors (i.e., factors that are constrained to the same combinations)
 
-% set solver tolerance to optimality tolerance of gurobi multiplied by inf norm of the constraints
-% solverTol = norm([Zh.Ac Zh.Ab Zh.b],inf)*(1e-6);
-% % solverTol = max(abs([Zh.Ac Zh.Ab Zh.b]),[],'all')*(1e-6);
-
-%% %--% update the binary tree and remove redundancy %--%
-
-% update the binary tree if necessary
 solverOpts = solverOptions();
 binTree = getLeaves(Zh, solverOpts);
 
@@ -72,8 +62,7 @@ if size(binTree,2) > 1
 	end
 	%Rank estimation
 	r = find(diagr >= zeroTol*diagr(1), 1, 'last'); %rank estimation
-	idx = E(1:r);	% I don't sorting matters..
-% 	idx = sort(E(1:r));
+	idx = E(1:r);
 	linIndep = binTree(idx,:);
 	RT = r;
 else
@@ -119,7 +108,7 @@ if ~isa(Zh, 'hybZono') || isempty(getLeaves(Zh,[]))
     return
 end
 
-%% %--% rescale the continuous generators %--%
+%% Rescale the continuous generators
 
 [ Zh , box , boxInt ] = rescaleCont(Zh,solverTol);
 

@@ -64,5 +64,23 @@ Z = hybZono(Gc, [], c, Ac, [], b);
 
 % Z = hybZono(Gc, [], c, [], [], []);
 figure
-plot(Z, 'r', 0.6)
 hold on, grid on, grid minor, axis equal
+plot(Z, 'r', 0.6)
+
+%%
+clc, close all, clear all
+
+Z = randomSet(1, 'hybZono', 10, 20, 5, 4);
+Z.Ac = [Z.Ac; zeros(1, Z.nGc)];
+Z.Ab = [Z.Ab; zeros(1, Z.nGb)];
+Z.b = [Z.b; 0];
+
+Ac_new = eye(1, Z.nGc);
+Ab_new = zeros(1, Z.nGb);
+b_new = 0.5;
+
+Z.Ac = [Z.Ac(1:2,:); Ac_new; Z.Ac(3:5,:)];
+Z.Ab = [Z.Ab(1:2,:); Ab_new; Z.Ab(3:5,:)];
+Z.b = [Z.b(1:2,:); b_new; Z.b(3:5,:)];
+
+Z_simp = removeRedundancy(Z);
