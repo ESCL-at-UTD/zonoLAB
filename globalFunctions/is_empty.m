@@ -15,6 +15,8 @@
 %	Trevor Bird - bird6@purdue.edu - Purdue 2021
 %
 %   NOT IN ZONOLAB (YET)
+%   note: this could be replaced/re-written to just check the size of
+%   getLeaves(Zh, solverOptions)
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 function B = is_empty(Zh)
