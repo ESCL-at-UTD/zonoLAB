@@ -44,6 +44,7 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         out = stepMLD(X0,U,W,A,B_u,B_w,B_aff,E_x,E_u,E_w,E_aff) % 1-step reachable set for MLD
         [s,x] = supportFunc(obj,d)  % Support function
         obj = union(obj1,obj2)      % Union
+        out = zonoSlice(obj,R,v);
 
         % Visualization
         [v,f] = plot(obj,varargin)  % Plot and output vertices and faces
