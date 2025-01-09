@@ -1,6 +1,7 @@
 %% First runs the code from the Logical Zonotope Toolbox, Then the HZ comparison
 
 clear all
+addpath(genpath('Logical-Zonotope'))
 
 rng(100);
 steps = 10;
@@ -27,12 +28,11 @@ execlogicZono = toc
 %% ----------- Hybrid Zonotopes ---------
 
 plot_LOGIC = 1;
-Add4Plot = hybZono(zeros(3,1),.1*eye(3),[]);
-
+Add4Plot = hybZono(.1*eye(3),[],[0;0;0],[],[],[]);
 
 %---------------- XNOR (not most efficient but what-evs) ---------------
-XNOR = hybZono([.5;.5;0],zeros(3,1),[.5;-.5;0]);
-XNOR = union(XNOR,hybZono([.5;.5;1],[],[.5;.5;0]));
+XNOR = hybZono([],[.5;-.5;0],[.5;.5;0],[],[],[]);
+XNOR = union(XNOR,hybZono([],[.5;.5;0],[.5;.5;1],[],[],[]));
 
 XNORp = XNOR + Add4Plot;
 
@@ -40,15 +40,15 @@ if plot_LOGIC
 figure
 subplot(221)
 grid on; grid MINOR
-XNORp.plot('method','MPT')
+plot(XNORp)
 title('XNOR')
 xlabel('x')
 ylabel('y')
 end
 
 % ----------------------- AND (not most efficient but what-evs) ----------
-AND = hybZono([0;.5;0],zeros(3,1),[0;-.5;0]);
-AND = union(AND,hybZono([1;.5;.5],[],[0;.5;.5]));
+AND = hybZono([],[0;-.5;0],[0;.5;0],[],[],[]);
+AND = union(AND,hybZono([],[0;.5;.5],[1;.5;.5],[],[],[]));
 
 ANDp = AND + Add4Plot;
 
@@ -56,7 +56,7 @@ if plot_LOGIC
 % figure
 subplot(222)
 grid on; grid MINOR
-ANDp.plot('method','MPT')
+plot(ANDp)
 title('AND')
 xlabel('x')
 ylabel('y')
@@ -71,15 +71,15 @@ if plot_LOGIC
 % figure
 subplot(223)
 grid on; grid MINOR
-NANDp.plot('method','MPT')
+plot(NANDp)
 title('NAND')
 xlabel('x')
 ylabel('y')
 end
 
 %--------------------- OR (not most efficient but what-evs)----------------
-OR = hybZono([1;.5;1],zeros(3,1),[0;.5;0]);
-OR = union(OR,hybZono([0;.5;.5],[],[0;.5;.5]));
+OR = hybZono([],[0;.5;0],[1;.5;1],[],[],[]);
+OR = union(OR,hybZono([],[0;.5;.5],[0;.5;.5],[],[],[]));
 
 ORp = OR + Add4Plot;
 
@@ -87,42 +87,43 @@ if plot_LOGIC
 % figure
 subplot(224)
 grid on; grid MINOR
-ORp.plot('method','MPT')
+plot(ORp)
 title('OR')
 xlabel('x')
 ylabel('y')
 end
-
+%%
 %---------------------- Let us make some boolean functions :) ------------
 % See the boolean functions from the "High-Dimensional Boolean Function"
 % in the paper
 
 % Create basis
-Phi = hybZono(.5*ones(12,1),zeros(12,1),.5*eye(12));
+Phi = hybZono(zeros(12,1),.5*eye(12),.5*ones(12,1),[],[],[]);
 % Couple the intermediate variables
 % [b1, b2, b3, u1, u2, u3, tmp1=xnor(b2,b1), tmp2=and(b1,u2), tmp3=xnor(u2,u3), b1+, b2+, b3+]^T
-Phi = andR(Phi,XNOR,M_i([2 1 7],12));
-Phi = andR(Phi,AND ,M_i([1 5 8],12));
-Phi = andR(Phi,XNOR,M_i([5 6 9],12));
+Phi = and(Phi,XNOR,M_i([2 1 7],12));
+Phi = and(Phi,AND ,M_i([1 5 8],12));
+Phi = and(Phi,XNOR,M_i([5 6 9],12));
 % Couple k+1 variables
 % [b1, b2, b3, u1, u2, u3, tmp1, tmp2, tmp3, b1+=or(u1,tmp1), b2+=xnor(b2,tmp2), b3+=nand(b3,tmp3)]^T
-Phi = andR(Phi,  OR,M_i([4 7 10],12));
-Phi = andR(Phi,XNOR,M_i([2 8 11],12));
-Phi = andR(Phi,NAND,M_i([3 9 12],12));
+Phi = and(Phi,  OR,M_i([4 7 10],12));
+Phi = and(Phi,XNOR,M_i([2 8 11],12));
+Phi = and(Phi,NAND,M_i([3 9 12],12));
 % Tranform to get rid of intermediate states
 Phi = M_i([1:6, 10:12],12)*Phi
 
+%%
 %-------------- Test Phi and Compare Results to the Boolean Function (See subfunctions)
 
 m = 0;
 for i = 1:100
 R3 = round(rand(3,1));
-R3set = hybZono(R3,[],[]);
+R3set = hybZono([],[],R3,[],[],[]);
 U = round(rand(3,1));
-Uset = hybZono(U,[],[]);
+Uset = hybZono([],[],U,[],[],[]);
 
 % Successor Set Identity
-R3plusSet = [zeros(3,6) eye(3)]*andR(Phi,cartProd(R3set,Uset),[eye(6) zeros(6,3)]);
+R3plusSet = [zeros(3,6) eye(3)]*and(Phi,cartProd(R3set,Uset),[eye(6) zeros(6,3)]);
 
 % Note Gc=0, and # leaves = 1
 R3plus = R3plusSet.c+R3plusSet.Gb*R3plusSet.getLeaves;
@@ -139,7 +140,7 @@ disp('[Iteration, Total Deviations]')
 [i m]
 end
 
-%------------ Stack it 20x --------------------------------------
+%% ------------ Stack it 20x --------------------------------------
 % They stack the system to make it high dimensional.
 
 Phi20 = Phi;
@@ -160,9 +161,10 @@ Phi20 = T*Phi20;
 %% ----------- Reachability Analysis using Phi20 --------------------
 
 % Initial set represented as a hybrid zonotope
-R{1} = VandM_2_HybZono(repmat(Apt{1},3,1),eye(10));
+% R{1} = VandM_2_HybZono(repmat(Apt{1},3,1),eye(10));
+R{1} = hybZono({repmat(Apt{1},3,1),eye(10)});
 % All possible input
-U = hybZono(.5*ones(60,1),zeros(60,1),diag(.5*ones(60,1)));
+U = hybZono(zeros(60,1),diag(.5*ones(60,1)),.5*ones(60,1),[],[],[]);
 N = 10;
 
 ZeroEye = [zeros(60,120)    eye(60)];
@@ -171,7 +173,7 @@ tic
 for i = 1:N
    startIt = toc;
    % Successor Set Identity
-   R{i+1} = ZeroEye*andR(Phi20,cartProd(R{i},U),EyeZero);
+   R{i+1} = ZeroEye*and(Phi20,cartProd(R{i},U),EyeZero);
    % Keeping track of computation times
    N_StepTime_TotalTime(i,:) = [i toc-startIt, toc];
 end
@@ -204,48 +206,3 @@ function out = BooleanFunction(in,u)
             ~and(in(3),~xor(u(2),u(3)))];
 
 end
-
-function Z = andR(obj,Y,R)
-	Z = obj;
-	
-	if nargin < 3
-		R = eye(size(Z.c,1));
-	end
-	
-	% deal with Z not having an binary factors..
-	if isempty(obj.Gb)
-		obj.Gb = zeros(size(obj.c,1),0);
-	end
-	
-	% use obj as a basis for the intersection
-	Z.Gc = [ obj.Gc , zeros(size(obj.Gc,1),size(Y.Gc,2)) ];
-	Z.Gb = [ obj.Gb , zeros(size(obj.Gb,1),size(Y.Gb,2)) ];
-	Z.c = obj.c;
-	% what dimensions are our constraints?
-	ncz = max(size(Z.Ac,1),size(Z.Ab,1));
-	ncy = max(size(Y.Ac,1),size(Y.Ab,1));
-	% first combine the constraints
-	Ac = [ obj.Ac , zeros(ncz,size(Y.Gc,2)) ;...
-		zeros(ncy,size(obj.Gc,2)) , Y.Ac ];
-	Ab = [ obj.Ab , zeros(ncz,size(Y.Gb,2)) ;...
-			zeros(ncy,size(obj.Gb,2)) , Y.Ab ];
-	% and intersection
-	AcI = [ R*obj.Gc , -Y.Gc ];
-	AbI = [ R*obj.Gb , -Y.Gb ];
-	% put together
-	Z.Ac = [ Ac ; AcI ];
-	Z.Ab = [ Ab ; AbI ];
-% 	Z.Ac = [ obj.Ac , zeros(ncz,size(Y.Gc,2)) ;...
-% 		zeros(ncy,size(obj.Gc,2)) , Y.Ac ;...
-% 		R*obj.Gc , -Y.Gc];
-% 	if ~isempty(obj.Gb)
-% 		Z.Ab = [ obj.Ab , zeros(ncz,size(Y.Gb,2)) ;...
-% 			zeros(ncy,size(obj.Gb,2)) , Y.Ab ;...
-% 			R*obj.Gb , -Y.Gb];
-% 	else
-% 		Z.Ab = [ obj.Ab , zeros(ncz,size(Y.Gb,2)) ;...
-% 			zeros(ncy,size(obj.Gb,2)) , Y.Ab ];
-% 	end
-	Z.b = [ obj.b ; Y.b ; Y.c - R*obj.c ];
-
-end		% end intersection
