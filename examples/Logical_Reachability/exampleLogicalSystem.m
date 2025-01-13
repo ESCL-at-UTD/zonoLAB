@@ -209,13 +209,13 @@ end
 
 tic
 for i =1:steps_LZ
-    [Az] = boolFun(Az,Uz);
+    [Az] = customBoolFun(Az,Uz);
 end
 execlogicZono = toc
 
 tic
 for i =1:steps_LZ
-    [Apz] = boolFun(Apz,Upz);
+    [Apz] = customBoolFun(Apz,Upz);
 end
 execplogicPolyZono = toc
 
@@ -238,4 +238,12 @@ function out = BooleanFunction(in,u)
     out = [ or(u(1),~xor(in(2),in(1)));
             ~xor(in(2),and(in(1),u(2)));
             ~and(in(3),~xor(u(2),u(3)))];
+end
+
+function A = customBoolFun(A,U)
+temp{1} = or(U{1},xnor(A{2},A{1}));
+temp{2} = xnor(A{2},and(A{1},U{2}));
+xn = xnor(U{2},U{3});
+temp{3} = nand(A{3},xn);
+A = temp;
 end
