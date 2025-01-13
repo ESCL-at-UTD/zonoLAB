@@ -58,9 +58,6 @@ drawSudoku(CLUES)
 
 % each square have binary variables {xi_(i,j,1),...,xi_(i,j,9)}
 
-% also, I'm going to write all the hybZonos in \xi_b \in {0, 1} form, and
-% then convert it to the usual {-1, 1} later.
-
 Ac = [];
 numCons = 4*81;
 numHints = size(CLUES, 1);
