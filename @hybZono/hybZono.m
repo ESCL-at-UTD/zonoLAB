@@ -147,5 +147,9 @@ classdef hybZono < abstractZono
                 out{leaf,1} = conZono(obj.Gc,obj.c+obj.Gb*leaves(:,leaf),obj.Ac,obj.b-obj.Ab*leaves(:,leaf));
             end
         end
+
+        function out = convexRelaxation(obj)
+            out = conZono([obj.Gc obj.Gb], obj.c, [obj.Ac obj.Ab], obj.b);
+        end
     end
 end
