@@ -5,7 +5,7 @@
 %       xi, ui ∈ {0, 1}^20 ,  i ∈ {1,2,3}
 %       out1 = u1 ∨ (x2 ⊙ x1)       equiv.  out1 = OR(u1, XNOR(x1, x2))
 %       out2 = x2 ⊙ (x1 ∧ u2)       equiv.  out2 = XNOR(x2, AND(x1,u2))
-%       out3 = x3,k∼∧ (u2 ⊙ u3)     equiv.  out3 = NAND(x3, XNOR(u2, u3))
+%       out3 = x3 ∼∧ (u2 ⊙ u3)     equiv.  out3 = NAND(x3, XNOR(u2, u3))
 %
 % For more details, see the following papers:
 % 
