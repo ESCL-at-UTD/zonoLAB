@@ -10,8 +10,9 @@
 %   Outputs:
 %       Z - zonotopic set in R^n (conZono object)
 %   Notes:
-%       As currently written, can only perform convex hull of HZ in 1, 2,
-%       or 3 dimensions (as it relies on the plotting function)
+%       Current method for convex hull of hybZono introduces exponentially
+%       many new constraints and continuous variables; see the function
+%       sharpHybZono for more detail. 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 function out = convexHull(obj1,varargin)
 
@@ -24,7 +25,7 @@ switch nargin
         elseif isa(obj1, 'conZono')
             out = obj1;
         elseif isa(obj1, 'hybZono')
-            out = INTERNAL_fcn_hybZono_hull(obj1);
+            out = convexRelaxation(sharpHybZono(obj1));
         end
         return
     otherwise
@@ -38,10 +39,10 @@ end
             obj2 = conZono(obj2);
         end
         if isa(obj1, 'hybZono')
-            obj1 = INTERNAL_fcn_hybZono_hull(obj1);
+            obj1 = convexRelaxation(sharpHybZono(obj1));
         end
         if isa(obj2, 'hybZono')
-            obj2 = INTERNAL_fcn_hybZono_hull(obj2);
+            obj2 = convexRelaxation(sharpHybZono(obj2));
         end
 
         c = (obj1.c + obj2.c)/2;
@@ -60,34 +61,4 @@ end
         b = [obj1.b/2;obj2.b/2;f];
 
         out = conZono(G,c,A,b);
-end
-
-function out = INTERNAL_fcn_hybZono_hull(Z)
-    [v,~] = plot(Z, plotOptions('Display','off'));
-    v_conv = v(convhull(v),:);
-    out = vPoly2Zono(v_conv');
-
-    % leaves = getLeaves(Z, solverOptions);
-    % if isempty(leaves)
-    %     warning('zonoLAB:EmptyZonotope','Hybrid zonotope is empty and cannot be plotted.')
-    %     out = conZono([],[],[],[]);
-    %     return
-    % end
-    % nLeaves = size(leaves,2);
-    % out = conZono(Z.Gc, Z.c + Z.Gb*leaves(:,1), Z.Ac, Z.b - Z.Ab*leaves(:,1));
-    % ax = gca;
-    % plot(out, 'm',1);
-    % if nLeaves > 1
-    %     for i = 2:nLeaves
-    %         Zi = conZono(Z.Gc, Z.c + Z.Gb*leaves(:,i), Z.Ac, Z.b - Z.Ab*leaves(:,i));
-    %         if i>2
-    %             ax.Children(2).delete
-    %         end
-    %         plot(Zi, 'g', 1);
-    %         out = convexHull(out, Zi)
-    %         ax.Children(2).delete
-    %         plot(out, 'm', 0.4);
-    %     end
-    % end
-
 end
