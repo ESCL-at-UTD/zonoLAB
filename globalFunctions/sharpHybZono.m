@@ -44,10 +44,10 @@ function Z = sharpHybZono(X)
     % total number of constraints that will be present in our hull set
     nC = R*length(allJ) + 2*m*(2^d*nchoosek(n,d));
 
-    Aw = zeros(nC, 2^n-1);
-    Av = zeros(nC, m*(2^n));
-    As = zeros(nC, 2*m*(2^d*nchoosek(n, d)));
-    b = zeros(nC, 1);
+    Aw = sparse(nC, 2^n-1);
+    Av = sparse(nC, m*(2^n));
+    As = sparse(nC, 2*m*(2^d*nchoosek(n, d)));
+    b = sparse(nC, 1);
 
     % for all J that are subsets (order <= d) of N
     for i = 1:length(allJ)
@@ -128,7 +128,7 @@ function [ P ] = PowerSet( S )
     P = cell(1,2^n);
     p_ix = 2;
     for nn = 1:n
-        a = combnk(x,nn);
+        a = nchoosek(x,nn);
         for j=1:size(a,1)
             P{p_ix} = S(a(j,:));
             p_ix = p_ix + 1;
@@ -136,7 +136,8 @@ function [ P ] = PowerSet( S )
     end
 end
 
-function out = getWDims(idxs, allJ)
+% very slow
+function out = getWDims_old(idxs, allJ)
     idxs = sort(idxs);
     for i = 1:length(allJ)
         if isequal(allJ{i}, idxs)
@@ -145,6 +146,19 @@ function out = getWDims(idxs, allJ)
         end
     end
     out = [];
+end
+
+% still pretty slow
+function out = getWDims(idxs, allJ)
+    idxs = sort(idxs);
+    N = allJ{end};
+    num = length(idxs);
+    out = 0;
+    for i = 1:num-1
+        out = out+nchoosek(length(N),i);
+    end
+    tests = nchoosek(N, num);
+    out = out + find(ismember(tests, idxs, 'rows'));
 end
 
 function [J1, J2] = makeJ1J2(n, d)
