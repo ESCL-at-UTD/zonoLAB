@@ -22,7 +22,6 @@ switch orderReductionTechnique
 end
 end
 
-
 function obj= exactApproximation(obj,setType)
 switch setType
     case 'Zonotope'
@@ -34,64 +33,37 @@ switch setType
             end
         end
         obj=zono(reduced_G,obj.c);
-    case 'Constraint Zonotope'    
+    case 'Constrained Zonotope'    
         A=obj.A;
         b=obj.b;
         c=obj.c;
         G=obj.G;
-
-        zeroCols=find(all([G;A]==0,1));
-
-        G(:,zeroCols)=[];
-  
-        zerorows=find(all([A,b]==0,2));
-
-        A(zerorows,:)=[];
-        b(zerorows)=[];
-
-        %Recalculation because the indices have been modified
-
-        [E,R]=refine_bounds_function(A,b);
-
-        equal_indices = find(E(:, 1) == E(:, 2));
-        c = c + sum(G(:, equal_indices) .* E(equal_indices, 1)', 2);
-        G(:,equal_indices)=[];        
-        b=b-sum(A(:,equal_indices).*E(equal_indices,1)',2);
-        A(:,equal_indices)=[];
-        %obj=conZono(G,c,A,b);
-        R(equal_indices,:)=[];
-
-        equal_indices = find(R(:, 1) == R(:, 2));
-        c = c + sum(G(:, equal_indices) .* E(equal_indices, 1)', 2);
-        G(:,equal_indices)=[];
-        b=b-sum(A(:,equal_indices).*E(equal_indices,1)',2);
-        A(:,equal_indices)=[];
-        % obj=conZono(G,c,A,b);
-
-        [E,R]=refine_bounds_function(A,b);        
-        nG=size(G,2);
-
-        for i=1:nG
-            if R(i,1)> E(i,1)
-                if R(i,2)<= E(i,2)
-                    [G,c,A,b]=constraint_remover_function(G,c,A,b);
-                    % obj=conZono(G,c,A,b);
-                end
-                  continue;            
-            end
-            if R(i,2)<E(i,2)
-                if R(i,1)>=E(i,1)
-                    [G,c,A,b]=constraint_remover_function(G,c,A,b);
-                    % obj=conZono(G,c,A,b);
+        while true
+            [G,c,A,b,eff_r]=redundancy_remover_conzono(G,c,A,b);
+            if isempty(eff_r)
+                break
+            end       
+            i=length(eff_r);
+            remove_position=eff_r(i);
+            n_c=size(A,1);
+            removable_constraint=0;
+            for idx=1:n_c
+                if A(idx,remove_position)~=0
+                    removable_constraint=idx;
+                    break
                 end
             end
+            if removable_constraint==0
+            continue;
+            end
+            [G,c,A,b]=constraint_remover_function(G,c,A,b,remove_position,removable_constraint);
+            obj=conZono(G,c,A,b);
         end
         obj=conZono(G,c,A,b);
         
     case 'Hybrid Zonotope'
         obj=obj
 end
-
 end
 
 function obj= outerApproximation(obj,setType,final_order)
@@ -106,14 +78,12 @@ switch setType
      
         Z_transformed=U'*obj;    
         obj=U*boundingBox(Z_transformed);
-
-    case 'Constraint Zonotope'
+    case 'Constrained Zonotope'
         obj=obj
     case 'Hybrid Zonotope'
         obj=obj
 end
 end
-
 
 function obj= innerApproximation(obj,setType,final_order)
 switch setType
