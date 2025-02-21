@@ -22,7 +22,6 @@ switch orderReductionTechnique
 end
 end
 
-
 function obj= exactApproximation(obj,setType)
 switch setType
     case 'Zonotope'
@@ -58,6 +57,7 @@ switch setType
             continue;
             end
             [G,c,A,b]=constraint_remover_function(G,c,A,b,remove_position,removable_constraint);
+            obj=conZono(G,c,A,b);
         end
         obj=conZono(G,c,A,b);
         
@@ -84,7 +84,6 @@ switch setType
         obj=obj
 end
 end
-
 
 function obj= innerApproximation(obj,setType,final_order)
 switch setType
