@@ -24,7 +24,7 @@
 %           Z.nGc = 2^X.nGb * (3*X.nGc + 1) - 1 - X.nGb
 %           Z.nC  = 2^X.nGb * ( X.nC + 2*X.nGc)
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-function Z = sharpHybZono(X)
+function Z = sharpHybZono(X, d)
 
     % convert the original matrices to a {0,1}-HZ instead of {-1,1}-HZ
     Abar = 2*X.Ab;
@@ -34,12 +34,14 @@ function Z = sharpHybZono(X)
     % determine key dimensions and parameters from the data
     n = size(Abar, 2);
     m = size(Bbar, 2);
-    d = n;
+    N = 1:n;
+    if nargin==1
+        d = n;
+    end
     D = min([n, d+1]);
     R = size(Abar, 1);
 
-    N = 1:n;
-    allJ = PowerSet(N);
+    allJ = PowerSet_d(N,d);
 
     % total number of constraints that will be present in our hull set
     nC = R*length(allJ) + 2*m*(2^d*nchoosek(n,d));
@@ -61,14 +63,14 @@ function Z = sharpHybZono(X)
         notJ = setdiff(N, J);
         for j = notJ
             % coefficient on w_Juj
-            Aw((i-1)*R+1:R*i, getWDims([J j], allJ)) = Abar(:, j);
+            Aw((i-1)*R+1:R*i, getWDims([J j], allJ, N)) = Abar(:, j);
         end
         
         % coefficient on v_Jk
         Av((i-1)*R+1:R*i, ((i-1)*m+(1:m))) = Bbar;
     end
 
-    [allJ1, allJ2] = makeJ1J2(n, d);
+    [allJ1, allJ2] = makeJ1J2(n, d, N);
     idx = R*length(allJ)+1;
     s = 1;
     % for all (J1, J2) of order d
@@ -82,11 +84,11 @@ function Z = sharpHybZono(X)
                 for ii = 1:length(J2subsets)
                     I = J2subsets{ii};
                     % f_d(J1, J2) - f_d^k(J1, J2) = slack variable
-                    Aw(idx, getWDims([J1 I], allJ)) = (-1)^numel(I);
-                    Av(idx, (getWDims([J1 I], allJ)*m+k)) = -(-1)^numel(I);
+                    Aw(idx, getWDims([J1 I], allJ, N)) = (-1)^numel(I);
+                    Av(idx, (getWDims([J1 I], allJ, N)*m+k)) = -(-1)^numel(I);
 
                     % f_d^k(J1, J2) = slack variable
-                    Av(idx+1, (getWDims([J1 I], allJ)*m+k)) = (-1)^numel(I);
+                    Av(idx+1, (getWDims([J1 I], allJ, N)*m+k)) = (-1)^numel(I);
                 end
                 
             else
@@ -95,9 +97,9 @@ function Z = sharpHybZono(X)
                 Av(idx+1, k) = 1;
                 for ii = 2:length(J2subsets) % start at 2 to ignore empty set
                     I = J2subsets{ii};
-                    Aw(idx, getWDims(I, allJ)) = (-1)^numel(I);
-                    Av(idx, (getWDims(I, allJ)*m+k)) = -(-1)^numel(I);  
-                    Av(idx+1, (getWDims([J1 I], allJ)*m+k)) = (-1)^numel(I);
+                    Aw(idx, getWDims(I, allJ, N)) = (-1)^numel(I);
+                    Av(idx, (getWDims(I, allJ, N)*m+k)) = -(-1)^numel(I);  
+                    Av(idx+1, (getWDims([J1 I], allJ, N)*m+k)) = (-1)^numel(I);
                 end
             end
             As(idx, s) = -1;
@@ -119,7 +121,7 @@ function Z = sharpHybZono(X)
     % binaries as binary, then you get a (sharp) representation of the 
     % original set. If you relax them all to continuous, then you get the
     % convex hull. 
-    Z = hybZono([Gw(:, n+1:end) Gv Gs], Gw(:, 1:n), X.c, Anew(:, n+1:end), Anew(:,1:n), bnew);    
+    Z = hybZono([Gw(:, n+1:end) Gv Gs], Gw(:, 1:n), X.c, Anew(:, n+1:end), Anew(:,1:n), bnew);   
 end
 
 function [ P ] = PowerSet( S )
@@ -136,8 +138,26 @@ function [ P ] = PowerSet( S )
     end
 end
 
+function [ P ] = PowerSet_d(S, d)
+    n = numel(S);
+    x = 1:n;
+    sum = 0;
+    for i = 0:d
+        sum = sum+nchoosek(n,i);
+    end
+    P = cell(1,sum);
+    p_ix = 2;
+    for nn = 1:d
+        a = nchoosek(x,nn);
+        for j=1:size(a,1)
+            P{p_ix} = S(a(j,:));
+            p_ix = p_ix + 1;
+        end
+    end
+end
+
 % very slow
-function out = getWDims_old(idxs, allJ)
+function out = getWDims_old(idxs, allJ, N)
     idxs = sort(idxs);
     for i = 1:length(allJ)
         if isequal(allJ{i}, idxs)
@@ -149,9 +169,8 @@ function out = getWDims_old(idxs, allJ)
 end
 
 % still pretty slow
-function out = getWDims(idxs, allJ)
+function out = getWDims(idxs, allJ, N)
     idxs = sort(idxs);
-    N = allJ{end};
     num = length(idxs);
     out = 0;
     for i = 1:num-1
@@ -161,8 +180,8 @@ function out = getWDims(idxs, allJ)
     out = out + find(ismember(tests, idxs, 'rows'));
 end
 
-function [J1, J2] = makeJ1J2(n, d)
-    OPTS = nchoosek(1:n, d);
+function [J1, J2] = makeJ1J2(n, d, N)
+    OPTS = nchoosek(N, d);
     idx = 0;
     bins = dec2bin(0:2^d-1)-'0';
     for i = 1:nchoosek(n,d)
