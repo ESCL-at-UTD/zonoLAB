@@ -16,8 +16,8 @@
 %					equality constraints removed
 %	
 %	Trevor Bird - bird6@purdue.edu - Purdue 2022
+%   Modified: Jonah Glunt, jjg57@psu.edu
 %
-%   NOT IN ZONOLAB (YET)
 % Jonah's notes: I replaced lots of "empty checks" in Trevor/Jake's
 % original script with calls to "getLeaves", although that adds quite a bit
 % of computation time. This function still has lots of optimization

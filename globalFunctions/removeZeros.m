@@ -14,8 +14,7 @@
 % 		Zh : n dimensional hybrid zonotope in HCG-rep without zeros rows or columns
 %	
 %	Trevor Bird - bird6@purdue.edu - Purdue 2022
-%
-%   NOT IN ZONOLAB (YET)
+%   Modified: Jonah Glunt, jjg57@psu.edu
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 function Zh = removeZeros(Zh,tol)
