@@ -151,5 +151,13 @@ classdef hybZono < abstractZono
         function out = convexRelaxation(obj)
             out = conZono([obj.Gc obj.Gb], obj.c, [obj.Ac obj.Ab], obj.b);
         end
+
+        function out = is_empty(obj)
+            if obj.nC==0
+                out = false;
+            else
+                out = size(getLeaves(obj), 1) > 0;
+            end
+        end
     end
 end
