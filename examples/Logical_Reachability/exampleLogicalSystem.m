@@ -177,6 +177,8 @@ N_StepTime_TotalTime
 % The following portion of code is copied from the file
 % 'Logical-Zonotope/BoolFunctionExample.m'.
 
+clear
+
 steps_LZ = 5; % number of steps in the prediction horizon
 dim_stack = 20; % number of times we "stacked" the system on itself
 numOfVar = 3;
