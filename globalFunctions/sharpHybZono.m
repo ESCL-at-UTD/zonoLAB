@@ -11,15 +11,21 @@
 %       and convex hull characterizations for mixed-integer zero-one 
 %       programming problems. Discrete Applied Mathematics, 52, 83–106.
 %       https://www.sciencedirect.com/science/article/pii/0166218X9200190W
+%
+%       More details about the application of the RLT to hybrid zonotopes
+%       can be found in the recent paper: https://arxiv.org/abs/2503.17483.
+%
 %   Syntax:
 %       Z = sharpHybZono(X)
+%       Z = sharpHybZono(X, d)
 %   Inputs:
 %       X   - hybZono object
+%       d   - the "order" of the RLT; if unused, d = X.nGb
 %   Outputs:
 %       Z   - hybZono object that represents the same set as X, and has
 %       the property that its convex relaxation is its convex hull
 %   Notes:
-%       The resulting hybrid zonotope will have the following complexity:
+%       When d==n, the resulting hybrid zonotope will have complexity:
 %           Z.nGb = X.nGb
 %           Z.nGc = 2^X.nGb * (3*X.nGc + 1) - 1 - X.nGb
 %           Z.nC  = 2^X.nGb * ( X.nC + 2*X.nGc)
