@@ -32,33 +32,33 @@ switch nargin
         error('The method convexHull accepts only one or two inputs.')
 end
 
-        if isa(obj1,'zono')
-            obj1 = conZono(obj1);
-        end
-        if isa(obj2,'zono')
-            obj2 = conZono(obj2);
-        end
-        if isa(obj1, 'hybZono')
-            obj1 = convexRelaxation(sharpHybZono(obj1));
-        end
-        if isa(obj2, 'hybZono')
-            obj2 = convexRelaxation(sharpHybZono(obj2));
-        end
+if isa(obj1,'zono')
+    obj1 = conZono(obj1);
+end
+if isa(obj2,'zono')
+    obj2 = conZono(obj2);
+end
+if isa(obj1, 'hybZono')
+    obj1 = convexRelaxation(sharpHybZono(obj1));
+end
+if isa(obj2, 'hybZono')
+    obj2 = convexRelaxation(sharpHybZono(obj2));
+end
 
-        c = (obj1.c + obj2.c)/2;
-        G = [obj1.G obj2.G (obj1.c-obj2.c)/2 zeros(obj1.n,2*(obj1.nG+obj2.nG))];
+c = (obj1.c + obj2.c)/2;
+G = [obj1.G obj2.G (obj1.c-obj2.c)/2 zeros(obj1.n,2*(obj1.nG+obj2.nG))];
 
-        H = [eye(obj1.nG) zeros(obj1.nG,obj2.nG)  -0.5*ones(obj1.nG,1);...
-            -eye(obj1.nG) zeros(obj1.nG,obj2.nG)  -0.5*ones(obj1.nG,1);...
-             zeros(obj2.nG,obj1.nG)  eye(obj2.nG)  0.5*ones(obj2.nG,1);...
-             zeros(obj2.nG,obj1.nG) -eye(obj2.nG)  0.5*ones(obj2.nG,1)];
-        I = eye(2*(obj1.nG + obj2.nG));
-        f = -0.5*ones(2*(obj1.nG + obj2.nG),1);
+H = [eye(obj1.nG) zeros(obj1.nG,obj2.nG)  -0.5*ones(obj1.nG,1);...
+    -eye(obj1.nG) zeros(obj1.nG,obj2.nG)  -0.5*ones(obj1.nG,1);...
+     zeros(obj2.nG,obj1.nG)  eye(obj2.nG)  0.5*ones(obj2.nG,1);...
+     zeros(obj2.nG,obj1.nG) -eye(obj2.nG)  0.5*ones(obj2.nG,1)];
+I = eye(2*(obj1.nG + obj2.nG));
+f = -0.5*ones(2*(obj1.nG + obj2.nG),1);
 
-        A = [obj1.A zeros(obj1.nC,obj2.nG) -obj1.b/2 zeros(obj1.nC,size(G,2)-obj1.nG-obj2.nG-1);...
-            zeros(obj2.nC,obj1.nG) obj2.A   obj2.b/2 zeros(obj2.nC,size(G,2)-obj2.nG-obj1.nG-1);...
-            H I];
-        b = [obj1.b/2;obj2.b/2;f];
+A = [obj1.A zeros(obj1.nC,obj2.nG) -obj1.b/2 zeros(obj1.nC,size(G,2)-obj1.nG-obj2.nG-1);...
+    zeros(obj2.nC,obj1.nG) obj2.A   obj2.b/2 zeros(obj2.nC,size(G,2)-obj2.nG-obj1.nG-1);...
+    H I];
+b = [obj1.b/2;obj2.b/2;f];
 
-        out = conZono(G,c,A,b);
+out = conZono(G,c,A,b);
 end
