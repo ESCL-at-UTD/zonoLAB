@@ -60,3 +60,15 @@ hold on, grid on, grid minor
 plot(X, 'r', 0.7)
 plot(Y, 'b', 0.7)
 plot(Z, 'g', 0.2)
+
+%% 
+clear, close all, clc
+
+X = randomSet(1, 'hybZono', 2, 5, 3, 1);
+Y = convexHull(X);
+
+figure
+hold on, grid on, grid minor
+plot(X, 'b')
+plot(Y, plotOptions('FaceColor', 'none', 'LineStyle', '--', 'LineWidth', 4))
+legend({'X', 'conv(X)'}, 'location', 'best', 'fontsize', 12)
