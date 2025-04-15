@@ -1,3 +1,12 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% Example:
+%   Using hybrid zonotopes to solve a game of Sudoku. Enforce the provided
+%   clues and the rules of the game as constraints, and call Gurobi to find
+%   the feasible solution(s).
+%
+% Written by Jonah Glunt, 2025
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
 % First, list all of the Clues that are given on the Sodoku board. If
 % square (i,j) takes the value v, then append the triplet [i j v] to the
 % matrix below. 
@@ -32,14 +41,14 @@ CLUES = [1 1 6
 drawSudoku(CLUES)
 title('Question')
 
-%%
+%% Building the constraints
 
 % For the most straight-forward first attempt, let's try the method of
 % having 9 binary variables per square (this results in 729 binary 
 % variables). This is inefficient, and could be reduced to as little as 4
 % binary variables per square, but then the constraints become much more
 % difficult to write. And I have found that Gurobi has no troubles handling
-% the HZs that result from this code. 
+% the size of the HZs that result from this code. 
 
 Ac = [];
 numCons = 4*81;
@@ -120,7 +129,6 @@ Ac = zeros(numCons+numHints, 0);
 Phi = hybZono(Gc, Gb, c, Ac, Ab, b);
 
 %%
-
 numLeaves = size(getLeaves(Phi,[]),2);
 disp(['There is/are ' num2str(numLeaves) ' possible solution/s.'])
 
@@ -143,7 +151,8 @@ if numLeaves == 1
 end
 % you could edit this section to have it solve the sudoku board for all of
 % the leaves (when there are multiple)
-%%
+
+%% Internal helper-functions
 
 % A triplet (i,j,k) corresponds with one possible value of one possible
 % number on the Sudoku board. For example, (1,2,3) indicates the binary
@@ -154,40 +163,41 @@ function dim = map(i,j,k)
     dim = 81*(i-1) + 9*(j-1)+k;
 end
 
-% I found this function online
+% I found this function online:
+% https://www.mathworks.com/help/optim/ug/solve-sudoku-puzzles-via-integer-programming-solver-based.html
 function drawSudoku(CLUES)
-% Function for drawing the Sudoku board
-%   Copyright 2014 The MathWorks, Inc. 
-
-figure;hold on;axis off;axis equal % prepare to draw
-rectangle('Position',[0 0 9 9],'LineWidth',3,'Clipping','off') % outside border
-rectangle('Position',[3,0,3,9],'LineWidth',2) % heavy vertical lines
-rectangle('Position',[0,3,9,3],'LineWidth',2) % heavy horizontal lines
-rectangle('Position',[0,1,9,1],'LineWidth',1) % minor horizontal lines
-rectangle('Position',[0,4,9,1],'LineWidth',1)
-rectangle('Position',[0,7,9,1],'LineWidth',1)
-rectangle('Position',[1,0,1,9],'LineWidth',1) % minor vertical lines
-rectangle('Position',[4,0,1,9],'LineWidth',1)
-rectangle('Position',[7,0,1,9],'LineWidth',1)
-
-% Fill in the clues
-%
-% The rows of B are of the form (i,j,k) where i is the row counting from
-% the top, j is the column, and k is the clue. To place the entries in the
-% boxes, j is the horizontal distance, 10-i is the vertical distance, and
-% we subtract 0.5 to center the clue in the box.
-%
-% If B is a 9-by-9 matrix, convert it to 3 columns first
-
-if size(CLUES,2) == 9 % 9 columns
-    [SM,SN] = meshgrid(1:9); % make i,j entries
-    CLUES = [SN(:),SM(:),CLUES(:)]; % i,j,k rows
-end
-
-for ii = 1:size(CLUES,1)
-    text(CLUES(ii,2)-0.5,9.5-CLUES(ii,1),num2str(CLUES(ii,3)))
-end
-
-hold off
+    % Function for drawing the Sudoku board
+    %   Copyright 2014 The MathWorks, Inc. 
+    
+    figure;hold on;axis off;axis equal % prepare to draw
+    rectangle('Position',[0 0 9 9],'LineWidth',3,'Clipping','off') % outside border
+    rectangle('Position',[3,0,3,9],'LineWidth',2) % heavy vertical lines
+    rectangle('Position',[0,3,9,3],'LineWidth',2) % heavy horizontal lines
+    rectangle('Position',[0,1,9,1],'LineWidth',1) % minor horizontal lines
+    rectangle('Position',[0,4,9,1],'LineWidth',1)
+    rectangle('Position',[0,7,9,1],'LineWidth',1)
+    rectangle('Position',[1,0,1,9],'LineWidth',1) % minor vertical lines
+    rectangle('Position',[4,0,1,9],'LineWidth',1)
+    rectangle('Position',[7,0,1,9],'LineWidth',1)
+    
+    % Fill in the clues
+    %
+    % The rows of B are of the form (i,j,k) where i is the row counting from
+    % the top, j is the column, and k is the clue. To place the entries in the
+    % boxes, j is the horizontal distance, 10-i is the vertical distance, and
+    % we subtract 0.5 to center the clue in the box.
+    %
+    % If B is a 9-by-9 matrix, convert it to 3 columns first
+    
+    if size(CLUES,2) == 9 % 9 columns
+        [SM,SN] = meshgrid(1:9); % make i,j entries
+        CLUES = [SN(:),SM(:),CLUES(:)]; % i,j,k rows
+    end
+    
+    for ii = 1:size(CLUES,1)
+        text(CLUES(ii,2)-0.5,9.5-CLUES(ii,1),num2str(CLUES(ii,3)))
+    end
+    
+    hold off
 
 end
