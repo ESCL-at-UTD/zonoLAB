@@ -156,7 +156,7 @@ classdef hybZono < abstractZono
             if obj.nC==0
                 out = false;
             else
-                out = size(getLeaves(obj), 1) > 0;
+                out = size(getLeaves(obj), 1) == 0;
             end
         end
     end
