@@ -64,7 +64,9 @@ For general background on hybrid zonotopes, refer to the following publication:
 
 More information on the hybrid zonotopes and applications can be found in the following publications:
 
-* Jacob A. Siefert, Trevor J. Bird, Andrew F. Thompson, Jonah J. Glunt, Justin P. Koeln, Neera Jain, Herschel C. Pangborn, [Reachability Analysis Using Hybrid Zonotopes and Functional Decomposition](https://arxiv.org/abs/2304.06827), arXiv:2304.06827v2, 2024.
+* Jonah J. Glunt, Joshua A. Robbins, Daniel Silvestre, Herschel C. Pangborn, [Sharp Hybrid Zonotopes: Set Operations and the Reformulation-linearization Technique](https://ieeexplore.ieee.org/document/10836881), arXiv.2503.17483v1, 2025.
+
+* Jacob A. Siefert, Trevor J. Bird, Andrew F. Thompson, Jonah J. Glunt, Justin P. Koeln, Neera Jain, Herschel C. Pangborn, [Reachability Analysis Using Hybrid Zonotopes and Functional Decomposition](https://ieeexplore.ieee.org/document/10836881), 2025.
 
 * Joshua Ortiz, Alyssa Velluci, Justin Koeln, Justin Ruths, [Hybrid Zonotopes Exactly Represent ReLU Neural Networks](https://ieeexplore.ieee.org/abstract/document/10383944), IEEE Conference on Decision and Control, 2023.
 
