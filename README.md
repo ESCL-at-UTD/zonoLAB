@@ -76,7 +76,7 @@ More information on the hybrid zonotopes and applications can be found in the fo
 
 * Jonah J. Glunt, Jacob A. Siefert, Andrew F. Thompson, Justin Ruths, Herschel C. Pangborn. [Automated Functional Decomposition for Hybrid Zonotope Over-approximations with Applications to LSTM Networks](https://arxiv.org/abs/2503.15336) arXiv.2503.15336, IEEE American Control Conference, 2025. (accepted)
 
-* Joshua A. Robbins, Jacob A. Siefert, Sean Brennan, Herscel C. Pangborn, [Mixed-Integer MPC-Based Motion Planning Using Hybrid Zonotopes with Tight Relaxations] (https://arxiv.org/abs/2411.01286), arXiv.2411.01286v1, 2024.
+* Joshua A. Robbins, Jacob A. Siefert, Sean Brennan, Herscel C. Pangborn, [Mixed-Integer MPC-Based Motion Planning Using Hybrid Zonotopes with Tight Relaxations](https://arxiv.org/abs/2411.01286), arXiv.2411.01286v1, 2024.
 
 * Joshua A. Robbins, Sean Brennan, Herschel C. Pangborn, [Efficient Solution of Mixed-Integer MPC Problems for Obstacle Avoidance Using Hybrid Zonotopes](https://ieeexplore.ieee.org/document/10886569), IEEE Conference on Decision and Control, 2024. 
 
