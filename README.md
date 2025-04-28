@@ -72,7 +72,7 @@ More information on the hybrid zonotopes and applications can be found in the fo
 
 * Andrew F. Thompson, Joshua A. Robbins, Matthew E. Boler, Herschel C. Pangborn, "Mixed-Integer Moving Horizon Estimation for Terrain-Aided Navigation Using Hybrid Zonotopes", IEEE/ION Position, Location, and Navigation Symposium, 2025. (accepted).
 
-* Joshua A. Robbins, Andrew F. Thompson, Sean Brennan, Herschel C. Pangborn, [Energy-Aware Predictive Motion Planning for Autonomous Vehicles Using a Hybrid Zonotope Constraint Representations](https://arxiv.org/abs/2411.03189) arXiv.2411.03189v2, IEEE American Control Conference, 2025. (accepted)
+* Joshua A. Robbins, Andrew F. Thompson, Sean Brennan, Herschel C. Pangborn, [Energy-Aware Predictive Motion Planning for Autonomous Vehicles Using a Hybrid Zonotope Constraint Representations](https://arxiv.org/abs/2411.03189), arXiv.2411.03189v2, IEEE American Control Conference, 2025. (accepted)
 
 * Jonah J. Glunt, Jacob A. Siefert, Andrew F. Thompson, Justin Ruths, Herschel C. Pangborn. [Automated Functional Decomposition for Hybrid Zonotope Over-approximations with Applications to LSTM Networks](https://arxiv.org/abs/2503.15336) arXiv.2503.15336, IEEE American Control Conference, 2025. (accepted)
 
