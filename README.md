@@ -64,7 +64,21 @@ For general background on hybrid zonotopes, refer to the following publication:
 
 More information on the hybrid zonotopes and applications can be found in the following publications:
 
-* Jacob A. Siefert, Trevor J. Bird, Andrew F. Thompson, Jonah J. Glunt, Justin P. Koeln, Neera Jain, Herschel C. Pangborn, [Reachability Analysis Using Hybrid Zonotopes and Functional Decomposition](https://arxiv.org/abs/2304.06827), arXiv:2304.06827v2, 2024.
+* Joshua A. Robbins, Jacob A. Siefert, Herschel C. Pangborn, [Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes](https://arxiv.org/abs/2504.03885), arXiv.2504.03885v1, 2025. Also see corresponding repository, [ZonoOpt](https://github.com/psu-PAC-Lab/ZonoOpt).
+
+* Jonah J. Glunt, Joshua A. Robbins, Daniel Silvestre, Herschel C. Pangborn, [Sharp Hybrid Zonotopes: Set Operations and the Reformulation-linearization Technique](https://arxiv.org/abs/2503.17483), arXiv.2503.17483v1, 2025.
+
+* Jacob A. Siefert, Trevor J. Bird, Andrew F. Thompson, Jonah J. Glunt, Justin P. Koeln, Neera Jain, Herschel C. Pangborn, [Reachability Analysis Using Hybrid Zonotopes and Functional Decomposition](https://ieeexplore.ieee.org/document/10836881), IEEE Transactions on Automatic Control (early access), 2025.
+
+* Andrew F. Thompson, Joshua A. Robbins, Matthew E. Boler, Herschel C. Pangborn, "Mixed-Integer Moving Horizon Estimation for Terrain-Aided Navigation Using Hybrid Zonotopes", IEEE/ION Position, Location, and Navigation Symposium, 2025. (accepted).
+
+* Joshua A. Robbins, Andrew F. Thompson, Sean Brennan, Herschel C. Pangborn, [Energy-Aware Predictive Motion Planning for Autonomous Vehicles Using a Hybrid Zonotope Constraint Representations](https://arxiv.org/abs/2411.03189), arXiv.2411.03189v2, IEEE American Control Conference, 2025. (accepted)
+
+* Jonah J. Glunt, Jacob A. Siefert, Andrew F. Thompson, Justin Ruths, Herschel C. Pangborn. [Automated Functional Decomposition for Hybrid Zonotope Over-approximations with Applications to LSTM Networks](https://arxiv.org/abs/2503.15336) arXiv.2503.15336, IEEE American Control Conference, 2025. (accepted)
+
+* Joshua A. Robbins, Jacob A. Siefert, Sean Brennan, Herscel C. Pangborn, [Mixed-Integer MPC-Based Motion Planning Using Hybrid Zonotopes with Tight Relaxations](https://arxiv.org/abs/2411.01286), arXiv.2411.01286v1, 2024.
+
+* Joshua A. Robbins, Sean Brennan, Herschel C. Pangborn, [Efficient Solution of Mixed-Integer MPC Problems for Obstacle Avoidance Using Hybrid Zonotopes](https://ieeexplore.ieee.org/document/10886569), IEEE Conference on Decision and Control, 2024. 
 
 * Joshua Ortiz, Alyssa Velluci, Justin Koeln, Justin Ruths, [Hybrid Zonotopes Exactly Represent ReLU Neural Networks](https://ieeexplore.ieee.org/abstract/document/10383944), IEEE Conference on Decision and Control, 2023.
 
@@ -77,6 +91,8 @@ More information on the hybrid zonotopes and applications can be found in the fo
 * Trevor J. Bird, Neera Jain, Herschel C. Pangborn, Justin P. Koeln, [Set-Based Reachability and the Explicit Solution of Linear MPC using Hybrid Zonotopes](https://ieeexplore.ieee.org/abstract/document/9867853), American Control Conference, 2022.
 
 * Trevor J. Bird, Neera Jain, [Unions and Complements of Hybrid Zonotopes](https://ieeexplore.ieee.org/abstract/document/9638970), IEEE Control Systems Letters, 2021.
+
+
 
 Dissertations:
 
