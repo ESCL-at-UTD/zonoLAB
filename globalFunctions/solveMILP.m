@@ -40,11 +40,11 @@ switch optSolver.milpSolver
         if ~isempty([A b]) && isempty([Aeq beq])
             model.sense = '<';
             model.A = sparse(A);
-            model.rhs = b;
+            model.rhs = double(full(b));
         elseif isempty([A b]) && ~isempty([Aeq beq])
             model.sense = '=';
             model.A = sparse(Aeq);
-            model.rhs = beq;
+            model.rhs = double(full(beq));
         elseif isempty([A b]) && isempty([Aeq beq])
             model.sense = '=';
             model.A = sparse(zeros(0,length(lb)));
