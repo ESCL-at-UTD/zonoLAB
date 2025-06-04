@@ -33,11 +33,11 @@ switch optSolver.lpSolver
         if ~isempty([A b]) && isempty([Aeq beq])
             model.sense = '<';
             model.A = sparse(A);
-            model.rhs = b;
+            model.rhs = double(full(b));
         elseif isempty([A b]) && ~isempty([Aeq beq])
             model.sense = '=';
             model.A = sparse(Aeq);
-            model.rhs = beq;
+            model.rhs = double(full(beq));
         elseif ~isempty([A b]) && ~isempty([Aeq beq]) % Need to fix case where both are empty
             error('Can only use < or = constraints (not both) when using gurobi.')
         end
