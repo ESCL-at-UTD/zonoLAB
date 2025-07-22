@@ -6,7 +6,7 @@
 %       Z = union(X,Y)        
 %   Inputs:
 %       X - zonotopic set in R^n (hybZono, conZono, or zono object)
-%       Y - zonotopic set in R^m (hybZono, conZono, or zono object)
+%       Y - zonotopic set in R^n (hybZono, conZono, or zono object)
 %   Outputs:
 %       Z - hybrid zonotope in R^n
 %   Notes:
