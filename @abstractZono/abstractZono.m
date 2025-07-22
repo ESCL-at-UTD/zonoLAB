@@ -14,19 +14,19 @@
 classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
     
     properties (Abstract) % These properties must be defined by each subclass
-        G       % Generator matrix (n x nG)
-        Gc      % Continuous generator matrix (n x nGc)
-        Gb      % Binary generator matrix (n x nGb)
-        c       % Center (n x 1)
-        A       % Constraint matrix (nC x nG)
-        Ac      % Continuous constraint matrix (nC x nGc)
-        Ab      % Binary constraint matrix (nC x nGb)
-        b       % Constraint vector (nC x 1)
-        n       % Dimension
-        nG      % Number of generators
-        nGc     % Number of continuous generators
-        nGb     % Number of binary generators
-        nC      % Number of constraints
+        G   double  % Generator matrix (n x nG)
+        Gc  double  % Continuous generator matrix (n x nGc)
+        Gb  double  % Binary generator matrix (n x nGb)
+        c   double  % Center (n x 1)
+        A   double  % Constraint matrix (nC x nG)
+        Ac  double  % Continuous constraint matrix (nC x nGc)
+        Ab  double  % Binary constraint matrix (nC x nGb)
+        b   double  % Constraint vector (nC x 1)
+        n   int32   % Dimension
+        nG  int32   % Number of generators
+        nGc int32   % Number of continuous generators
+        nGb int32   % Number of binary generators
+        nC  int32   % Number of constraints
     end
 
     methods
