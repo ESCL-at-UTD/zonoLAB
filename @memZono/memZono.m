@@ -209,7 +209,12 @@ classdef memZono
         function out = Z(obj,dims), out = projection(obj,dims).Z_; end
         % Additional methods (implimentations of abstractZono methods in memZono)
         [NN,Y] = reluNN(X,Ws,bs,a);
-        [s,x_out] = supportFunc(obj,dims,d_in)
+        function out = boundingBox(in)
+            keys_out = in.keys_;
+            keys_out.factors = in.dimKeys;
+            keys_out.cons = {};
+            out = memZono(boundingBox(in.Z_),keys_out);
+        end
     end
 
     %% Indexing  ----------------------------
