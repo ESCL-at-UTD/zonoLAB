@@ -1,10 +1,13 @@
-function obj = orderReduction(obj,setType, orderReductionTechnique,final_order)
+function obj = reduce_order(obj,setType, orderReductionTechnique,final_order,filling_set)
     % Default values for setType and orderReductionTechnique if not provided
 if nargin < 3|| isempty(setType)
     setType = 'Zonotope';  % Default setType
 end
 if nargin < 4 || isempty(orderReductionTechnique)
     orderReductionTechnique = 'Exact';  % Default orderReductionTechnique
+end
+if nargin < 5|| isempty(filling_set)
+    filling_set=obj;  % Default setType
 end
 
 disp(['Set type: ', setType]);
@@ -33,35 +36,10 @@ switch setType
             end
         end
         obj=zono(reduced_G,obj.c);
-    case 'Constrained Zonotope'    
-        A=obj.A;
-        b=obj.b;
-        c=obj.c;
-        G=obj.G;
-        while true
-            [G,c,A,b,eff_r]=redundancy_remover_conzono(G,c,A,b);
-            if isempty(eff_r)
-                break
-            end       
-            i=length(eff_r);
-            remove_position=eff_r(i);
-            n_c=size(A,1);
-            removable_constraint=0;
-            for idx=1:n_c
-                if A(idx,remove_position)~=0
-                    removable_constraint=idx;
-                    break
-                end
-            end
-            if removable_constraint==0
-            continue;
-            end
-            [G,c,A,b]=constraint_remover_function(G,c,A,b,remove_position,removable_constraint);
-            obj=conZono(G,c,A,b);
-        end
-        obj=conZono(G,c,A,b);
-        
+    case 'Constrained Zonotope'
+        obj=reduce_conzono(obj);      
     case 'Hybrid Zonotope'
+        disp('Not supported yet')
         obj=obj
 end
 end
@@ -74,13 +52,13 @@ switch setType
         X = [G, -G]';  
         Co = X' * X;   
         % Step 4: Perform Singular Value Decomposition (SVD)
-        [U, ~, ~] = svd(Co);  % U contains the principal components (eigenvectors)
-     
+        [U, ~, ~] = svd(Co);  % U contains the principal components (eigenvectors)    
         Z_transformed=U'*obj;    
         obj=U*boundingBox(Z_transformed);
     case 'Constrained Zonotope'
         obj=obj
     case 'Hybrid Zonotope'
+        disp('Not Supported yet')
         obj=obj
 end
 end
@@ -123,5 +101,10 @@ switch setType
         T = [eye(n_r);T2'];
         G_transformed=G*T;
         obj=zono(G_transformed,c);
+        case 'Constrained Zonotope'
+            obj=innerApprox_conzono(filling_set,obj);
+        case 'Hybrid Zonotope'
+            disp('Not Supported yet')
+            obj=obj
 end
 end
