@@ -1,7 +1,7 @@
-function out = innerApprox_conzono(obj1,obj2,varargin)
+function out = reduceInner(obj2,obj1,varargin)
 % Method options: 'Hausdorff' or 'Infinity Norm'
-disp('First argument - object that is to be fitted inside the conzono. Can be zono or conzono. Other types PROBABLY not supported')
-disp('Second argument- Conzono whose inner-approx is desired')
+disp('Second argument - object that is to be fitted inside the conzono. Can be zono or conzono. Other types PROBABLY not supported')
+disp('First argument- Conzono whose inner-approx is desired')
 
 
 if obj1.n ~= obj2.n

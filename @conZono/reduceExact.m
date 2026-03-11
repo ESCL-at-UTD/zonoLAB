@@ -1,4 +1,4 @@
-function Z_reduced = reduce_conzono(Zi)
+function Z_reduced = reduceExact(Zi)
 %REDUCECONZONOGUROBI Reduce redundant generators and constraints using Gurobi
 % Reduction in 2D and 3D should most definitely work. Reduction in higher
 % dimensions is still in question.
