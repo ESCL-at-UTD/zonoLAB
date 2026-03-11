@@ -276,7 +276,9 @@ dotProd = fN*[fC-interiorPoint]';
 if dotProd < 0 % Face normals should always point outward
     fN = -fN;
 end
-fN = normalize(fN,'norm');
+if fN ~= zeros(size(fN)) % otherwise fN might be NaN, and then it breaks later code
+    fN = normalize(fN,'norm');
+end
 end
 
 function facesThatSee = findFacesThatSeeNewVertex(fNorms,vertOnFace,extreme)

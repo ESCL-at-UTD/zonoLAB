@@ -1,0 +1,3 @@
+[submodule "examples/Logical_Reachability/Logical-Zonotope"]
+	path = examples/Logical_Reachability/Logical-Zonotope
+	url = https://github.com/aalanwar/Logical-Zonotope.git
