@@ -79,7 +79,12 @@ switch optSolver.milpSolver
             	return
             end
 
-            x = [result.pool.xn];
+            if isfield(result.pool, 'poolnx')
+                % Gurobi 13.0 and newer
+                x = [result.pool.poolnx];
+            elseif isfield(result.pool, 'xn')
+                x = [result.pool.xn];
+            end
             fVal = [result.pool.objval];
         end
         exitFlag = result.status;
